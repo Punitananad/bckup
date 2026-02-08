@@ -1,0 +1,62 @@
+{% load static %}
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Review Completed</title>
+
+    <link rel="stylesheet" href="{% static 'assets/css/order-preparing.css' %}">
+
+</head>
+
+<body class="page-success">
+    <div class="stage-wrapper">
+        <div class="stage">
+            <!-- Animation -->
+            <svg class="card" viewBox="0 0 940 640" xmlns="http://www.w3.org/2000/svg" aria-labelledby="t1" role="img">
+                <title id="t1">Thank you! Your order is confirmed</title>
+                <g transform="translate(480,320)">
+                    <g class="content">
+                        <circle r="140" fill="var(--yellow)" opacity=".12">
+                            <animate attributeName="opacity" values=".12;.04;.12" dur="2.4s" repeatCount="indefinite">
+                            </animate>
+                        </circle>
+                        <g>
+                            <circle cx="-120" cy="-40" r="10" fill="var(--orange)" class="sparkle-1">
+                            </circle>
+                            <circle cx="130" cy="-20" r="8" fill="var(--yellow)" class="sparkle-2"></circle>
+                            <circle cx="-90" cy="80" r="8" fill="var(--orange)" class="sparkle-3"></circle>
+                            <circle cx="110" cy="70" r="9" fill="var(--yellow)" class="sparkle-4"></circle>
+                        </g>
+                        <circle r="70" fill="none" stroke="var(--yellow)" stroke-width="12"></circle>
+                        <path d="M -26 6 L -6 26 L 34 -18" fill="none" stroke="var(--orange)" stroke-width="12"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <animateTransform attributeName="transform" type="scale" values="1;1.08;1" dur="1.7s"
+                                repeatCount="indefinite"></animateTransform>
+                        </path>
+                    </g>
+                </g>
+            </svg>
+            <span class="confirm-line confirm-line--lead">
+                🎉 Thank You for Your Review!
+            </span>
+
+            <span class="confirm-line confirm-line--sub">
+                We truly appreciate your feedback — your review has been saved and means a lot to us.
+            </span>
+
+            {% if order.seat.row.hall.theatre.download_invoice %}
+                <a class="refund-button mx-1 my-1" href="{% url 'theatre:invoice' order.pk %}">
+                    Invoice
+                </a>
+            {% endif %}
+        </div>
+    </div>
+
+</body>
+
+</html>

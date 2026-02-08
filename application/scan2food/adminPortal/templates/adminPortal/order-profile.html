@@ -1,0 +1,485 @@
+{% extends 'adminPortal/base.html' %}
+
+{% load static %}
+{% block title %}
+
+<title>
+    Order Profile | {{order_id}}
+</title>
+
+<style>
+    .connection-status-badge {
+        position: relative;
+        top: -4vh;
+    }
+
+
+    .contact {
+        width: 30vw;
+    }
+
+    #chat-button {
+        position: fixed;
+        right: 0;
+        margin: 0 2.5%;
+        bottom: 15%;
+    }
+
+    .chat-badge {
+        position: absolute;
+        right: 0;
+        margin: 0 5%;
+    }
+
+    .chat-container {
+        height: 100vh;
+        display: flex;
+    }
+
+    /* Sidebar */
+    .chat-sidebar {
+        width: 25%;
+        background: #fff;
+        border-right: 1px solid #dee2e6;
+        overflow-y: auto;
+    }
+
+    .user-item {
+        display: flex;
+        align-items: center;
+        padding: 10px;
+        cursor: pointer;
+        transition: background 0.3s;
+    }
+
+    .user-item:hover {
+        background-color: #f1f1f1;
+    }
+
+    .user-item img {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        margin-right: 10px;
+    }
+
+    /* Chat Window */
+    .chat-window {
+        width: 75%;
+        display: flex;
+        flex-direction: column;
+        background: #fdfdfd;
+    }
+
+    .chat-header-img {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        margin-right: 10px;
+    }
+
+    .chat-header {
+        width: 100%;
+    }
+
+    .chat-messages {
+        flex-grow: 1;
+        padding: 15px;
+        overflow-y: auto;
+    }
+
+    .message-row {
+        display: flex;
+        align-items: flex-end;
+        margin-bottom: 12px;
+    }
+
+    .message-row.sent {
+        justify-content: flex-end;
+    }
+
+    .message-bubble {
+        max-width: 65%;
+        padding: 10px 15px;
+        border-radius: 15px;
+        position: relative;
+    }
+
+    .message-row.received .message-bubble {
+        background: #e9ecef;
+        color: #212529;
+        margin-left: 10px;
+        border-bottom-left-radius: 0;
+    }
+
+    .message-row.sent .message-bubble {
+        background: #fea116;
+        color: #fff;
+        margin-right: 10px;
+        border-bottom-right-radius: 0;
+    }
+
+    .message-avatar {
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+    }
+
+    .chat-input {
+        border-top: 1px solid #dee2e6;
+        padding: 10px;
+    }
+
+    .chat-input input {
+        border-radius: 20px;
+        padding: 10px 15px;
+    }
+
+    .contact-detail-view {
+        margin: 0 2.5%;
+    }
+
+    .scrollable-card {
+        max-height: 60vh;
+        min-height: 40vh;
+        overflow-y: auto;
+    }
+</style>
+
+{% endblock %}
+
+{% block content %}
+
+<div class="modal fade" id="refund-order" tabindex="-1" role="dialog" aria-labelledby="refund-orderTitle"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Refund Amount</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+
+            </div>
+            <div>
+                <div class="modal-body">
+                    <div class="card-title">
+                        Do You Want To Refund The Amount Again To The User.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary btn-custom" data-bs-dismiss="modal">Close</button>
+                    <a type="submit" class="btn btn-danger" href="{% url 'admin-portal:refund-order' order_id %}">Refund
+                        It</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="delete-order" tabindex="-1" role="dialog" aria-labelledby="delete-orderTitle"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel4">Delete Order</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+
+            </div>
+            <div>
+                <div class="modal-body">
+                    <div class="card-title">
+                        Do You Want To Delete The Order
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary btn-custom" data-bs-dismiss="modal">Close</button>
+                    <a type="submit" class="btn btn-danger" href="{% url 'admin-portal:delete-order' order_id %}">Delete
+                        Order</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Tabs Start -->
+<div class="pageWrapper">
+    <div class="container-xxl pb-4 pt-2">
+        <div class="tabs-wrapper">
+            <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
+                <h5 class="section-title ff-secondary text-center text-primary fw-normal">Order Summary</h5>
+                <h4 class="mb-5">Order Details</h4>
+            </div>
+            <div class="tab-class text-center wow fadeInUp" data-wow-delay="0.1s"
+                style="visibility: visible; animation-delay: 0.1s; animation-name: fadeInUp;">
+                <ul class="nav nav-pills d-inline-flex justify-content-center border-bottom mb-3" id="myTab"
+                    role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <a class="d-flex align-items-center text-start mx-3 ms-0 pb-3 active" id="order-tab"
+                            data-bs-toggle="tab" data-bs-target="#order" type="button" role="tab" aria-controls="order"
+                            aria-selected="true">
+
+                            <i class="far fa-bookmark fa-2x text-primary"></i>
+                            <div class="ps-3">
+                                <h6>Orders</h6>
+                            </div>
+                        </a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <a class="d-flex align-items-center text-start mx-3 pb-3" id="items-tab" data-bs-toggle="tab"
+                            data-bs-target="#items" type="button" role="tab" aria-controls="items"
+                            aria-selected="false">
+
+                            <i class="fas fa-list-ul fa-2x text-primary"></i>
+                            <div class="ps-3">
+                                <h6>Items</h6>
+                            </div>
+                        </a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <a class="d-flex align-items-center text-start mx-3 pb-3" id="payments-tab" data-bs-toggle="tab"
+                            data-bs-target="#payments" type="button" role="tab" aria-controls="payments"
+                            aria-selected="false">
+                            <i class="fa fa-credit-card fa-2x text-primary"></i>
+                            <div class="ps-3">
+                                <h6>Payments</h6>
+                            </div>
+                        </a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <a class="d-flex align-items-center text-start mx-3 pb-3" id="chats-tab" data-bs-toggle="tab"
+                            onclick="LoadAllChats()" data-bs-target="#chat-box" type="button" role="tab"
+                            aria-controls="chat-box" aria-selected="false">
+                            <i class="fa fa-comments fa-2x text-primary"></i>
+                            <div class="ps-3">
+                                <h6>Chat Box</h6>
+                            </div>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="tab-content" id="myTabContent">
+                <!-- Order Tab Start -->
+                <div class="tab-pane fade show active" id="order" role="tabpanel" aria-labelledby="order-tab">
+                    <div class="card rounded-2">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <p class="text-muted">Order ID</p>
+                                <h6 id="order-id">#{{order.id}}</h6>
+                            </div>
+
+                            <div class="d-flex justify-content-between">
+                                <p class="text-muted">Theatre Name</p>
+                                <h6 id="theatre-name"></h6>
+                            </div>
+
+                            <div class="d-flex justify-content-between">
+                                <p class="text-muted">Seat</p>
+                                <h6 id="seat-name"></h6>
+                            </div>
+
+                            <div class="d-flex justify-content-between">
+                                <p class="text-muted">Food Delivered Status.</p>
+                                <h6>
+                                    <a href="#" id="delivery-status" class="text-dark">
+                                    </a>
+                                </h6>
+                            </div>
+
+                            <div class="d-flex justify-content-between">
+                                <p class="text-muted">Order Seen</p>
+
+                                <h6>
+                                    <a href="#" id="order-shown" class="text-dark"></a>
+                                </h6>
+
+                            </div>
+
+                            <div class="d-flex justify-content-between" id="delivery-detail-box">
+                                <p class="text-muted">Delivery Time</p>
+                                <h6>
+                                    <a href="#" id="delivery-detail-box-value" class="text-dark">
+                                    </a>
+                                </h6>
+                            </div>
+
+                            <div class="d-flex justify-content-between">
+                                <p class="text-muted">Order Date</p>
+                                <h6 id="order-date"></h6>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <p class="text-muted">Order Time</p>
+                                <h6 id="order-time"></h6>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <p class="text-muted">Phone Number</p>
+                                <h6 id="phone-number"></h6>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <p class="text-muted">Payment Status</p>
+                                <h6 id="payment-status"></h6>
+                            </div>
+
+                            <div class="d-flex justify-content-between">
+                                <p class="text-muted" id="panding-amount-heading">Pending Amount</p>
+                                <h6 class="total-amount">₹ <span id="panding-amount-heading-value"></span></h6>
+                            </div>
+
+
+                        </div>
+                    </div>
+                </div>
+                <!-- Order Tab End -->
+
+                <!-- Items Tab Start -->
+                <div class="tab-pane fade" id="items" role="tabpanel" aria-labelledby="items-tab">
+                    <div class="card rounded-2">
+                        <div class="card-body" id="order-items">
+
+                            <div id="all-tax-area">
+                                {% for tax in theatre.tax_set.all %}
+                                <div class="d-flex justify-content-between">
+                                    <p class="text-muted">{{tax.name}} (<span
+                                            class="tax-perscantage">{{tax.percentage}}</span>%)</p>
+                                    <h6 class="amounts">₹ <span class="tax-amount"></span></h6>
+                                </div>
+                                {% endfor %}
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <!-- Items Tab End -->
+
+                <!-- Payments Tab Start -->
+                <div class="tab-pane fade" id="payments" role="tabpanel" aria-labelledby="payments-tab">
+                    <div class="card rounded-2">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <p class="text-muted">Payment Status</p>
+
+                                <h6 id="payment-tab-payment-status" class="total-amount">
+
+                                </h6>
+                            </div>
+
+                            <div class="d-flex justify-content-between">
+                                <p class="text-muted" id="payment-tab-panding-amount-heading">Paid Amount </p>
+                                <h6 class="total-amount">₹ <span id="payment-tab-panding-amount-value"></span>
+                                </h6>
+                            </div>
+
+                            <div class="d-flex justify-content-between">
+                                <p class="text-muted">Payment Method</p>
+                                <h6 class="total-amount" id="payment-method-value">
+                                </h6>
+                            </div>
+
+                            <div class="d-flex justify-content-between d-none" id="gateway-detail">
+                                <p class="text-muted">
+                                    Payment Gateway
+                                </p>
+                                <h6 id="gateway-name">
+
+                                </h6>
+                            </div>
+
+                            <div class="d-flex justify-content-between d-none" id="scan2food-payment-id-detail">
+                                <p class="text-muted">
+                                    Scan2food Payment Id
+                                </p>
+                                <h6>
+                                    # <span id="scan2food-payment-id-value"></span>
+                                </h6>
+                            </div>
+
+                            <div class="d-flex justify-content-between d-none" id="gateway-transaction">
+                                <p class="text-muted">Transaction ID</p>
+                                <h6 class="total-amount" id="gateway-transaction-id"></h6>
+                            </div>
+
+                            <div class="col-12 float-end text-end">
+                                <button class="btn btn-danger" id="refund-button" data-bs-toggle="modal"
+                                    data-bs-target="#refund-order" style="cursor: pointer;">
+                                    Refund Amount
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Repeat for other payments -->
+                </div>
+                <!-- Payments Tab End -->
+
+                <!-- Chat box Start -->
+                <div class="tab-pane fade" id="chat-box" role="tabpanel" aria-labelledby="chats-tab">
+                    <div class="card rounded-2">
+                        <div class="card-header" style="display: flex;">
+                            <img src="https://img.freepik.com/premium-vector/person-with-blue-shirt-that-says-name-person_1029948-7040.jpg"
+                                class="message-avatar" alt="User">
+
+                            <div class="contact-detail-view">
+                                <h6 id="chat-seat-label">
+                                    Customer
+                                </h6>
+                                <div id="chat-phone-label" class="text-muted small mt-1 tmg">
+                                    [PHONE NUMBER]
+                                </div>
+                                <div id="chat-user-id" class="d-none">
+                                    [CHAT USER ID]
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- CHAT AREA STARTS -->
+
+                        <div id="chat-area" class="card-body scrollable-card">
+                        
+                        </div>
+                        <!-- CHAT AREA ENDS -->
+
+                        <div class="card-footer">
+                            <form id="chat-form">
+                                {% csrf_token %}
+                                <div class="input-group">
+                                    <input type="text" id="user-input" class="form-control"
+                                        placeholder="Type a message..." value="" autocomplete="off" />
+
+                                    <button type="submit" class="btn btn-primary">Send</button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- Repeat for other payments -->
+                    </div>
+                    <!-- Chat box end -->
+                </div>
+                <div class="row g-3">
+                    <div class="container-fluid text-center pt-3">
+                        <button class="btn btn-primary mx-2 mb-2 d-none" id="kot-button" order_id=""
+                            onclick="printKot(this)">Print KOT </button>
+                        <button class="btn btn-primary mx-2 mb-2 d-none" id="bill-button" order_id=""
+                            onclick="printBill(this)">Print Bill </button>
+                        <button class="btn btn-danger mx-2 mb-2" id="delete-order" data-bs-toggle="modal"
+                            data-bs-target="#delete-order">Delete Order</button>
+                        <button class="btn btn-success mx-2 mb-2 d-none" onclick="deliverOrder()"
+                            id="order-deliver-button">Deliver
+                            Order</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <script src="{% static '/dashboard/order-profile.js' %}"></script>
+
+    <script>
+        async function startWork() {
+            await openOrderProfile('{{order_id}}', 'order-page')
+        }
+        startWork()
+    </script>
+
+    <script src="/static/dashboard/profile/chat/main.js"></script>
+    <!-- Tabs End -->
+    {% endblock %}

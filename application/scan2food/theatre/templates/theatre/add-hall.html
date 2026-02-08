@@ -1,0 +1,102 @@
+{% extends "theatre/base.html" %}
+
+{% block title %}
+
+<title>
+    Add Hall
+</title>
+
+{% endblock %}
+
+{% block content %}
+
+{% load static %}
+
+<!-- Add Sitting Area Form Starts Here -->
+
+<!-- Modal -->
+<!-- Area form -->
+<div class="modal fade" id="sittingAreaName" tabindex="-1" role="dialog" aria-labelledby="sittingAreaNameTitle"
+    aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Add Area</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"></span>
+                </button>
+            </div>
+            <form method="post" action="#">
+                <div class="modal-body">
+                    <div>
+
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="hall-name" class="col-form-label">Enter Hall Name</label>
+                            <input type="text" class="form-control" id="hall-name" name="hall-name">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary btn-custom" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" id="add-submit" name="work" value="add_area" class="btn btn-primary">Add
+                        Area</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</div>
+
+
+<!-- Table Start Here -->
+<div class="pageWrapper">
+    <div class="container-xxl pb-4 pt-2">
+        <div class="container">
+            <div class="row g-3 align-items-center mx-0">
+                <div class="col-lg-10">
+                    <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
+                        <h5 class="section-title ff-secondary text-center text-primary fw-normal mt-4">Sitting Area</h5>
+                        <h5 class="mb-2">Add Your Cinema Hall </h5>
+                    </div>
+                </div>
+                <div class="col-lg-2 text-end float-end">
+                    <button class="btn btn-primary" id="add-hall"><i class="fas fa-plus me-1"></i>Add Hall</button>
+                </div>
+
+            </div>
+
+
+            <div id="all-hall-list mb-3">
+                <div class="row g-3 mt-3 mx-0">
+                    {% for hall in all_hall %}
+                    <div class="col-lg-3 col-sm-6 col-6 wow fadeInUp" data-wow-delay="0.3s">
+                        <div class="service-item rounded pt-3">
+                            <a href="{% url 'theatre:add-seat-to-hall' hall.id %}">
+                                <div class="p-4">
+                                    <img class="howItWorkImg" src="{% static 'assets/images/cinema.png' %}" alt="Hall">
+                                    <h6>
+                                        {{hall.name}}
+                                    </h6>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- <div class="row">
+            <div class="col-12 mt-5">
+                <button class="btn btn-primary" id="add-hall">Add Hall</button>
+            </div>
+        </div> -->
+
+    </div>
+</div>
+<!-- Table End Here -->
+
+<script src="{% static 'theatre_js/add-hall.js' %}"></script>
+
+{% endblock %}

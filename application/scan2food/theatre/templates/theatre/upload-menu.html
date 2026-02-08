@@ -1,0 +1,36 @@
+{% extends 'theatre/base.html' %}
+
+{% block content %}
+
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    upload menu
+                </div>
+                <form action="{% url 'theatre:upload-menu' %}" method="post" enctype="multipart/form-data">
+                    <div class="card-body">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="menu_file">Select Excel File:</label>
+                            <input class="form-control" type="file" name="file" accept=".xlsx, .xls" required>
+                        </div>
+
+                    </div>
+                    <div class="card-footer">
+                        <div class="row">
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-success">Upload Menu</button>
+                            </div>
+                        </div>
+
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}

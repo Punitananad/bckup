@@ -1,0 +1,122 @@
+{% extends "website/base.html" %}
+{% load static %}
+{% block title %}
+<title>
+
+</title>
+<style>
+    .bg-wrapper {
+        min-height: calc(100vh - 121px);
+
+    }
+</style>
+<meta name="csrf-token" content="{{ csrf_token }}">
+{% endblock %}
+{% block body %}
+
+<!-- code  -->
+{% load static %}
+<!-- Navbar & Hero Start -->
+<div class="container-xxl p-0">
+    <div class="bg-dark py-1 px-3 mt-sm-0-cust w-100 z-index-9">
+        <div class="container-fluid m-0">
+            <div class="row align-items-center">
+                <div class="col-4 col-md-8 col-lg-4">
+                    <img src="/static/assets/images/brand/Scan2Food.png" class="app-brand-logo" alt="Scan2Food Logo">
+                </div>
+                <div class="col-md-8 col-8 col-lg-5 offset-lg-3 text-end float-end">
+                    <div class="text-white ">
+                        <h6 id="restorent-name" class=" text-white smaller mb-1"></h6>
+                        <h6 class="text-primary smaller mb-0">
+                            Theatre :
+                            <span class="small text-white smaller" id="theatre-name-label">[Theatre Name]</span>
+                        </h6>
+                    </div>
+                    <div class="text-white">
+                        <h6 id="restorent-name" class=" text-white smaller mb-1"></h6>
+                        <h6 class="text-primary smaller mb-0">
+                            Hall :
+                            <span class="small text-white smaller" id="hall-name-label">[Hall Name]</span>
+                        </h6>
+                    </div>
+                    <!-- Search Bar -->
+                    <div class="input-group d-none">
+                        <input type="text" class="form-control" placeholder="Search">
+                        <span class="input-group-text bg-primary text-dark white border-left-0">
+                            <i class="fas fa-search"></i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Navbar End -->
+
+    <!-- seat input start -->
+    <div class="bg-white p-0 bg-wrapper">
+        <div class="row m-0 align-items-center pt-4">
+            <div class="col-lg-12 col-md-12 text-center">
+                <h5 class="section-title ff-secondary text-center text-primary fw-normal mb-5 mt-3">Select Your Seat
+                </h5>
+            </div>
+            <div class="row">
+                <div class="col-lg-10 col-10 offset-lg-1 offset-1 justify-content-center">
+                    <div class="container bg-grey px-4 py-3">
+
+                        <div class="row align-items-center">
+                            <div class="col-lg-4 col-md-4 col-12 mb-3">
+                                <div class="form-group position-relative">
+                                    <label for="selected-row" class="form-label fw-bold">Select Row</label>
+                                    <select id="selected-row" name="selected-row" class="form-select">
+                                        <option value="">Select Row</option>
+                                        
+                                    </select>
+
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-12 mb-3">
+                                <div class="form-group position-relative">
+                                    <label for="selected-seat" class="form-label fw-bold">Enter Your Seat No.</label>
+                                    <select name="selected-seat" id="selected-seat" class="form-select" required>
+                                        <option value="">Select Seat</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-12 mb-0">
+                                <button type="button" class="btn btn-primary mt-1" id="open-menu-button">Proceed</button>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+
+
+    </div>
+
+    <!-- seat input form end -->
+
+    <!-- footer -->
+    <div class="container-fluid bg-dark text-light footer wow fadeIn" data-wow-delay="0.1s">
+        <div class="container">
+            <div class="copyright">
+                <div class="row">
+                    <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
+                        © <a class="border-bottom" href="#">Scan2Food</a>, All Right Reserved.
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+{{theatre_id|json_script:'theatre-id'}}
+{{hall.name|json_script:'hall-name'}}
+<script src="{% static 'theatre_js/single-hall-page.js' %}"></script>
+
+{% endblock %}

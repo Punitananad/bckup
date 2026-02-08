@@ -1,0 +1,93 @@
+{% extends 'adminPortal/base.html' %}
+
+{% block title %}
+<title>
+    Settings
+</title>
+{% endblock %}
+
+{% block content %}
+
+{% load static %}
+
+<!-- Add category -->
+
+<div class="pageWrapper">
+    <div class="container-xxl pb-4 pt-2">
+        <div class="container">
+            <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
+                <h5 class="section-title ff-secondary text-center text-primary fw-normal">Gateway Details</h5>
+                <h4 class="mb-3">Add Gateway</h4>
+            </div>
+
+            <div class="row mb-3 g-3 m-0">
+                <div class="col-12 bg-dark shadow pt-3 px-3">
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="row g-3">
+
+                            {% for field in form %}
+                            <div class="col-12 col-lg-4">
+                                <label for="date-range" class="text-white"
+                                    placeholder="Enter the Tax Type">{{field.name}}</label>
+                                {{field}}
+                            </div>
+                            {% endfor %}
+                            <div class="col-12 col-lg-4 py-4">
+                                <button type="submit" class="btn btn-primary"><i class="fas fa-plus me-2"></i>Add
+                                    Gateway</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="row gx-4 ">
+
+                <div class="col-12">
+                    <div class="table-responsive">
+                        <table class="table table-custom custom-table table-scrollable">
+                            <thead>
+                                <tr>
+                                    <th scope="col">
+                                        #
+                                    </th>
+                                    <th scope="col">
+                                        Gateway Name
+                                    </th>
+                                    <th>
+                                        Action
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for gateway in all_gateways %}
+                                <tr>
+                                    <th scop="row">
+                                        {{ forloop.counter }}
+                                    </th>
+                                    <td>
+                                        {{ gateway.name}}
+                                    </td>
+                                    <td>
+                                        {% if gateway.is_active %}
+                                        <a id="settlement" href="{% url 'admin-portal:activate-gateway' gateway.pk %}"
+                                            class="badge rounded-pill text-bg-success bg-success ms-3"
+                                            style="cursor: pointer;">Activate</a>
+                                        {% else %}
+                                        <a id="settlement" href="{% url 'admin-portal:activate-gateway' gateway.pk %}"
+                                            class="badge rounded-pill text-bg-danger bg-danger ms-3"
+                                            style="cursor: pointer;">Deactivate</a>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

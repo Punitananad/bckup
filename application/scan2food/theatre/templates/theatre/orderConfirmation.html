@@ -1,0 +1,37 @@
+
+<div class="pageWrapper">
+    <div class="container" >
+        <!-- id="remaining-part" -->
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="weather-card one">
+                    <div class="top text-center">
+                        <!-- You can add a heading or image here if needed -->
+                         <img src="{% static 'assets/images/food-cooking.gif' %}" alt="cooking icon" class="w-65">
+                    </div>
+                    <div class="bottom bg-light p-4 rounded">
+                        <div class="wrapper">
+                            <ul class="forecast list-unstyled">
+                                <li
+                                    class="active d-flex justify-content-between align-items-center p-2 mb-2 bg-success text-white rounded">
+                                    <span class="date">Completed</span>
+                                    <span class="lnr lnr-checkmark-circle condition">
+                                        <span class="status-text">Food is ready</span>
+                                    </span>
+                                </li>
+                                <li
+                                    class="d-flex justify-content-between align-items-center p-2 bg-secondary text-white rounded">
+                                    <span class="date">Pending</span>
+                                    <span class="lnr lnr-hourglass condition">
+                                        <span class="status-text">In progress</span>
+                                    </span>
+                                </li>
+                            </ul>
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

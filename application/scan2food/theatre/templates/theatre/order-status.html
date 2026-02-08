@@ -1,0 +1,111 @@
+{% extends "website/base.html" %}
+{% load static %}
+{% block title %}
+
+<title>
+    Order Status | {{order.seat.name}}
+</title>
+<link rel="stylesheet" href="{% static 'assets/css/table_status.css' %}">
+
+
+{% endblock %}
+
+{% block body %}
+
+{% include "website/components/header.html" %}
+
+<div class="bg-white p-0">
+    <!-- Spinner Start -->
+    <div id="spinner"
+        class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
+        <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+    </div>
+    <!-- Spinner End -->
+</div>
+
+<!-- form to take the phone number  -->
+
+<!-- Modal -->
+<div class="modal fade" id="detailBox" tabindex="-1" aria-labelledby="detailBoxLabel" aria-hidden="true"
+    data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="detailBoxLabel">Great! Your food is on the way.</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="col-md-12 mt-2">
+                        <label class="text-dark">
+                            Please provide your phone number. so that theatre staff can contact you in case of any
+                            issues with food delivery.
+                        </label>
+                    </div>
+
+                    <div class="col-md-12 mt-2">
+                        <input type="number" autocomplete="tel" name="phone-number"
+                            placeholder="Enter Your Phone Number" class="form-control" id="phone-number" required>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" onclick="submitForm()">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- form end to take the phone number -->
+
+<div class="pageWrapper">
+    <div class="container">
+        <!-- id="remaining-part" -->
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="weather-card one">
+                    <div class="top text-center">
+                        <!-- You can add a heading or image here if needed -->
+                        <img src="{% static 'assets/images/food-cooking.gif' %}" alt="cooking icon" class="w-65">
+                    </div>
+                    <div class="bottom bg-light p-4 rounded">
+                        <div class="wrapper">
+                            <ul class="forecast list-unstyled">
+                                {% if order.delivery_time == None %}
+                                <li
+                                    class="active d-flex justify-content-between align-items-center p-2 mb-2 bg-success text-white rounded">
+                                    <span class="date">Food is on the way !</span>
+                                </li>
+                                {% else %}
+                                <li
+                                    class="active d-flex justify-content-between align-items-center p-2 mb-2 bg-warning text-white rounded">
+                                    <span class="date">Food is Delivered !</span>
+                                </li>
+                                {% endif %}
+                            </ul>
+                            <!-- {% if order.seat.row.hall.theatre.detail.payment_model == 'customer'%}
+                                <a class="btn btn-primary mb-2" href="{% url 'theatre:invoice' order.pk %}" target="_blank"
+                                    id="downloadInvoice"><i class="fas fa-download me-2"></i>Download Invoice</a>
+                            {% endif %} -->
+
+                            <p>Thankyour for placing the order with Scan2Food.com </p>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{order.payment.phone_number|json_script:"customer-phone-number"}}
+
+<script src="{% static 'theatre_js/order-status.js' %}"></script>
+
+{% include "theatre/components/status-footer.html" %}
+
+{% endblock %}

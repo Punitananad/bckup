@@ -1,0 +1,178 @@
+{% extends "theatre/base.html" %}
+
+{% load static %}
+{% block title %}
+
+
+{% endblock %}
+
+{% block content %}
+<div class="pageWrapper" id="paymentPage">
+    <!-- templates/payment_page.html -->
+
+    <div class="row align-items-center justify-content-center m-0">
+        <div class="container text-center">
+            <h5 class="section-title ff-secondary text-center text-primary fw-normal">Payment Details</h5>
+            <!-- added the phone number field -->
+            <div class="row mt-3">
+                <form method="post">
+                    <div class="col-lg-6 col-sm-6 col-12">
+                        <div class="form-floating mb-3">
+                            <input type="tel" class="form-control" autofocus name="getPhoneNumber" id="getPhoneNumber"
+                                placeholder="Phone Number" required="" inputmode="tel" autocomplete="tel"
+                                value="{{order.payment.phone_number}}" maxlength="10">
+                            <label for="getPhoneNumber" class="form-label">Please enter your Whatsapp Number</label>
+                            <p class="mb-0 text-danger text-start float-start mt-2 mb-3">Please provide your whatsapp
+                                number!</p>
+                        </div>
+
+
+                        <div class="mt-4">
+                            <label for="notes" class="col-12 text-start ">notes :</label>
+                            <textarea class="form-control" name="notes" id="notes" rows="3"
+                                placeholder="Extra Cheese, Extra Sauses">{{order.notes}}</textarea>
+                        </div>
+
+                    </div>
+                </form>
+            </div>
+            <!-- added the phone number field -->
+            <div class="card rounded-2 mt-2 mb-3">
+                <div class="card-body">
+
+
+
+                    <!-- <div class="d-flex justify-content-between">
+                        <p class="text-muted" id="payment-tab-panding-amount-heading">Order Amount
+
+                        </p>
+                        <h6 class="total-amount">₹ <span class="amount-with-tax">{{amount}}</span>
+                        </h6>
+                    </div> -->
+
+                    <hr>
+                    <div class="d-flex justify-content-between">
+                        <p class="text-muted">Total Amount</p>
+                        <h6 class="total-amount">₹ <span class="amount-with-tax">{{amount}}</span></h6>
+                    </div>
+
+
+
+                    <div class="d-flex justify-content-center">
+                        <!-- {% if request.user.is_anonymous %}
+                        <div class="text-center mt-4 mx-2">
+                            <a href="{% url 'theatre:generate-cash-order' order.pk %}"
+                                class="btn btn-secondary btn-custom">Pay by Cash</a>
+                        </div>
+
+                        {% else %}
+                        <div class="text-center mt-4 mx-2">
+                            <a href="{% url 'theatre:add-payment-manually' order.id %}"
+                                class="btn btn-secondary btn-custom">Pay by Cash</a>
+                        </div>
+                        {% endif %} -->
+
+                    </div>
+                </div>
+            </div>
+            <div class="row justify-content-between">
+                <div class="col-md-8 offset-md-2 col-8 offset-2">
+                    <div class="text-center mt-4 mx-2">
+
+                        <form action="/" method="POST">
+                            {% csrf_token %}
+                            <div class="row">
+                                <button class="btn btn-primary mb-2" type="button" onclick="submitForm()"
+                                    id="rzp-button1">Pay</button>
+
+                                <!-- {% if request.user.is_anonymous %}
+                                <button class="d-none"></button>
+                                {% else %}
+
+                                <a href="{% url 'theatre:cancel-cash-order' order.id%}"
+                                    class="btn btn-danger btn-custom mb-2">Cancel Order</a>
+
+                                {% endif %} -->
+
+                                <div class="col-lg-6 col-md-6 col-12 col-sm-6">
+
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+                </div>
+            </div>
+
+
+        </div>
+
+    </div>
+</div>
+
+{{order.id|json_script:"order-id"}}
+
+<script>
+
+    // function to hit the post request for saving the phone number
+    async function PostRequest(url, data) {
+        csrftoken = document.getElementsByName('csrfmiddlewaretoken')[0].value;
+        return fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken
+            },
+            body: JSON.stringify(data),
+        })
+            .then(function (response) {
+                return response.json();
+            })
+            .then(function (data) {
+                return data;
+            })
+            .catch(function (error) {
+                throw new Error('Failed to fetch data');
+            });
+    }
+
+    const phoneInput = document.getElementById('getPhoneNumber');
+    phoneInput.addEventListener('input', function (e) {
+        this.value = this.value.replace(/[^0-9]/g, '');
+        if (this.value.length != 10) {
+            this.setAttribute('class', 'form-control is-invalid');
+        }
+        else {
+            this.setAttribute('class', 'form-control is-valid');
+        }
+    });
+
+    async function submitForm() {
+
+        let phone_number = document.getElementById('getPhoneNumber').value;
+        let notes = document.getElementById('notes').value;
+
+        if (phone_number.length < 10) {
+            phoneInput.setAttribute('class', 'form-control is-invalid');
+            phoneInput.focus();
+            return;
+        }
+        else {
+            let data = {
+                'phone_number': phone_number,
+                'notes': notes
+            }
+
+            order_id = JSON.parse(document.getElementById('order-id').textContent);
+            let url = `/theatre/order-status/${order_id}`;
+            let update_status = await PostRequest(url, data);
+            if (update_status.status == true) {
+                window.open("{{redirect_url}}", "_self");
+            }
+        }
+
+    }
+</script>
+
+
+{% endblock %}

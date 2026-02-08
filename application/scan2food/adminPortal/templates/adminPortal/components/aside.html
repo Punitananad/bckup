@@ -1,0 +1,99 @@
+<!-- SIDEBAR -->
+
+<aside id="sidebar" class="sidebar dashboard-sideBar">
+    <div class="menu mt-2">
+        <a class="nav-link active" href="{% url 'admin-portal:index' %}"><i class="bi bi-speedometer2"></i><span
+                class="nav-text">Dashboard</span></a>
+
+        <a class="nav-link d-flex align-items-center collapsed" data-bs-toggle="collapse" href="#ordersMenu">
+            <i class="bi bi-receipt-cutoff"></i><span class="nav-text">Orders</span><i
+                class="bi bi-chevron-right chev"></i>
+        </a>
+        <div id="ordersMenu" class="collapse submenu">
+            <a class="nav-link" href="{% url 'admin-portal:live-orders' %}"><i class="bi bi-broadcast-pin"></i><span class="nav-text text-truncate">Live
+                    Orders</span></a>
+            <a class="nav-link" href="{% url 'admin-portal:all-orders' %}"><i class="bi bi-clipboard-data"></i><span class="nav-text text-truncate">All
+                    Orders</span></a>
+
+        </div>
+
+        <a class="nav-link d-flex align-items-center collapsed" data-bs-toggle="collapse" href="#theatreMenu">
+            <i class="bi bi-building"></i><span class="nav-text">Theatres</span><i class="bi bi-chevron-right chev"></i>
+        </a>
+        <div id="theatreMenu" class="collapse submenu">
+            <a class="nav-link" href="{% url 'admin-portal:all-theatre' %}" role="button">
+                <i class="bi bi-list-check"></i><span class="nav-text text-truncate">All Theatres</span>
+            </a>
+            <a class="nav-link" href="#"><i class="bi bi-person-check"></i><span
+                    class="nav-text text-truncate">Onboarding
+                    (Agreed, not live)</span></a>
+            <a class="nav-link" href="#"><i class="bi bi-grid-3x3-gap"></i><span class="nav-text text-truncate">Seat
+                    Mapping</span></a>
+        </div>
+
+        <a class="nav-link" href="{% url 'admin-portal:all-payouts' %}"><i class="bi bi-cash"></i><span
+                class="nav-text text-truncate">Payouts</span></a>
+        <a class="nav-link "  href="{% url 'admin-portal:all-refund-queries' %}"><i class="bi bi-question-circle"></i><span
+                class="nav-text text-truncate">Queries</span></a>
+        <a class="nav-link "  href="{% url 'admin-portal:settings' %}"><i class="bi bi-gear"></i><span class="nav-text text-truncate">Settings</span></a>
+        <a href="{% url 'admin-portal:item-approved-list' %}" class="nav-link"><i class="far fa-thumbs-up"></i><span class="nav-text text-truncate">All food Items</span></a>
+    </div>
+</aside>
+<!-- <script>
+       document.querySelectorAll('.nav-link').forEach(function(link) {
+        link.addEventListener('click', function() {
+            document.querySelectorAll('.nav-link').forEach(function(nav) {
+                nav.classList.remove('active');
+            });
+            this.classList.add('active');
+        });
+    });
+</script> -->
+<script>
+try {
+    document.addEventListener('DOMContentLoaded', function() {
+        // Remove active from all links
+        document.querySelectorAll('.nav-link').forEach(function(link) {
+            link.classList.remove('active');
+        });
+
+        // Get last active link href from localStorage
+        var activeHref = localStorage.getItem('activeNavLink');
+        if (activeHref) {
+            var activeLink = document.querySelector('.nav-link[href="' + activeHref + '"]');
+            if (activeLink) {
+                activeLink.classList.add('active');
+                // If submenu item, open its parent menu
+                var submenu = activeLink.closest('.submenu');
+                if (submenu) {
+                    submenu.classList.add('show');
+                }
+            }
+        }
+
+        // Add click event to all nav-links
+        document.querySelectorAll('.nav-link').forEach(function(link) {
+            link.addEventListener('click', function(e) {
+                // If this is a submenu item, prevent parent collapse
+                if (link.closest('.submenu')) {
+                    e.stopPropagation();
+                    // Open parent menu
+                    link.closest('.submenu').classList.add('show');
+                }
+                // Save href for active class
+                localStorage.setItem('activeNavLink', this.getAttribute('href'));
+            });
+        });
+
+        // Prevent collapse toggle when clicking submenu items
+        document.querySelectorAll('.submenu .nav-link').forEach(function(subLink) {
+            subLink.addEventListener('click', function(e) {
+                e.stopPropagation();
+            });
+        });
+    });
+} catch (err) {
+    // Optionally log the error or handle gracefully
+    console.warn('Sidebar navigation script error:', err);
+}
+</script>

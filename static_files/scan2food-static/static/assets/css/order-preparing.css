@@ -1,0 +1,519 @@
+:root {
+  --yellow: #FEA116;
+  --blue: #2c406e;
+  --orange: #f36129;
+}
+
+.stage-wrapper {
+  color: var(--blue);
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+  display: flex;
+  background: transparent;
+  align-items: center;
+  justify-content: center;
+  margin-top: 40px;
+}
+
+.stage {
+  /* Increase max width so SVG appears larger on desktop */
+  width: min(1200px, 98vw);
+  display: grid;
+  gap: 10px;
+  place-items: center;
+  padding: 10px 20px;
+}
+
+.stage .card {
+  width: 100%;
+  aspect-ratio: 16/9;
+  display: block;
+  filter: drop-shadow(0 10px 30px rgba(44, 64, 110, .18));
+}
+
+/* Variant: card with 3:2 ratio (960x640) */
+.stage-wrapper .card.card-3x2 {
+  aspect-ratio: 3 / 2;
+}
+
+/* Shared UI bits (used on some pages) */
+.stage-wrapper .meta {
+  text-align: center;
+  font-weight: 700;
+  display: grid;
+  gap: 4px;
+}
+
+.stage-wrapper .timerWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.stage-wrapper .clock {
+  width: 28px;
+  height: 28px;
+}
+
+.stage-wrapper .eta {
+  font-size: clamp(18px, 3.8vw, 24px);
+  font-weight: 800;
+  color: var(--blue);
+}
+
+.stage-wrapper .lead {
+  font-weight: 800;
+  color: var(--yellow);
+  font-size: clamp(16px, 3.2vw, 22px);
+}
+
+.stage-wrapper .sub {
+  font-weight: 700;
+}
+
+/* countdown ring size used on some pages */
+.ring {
+  width: 50px;
+  height: 50px;
+}
+
+@keyframes slideInCenter {
+  0% {
+    transform: translateX(-40%);
+    opacity: 0
+  }
+
+  60% {
+    opacity: 1
+  }
+
+  100% {
+    transform: translateX(0);
+    opacity: 1
+  }
+}
+
+@keyframes trayBounce {
+
+  0%,
+  100% {
+    transform: translateY(0)
+  }
+
+  50% {
+    transform: translateY(-8px)
+  }
+}
+
+.panel {
+  width: 100%;
+  display: grid;
+  gap: 8px;
+  justify-items: center;
+  text-align: center;
+  margin-top: -2px
+}
+
+.prompt {
+  font-weight: 800;
+  color: var(--blue)
+}
+
+.stars {
+  display: flex;
+  gap: 6px;
+  margin-top: 20px;
+}
+
+.star {
+  width: 38px;
+  height: 38px;
+  cursor: pointer;
+  fill: none;
+  stroke: var(--blue);
+  stroke-width: 2
+}
+
+.star.active {
+  fill: var(--yellow);
+  stroke: var(--yellow)
+}
+
+.stage textarea {
+  width: min(720px, 96%);
+  min-height: 74px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1.5px solid var(--blue);
+  background: transparent;
+  color: var(--blue);
+  font-size: 16px;
+  margin-top: 12px;
+}
+
+textarea::placeholder {
+  color: rgba(44, 64, 110, .7)
+}
+
+.actions {
+  display: flex;
+  gap: 8px
+}
+
+.stage button {
+  border: 1px solid var(--blue);
+  background: var(--yellow);
+  color: #101828;
+  font-weight: 800;
+  padding: 8px 14px;
+  border-radius: 12px;
+  cursor: pointer;
+  margin-top: 15px;
+}
+
+.stage .msg {
+  font-weight: 800;
+  color: var(--orange);
+  display: none
+}
+
+/* Success page inline text helpers */
+.confirm-line {
+  display: block;
+  text-align: center;
+  font-weight: 700;
+  color: var(--blue);
+}
+
+.confirm-line--lead {
+  font-size: 25px;
+  margin-top: 52px;
+}
+
+.confirm-line--sub {
+  font-size: 18px;
+  margin-top: 6px;
+}
+
+/* Mobile: scale SVG internals (no translate/cropping) */
+@media (max-width: 600px) {
+  .stage {
+    width: 100vw;
+  }
+
+  svg.card .content {
+    transform: scale(1.5);
+    transform-box: fill-box;
+    transform-origin: 50% 50%;
+  }
+}
+
+@media (max-width: 400px) {
+  svg.card .content {
+    transform: scale(1.8);
+  }
+}
+
+@keyframes steam {
+  0% {
+    transform: translateY(8px);
+    opacity: .2
+  }
+
+  50% {
+    opacity: .7
+  }
+
+  100% {
+    transform: translateY(-10px);
+    opacity: 0
+  }
+}
+
+@keyframes bubble {
+  0% {
+    transform: translateY(0)
+  }
+
+  50% {
+    transform: translateY(-4px)
+  }
+
+  100% {
+    transform: translateY(0)
+  }
+}
+
+@keyframes sparkle {
+
+  0%,
+  100% {
+    opacity: .25;
+    transform: translateY(0)
+  }
+
+  50% {
+    opacity: .9;
+    transform: translateY(-6px)
+  }
+}
+
+/* ---------- Animation helper classes (used by inline SVGs) ---------- */
+.sparkle-1 {
+  animation: sparkle 2.2s ease-in-out infinite;
+}
+
+.sparkle-2 {
+  animation: sparkle 2.4s ease-in-out infinite;
+  animation-delay: .2s;
+}
+
+.sparkle-3 {
+  animation: sparkle 2s ease-in-out infinite;
+  animation-delay: .4s;
+}
+
+.sparkle-4 {
+  animation: sparkle 2.6s ease-in-out infinite;
+  animation-delay: .1s;
+}
+
+.steam-1 {
+  animation: steam 2.2s ease-in-out infinite;
+}
+
+.steam-2 {
+  animation: steam 2.6s ease-in-out infinite;
+  animation-delay: .3s;
+}
+
+.steam-3 {
+  animation: steam 2.4s ease-in-out infinite;
+  animation-delay: .6s;
+}
+
+.bubble-1 {
+  animation: bubble 2.2s ease-in-out infinite;
+}
+
+.bubble-2 {
+  animation: bubble 2.4s ease-in-out infinite;
+  animation-delay: .2s;
+}
+
+.bubble-3 {
+  animation: bubble 1.9s ease-in-out infinite;
+  animation-delay: .4s;
+}
+
+.tray-bounce {
+  animation: trayBounce 2.2s ease-in-out infinite;
+}
+
+.slide-in-center {
+  animation: slideInCenter 2.6s ease-out infinite alternate;
+}
+
+/* Clock small variant */
+.clock--small {
+  width: 20px;
+  height: 20px;
+  vertical-align: middle;
+  margin-right: 6px;
+}
+
+/* refund UI moved from inline styles */
+.refund-claim {
+  margin-top: 12px;
+  text-align: center;
+}
+
+/* don't hide the whole block — hide only the button */
+.refund-button.hidden {
+  display: none;
+}
+
+ .refund-copy {
+  margin: 0 0 8px;
+  color: var(--blue);
+  margin-top: 1vh;
+  background-color: #f9f0e2;
+  padding: 10px;
+  border-radius: 5px;
+  font-weight: bold;
+  display: inline-block;
+  text-align: center;
+}
+
+.refund-button {
+  background: linear-gradient(90deg, var(--yellow), var(--orange));
+    border: none;
+    padding: 8px 8px;
+    border-radius: 8px;
+    color: #fff;
+    font-weight: 700;
+    cursor: pointer;
+    font-size: 11px;
+    margin-right: 10px;
+      display: inline-block;
+
+}
+
+.refund-button[disabled] {
+  opacity: 0.6;
+  cursor: default;
+}
+
+/* ---------- Page-specific scaling (overrides general mobile rules) ---------- */
+/* Order Success */
+@media (max-width: 600px) {
+  .page-success svg.card .content {
+    transform: scale(2.2);
+    transform-box: fill-box;
+    transform-origin: 50% 50%;
+  }
+}
+
+@media (max-width: 400px) {
+  .page-success svg.card .content {
+    transform: scale(2.6);
+  }
+}
+
+/* Order Being Prepared */
+.page-prep svg.card .content {
+  transform: scale(1.5);
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+}
+
+@media (max-width: 600px) {
+  .page-prep svg.card .content {
+    transform: scale(2.3);
+  }
+}
+
+@media (max-width: 400px) {
+  .page-prep svg.card .content {
+    transform: scale(2.7);
+  }
+}
+
+
+
+
+/* style for modal */
+
+/* Overlay */
+.modal-overlay {
+  display: none;
+  /* Hidden by default */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  /* Darken the page */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+/* Modal Box */
+.modal-content {
+  background: #fff;
+  padding: 25px 30px;
+  border-radius: 10px;
+  max-width: 400px;
+  width: 90%;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+  text-align: center;
+}
+
+.modal-content h2 {
+  font-size: 18px;
+  margin-bottom: 20px;
+}
+
+.modal-content input {
+  width: 100%;
+  padding: 10px 12px;
+  margin-bottom: 15px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  font-size: 16px;
+}
+
+.modal-content button {
+  padding: 10px 20px;
+  margin: 5px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 15px;
+}
+
+.modal-content button:hover {
+  opacity: 0.9;
+}
+
+/* .modal-content .close-btn {
+  background: #f44336;
+  color: #fff;
+}
+
+.modal-content button:not(.close-btn) {
+  background: #4CAF50;
+  color: #fff;
+} */
+
+
+
+
+
+/* Toast container */
+#toast-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 9999;
+}
+
+/* Individual toast */
+.toast {
+  /* Bootstrap bg-danger red */
+  color: #fff;
+  padding: 12px 20px;
+  margin-top: 10px;
+  border-radius: 5px;
+  opacity: 0;
+  transform: translateX(100%);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  font-size: 14px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* Show toast */
+.toast.show {
+  opacity: 1;
+  transform: translateX(0);
+  background-color: #dc3545;
+}
+.page-delivered svg, .stage svg {
+  background-color: transparent!important;
+  border: 0px solid transparent!important;
+
+}
+#button-area {
+      background-color: #f9f0e2;
+    margin-top: 12px;
+    width: 100%;
+    padding: 10px 10px 20px 10px;
+}
+#button-area a:focus, #button-area a:active, #button-area a:hover {
+    text-decoration: none;
+    color: #131313;
+}

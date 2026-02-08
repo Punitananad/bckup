@@ -1,0 +1,218 @@
+{% extends 'theatre/base.html' %}
+
+{% block title %}
+<title>
+    Payment History
+</title>
+{% endblock %}
+
+{% block content %}
+
+
+<!-- Order History Start -->
+<div class="pageWrapper">
+    <div class="container-xxl pb-4 pt-2">
+        <div class="container">
+            <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
+                <h5 class="section-title ff-secondary text-center text-primary fw-normal">All Payments</h5>
+                <h4 class="mb-5">Your All Payment History</h4>
+            </div>
+            <!-- date range picker start -->
+            <form>
+                <div class="row mb-4">
+                    <div class="col-md-12 col-lg-12 col-12">
+                        <div class="shadow-lg bg-white p-3">
+                            <div class="row align-items-center g-3">
+                                <div class="col-lg-4 col-md-4 col-12">
+                                    <label for="daterange" class="fw-bold">Date Range</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text" id="basic-addon1"> <i
+                                                class="fa fa-calendar"></i></span>
+                                        <input type="text" id="daterange" class="form-control br-2" name="daterange"
+                                            aria-label="daterange" aria-describedby="basic-addon1">
+                                    </div>
+                                </div>
+
+                                <input type="number" id="page_number" name="page" style="display: none;">
+
+                                <div class="col-lg-2 col-md-2 col-12">
+                                    <button type="submit" class="btn btn-primary mt-4" id="submit-button"><i
+                                            class="fa fa-filter me-2"></i>Filter Results</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+            <!-- date range picker end -->
+            <div id="order-list" class="row">
+
+
+                <div class="container-fluid">
+
+
+                    <div class="table-responsive">
+                        <table class="table custom-table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">
+                                        S No.
+                                    </th>
+                                    <th scope="col" class="w-200 text-center">
+                                        Time
+                                    </th>
+                                    <th scope="col" class="text-center">
+                                        Amount
+                                    </th>
+                                    <th scope="col" class="text-center">
+                                        Payment Method
+                                    </th>
+                                    <th scope="col" class="text-center">
+                                        Seat
+                                    </th>
+                                    <th scope="col" class="text-center">
+                                        settled
+                                    </th>
+                                    <th scope="col" class="text-center">
+                                        Action
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for payment in all_payments %}
+                                <tr>
+                                    <th scope="row">
+                                        {{forloop.counter}}
+                                    </th>
+                                    <td class="text-center">
+                                        {{payment.time}}
+                                    </td>
+                                    <td class="text-center">
+                                        ₹ {{payment.order.order_amount}}
+                                    </td>
+                                    <td class="text-center">
+                                        {{payment.payment_method}}
+                                    </td>
+                                    <td class="text-center">
+                                        {{payment.order.seat.row.hall.name}} ({{payment.order.seat.name}})
+                                    </td>
+                                    <td class="text-center">
+                                        {% if payment.is_settled %}
+                                        <span class="badge rounded-pill text-bg-success bg-success ms-3">settled</span>
+                                        {% else %}
+                                        <span class="badge rounded-pill text-bg-success bg-danger ms-3">unsettled</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-center">
+                                        <a href="{% url 'theatre:order-profile' payment.order.pk %}"> <i
+                                                class="fas fa-eye text-primary"></i></a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+
+                        </table>
+                    </div>
+                    <div class="custom-pagination">
+                        <div class="row m-0">
+                            <div class="col-lg-6 col-md-5 col-5">
+                                <div class="current">
+                                    Page {{ all_payments.number }} of {{ all_payments.paginator.num_pages }}.
+                                </div>
+                            </div>
+                            <div class="col-lg-6 col-7 col-md-7">
+                                <ul class="pagination justify-content-end mb-0">
+                                    {% if all_payments.has_previous %}
+                                    <li class="page-item">
+                                        <a class="page-link" onclick="OpenPage('1')" tabindex="-1">
+                                            <i class="fas fa-angle-left"></i>
+                                            <span class="sr-only">Previous</span>
+                                        </a>
+                                    </li>
+
+                                    <li class="page-item">
+                                        <a class="page-link"
+                                            onclick="OpenPage('{{ all_payments.previous_page_number }}')" tabindex="-1">
+                                            {{ all_payments.previous_page_number }}
+                                        </a>
+                                    </li>
+                                    {% endif %}
+
+
+                                    <li class="page-item active">
+                                        <a class="page-link" href="#">{{all_payments.number}}</a>
+                                    </li>
+
+                                    {% if all_payments.has_next %}
+
+                                    <li class="page-item">
+                                        <a onclick="OpenPage('{{ all_payments.next_page_number }}')" class="page-link">
+                                            {{ all_payments.next_page_number}}
+                                        </a>
+                                    </li>
+
+                                    <li class="page-item">
+                                        <a onclick="OpenPage('{{ all_payments.next_page_number }}')" class="page-link">
+                                            <i class="fas fa-angle-right"></i>
+                                            <span class="sr-only">Next</span>
+                                        </a>
+                                    </li>
+
+                                    {% endif %}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+{{ start_date|json_script:"start-date"}}
+{{ end_date|json_script:"end-date"}}
+
+
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<script>
+    const start_date = JSON.parse(document.getElementById('start-date').innerText);
+    const end_date = JSON.parse(document.getElementById('end-date').innerText)
+
+
+    $(document).ready(function () {
+        $('#daterange').daterangepicker({
+            locale: {
+                format: 'DD/MMM/YYYY'
+            },
+            startDate: new Date(start_date), // Set start date to today
+            endDate: new Date(end_date),   // Set end date to today
+            showDropdowns: true,
+            opens: 'right',
+            ranges: {
+                'Today': [moment(), moment()],
+                'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+                'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+                'This Month': [moment().startOf('month'), moment().endOf('month')],
+                'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+            }
+        });
+    });
+
+    document.getElementById('order_type').value = JSON.parse(document.getElementById('order-type-value').innerText);
+    document.getElementById('payment_status').value = JSON.parse(document.getElementById('payment-status-value').innerText);
+
+    function OpenPage(page_number) {
+        page_number = JSON.parse(page_number);
+        document.getElementById('page_number').value = page_number;
+        document.getElementById('submit-button').click();
+    }
+
+</script>
+
+<!-- Order History End -->
+{% endblock %}

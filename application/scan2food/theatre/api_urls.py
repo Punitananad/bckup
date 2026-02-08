@@ -1,0 +1,40 @@
+from django.urls import path
+from . import api_views
+
+app_name = 'theatre-api'
+urlpatterns = [
+    path('all-seating-plan', api_views.all_seating_plan, name='all-seating-plan'),
+    path('all-menu/<int:pk>', api_views.all_menu, name='menu-data'),
+    path('create-order', api_views.create_order, name='create-order'),
+    path('tax-list/<int:pk>', api_views.get_tex_list, name='tax-list'),
+    path('order-data/<int:pk>', api_views.order_data, name='order-data'),
+    path('seat-last-order/<int:pk>', api_views.seat_last_order, name='seat-last-order'),
+    path('deliver-order/<int:pk>', api_views.deliver_order, name='deliver-order'),
+    path('dashboard-data', api_views.dashboard_data, name='dashboard-data'),
+    path('get-yearly-revenue/<int:year>', api_views.get_yearly_revenue, name='yearly-revenue'),
+    path('get-volet-data', api_views.get_volet_data, name='volet-data'),
+    # path('cashfree-data-request', api_views.cashfree_data_request, name='cashfree-data-request'),
+    path('phonepe-data-request', api_views.phonepe_data_request, name='phonepe-data-request'),
+    path('get-all-images', api_views.get_all_images, name='get-all-images'),
+    path('upload-food-image', api_views.upload_food_image, name='upload-food-image'),
+    path('get-phone-number-by-order-id/<int:pk>', api_views.get_phone_number_by_order_id, name='get-phone-number-by-order-id'),
+    path('get-all-theatres', api_views.get_all_theatres, name='get-all-theatres'),
+    path('is-order-viewed/<int:pk>', api_views.is_order_viewed, name='is-order-viewed'),
+    path('update-bulk-status', api_views.update_bulk_status, name='update-bulk-status'),
+    path('get-payu-form-details/<int:pk>', api_views.get_payu_form_details, name='get-payu-form-details'),
+    path('payu-webhook-url', api_views.payu_webhook_url, name='payu-webhook-url'),
+    path('ccavenue-hook', api_views.ccavenue_hook, name='ccavenue-hook'),
+    path('razorpay-webhook-url', api_views.razporpay_webhook_url, name='razorpay-webhook-url'),
+    path('split-razorpay-webhook-url', api_views.split_razporpay_webhook_url, name='split-razorpay-webhook-url'),
+    path('generate-otp/<int:pk>/<str:regenerate>', api_views.generate_otp, name='generate-otp'),
+    path('generate-update-otp', api_views.generate_update_otp, name='generate-update-otp'),
+    path('all-orders-sse', api_views.sse_orders_stream, name='all-orders-sse'),
+    path('get-last-payout', api_views.get_last_payout, name='get-last-payout'),
+    path('live-orders', api_views.live_orders, name='live-orders'),
+    path('refund-query-count', api_views.refund_query_count, name='refund-query-count'),
+    path('update-refund-query-status/<int:pk>', api_views.update_refund_query_status, name='update-refund-query-status'),
+    path('theatre-detail', api_views.theatre_detail, name='theatre-detail'),
+    path('split-razporpay-payout-webhook', api_views.split_razporpay_payout_webhook, name='split-razporpay-payout-webhook'),
+    path('get-order-by-phone-no/<str:phone_number>', api_views.get_order_id_by_phone_no, name='get-order-by-phone-no'),
+    # path('update-user-profile', api_views.update_user_profile, name='update-user-profile')
+]

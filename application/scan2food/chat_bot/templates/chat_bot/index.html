@@ -1,0 +1,146 @@
+{% extends "chat_bot/base.html" %}
+
+{% block title %}
+<title>
+    Chat App
+</title>
+
+<style>
+    #phone-list {
+        height: 80vh;
+        overflow-y: auto;
+    }
+
+    .list-group-item {
+        cursor: pointer;
+    }
+</style>
+{% endblock %}
+
+
+{% block content %}
+
+{% load static %}
+
+
+<div class="modal fade bd-example-modal-lg show" id="msg-card-box" tabindex="-1" role="dialog"
+    aria-labelledby="msg-card-boxTitle" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h6 class="modal-title" id="selected-phone"></h6>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+
+            </div>
+
+            <div class="modal-body">
+                <div id="chat-box" class="card-body overflow-auto mb-2" style="flex: 1; scroll-behavior: smooth;">
+                    <!-- Messages will appear here -->
+                    <!-- Example messages -->
+
+                </div>
+
+            </div>
+            <div class="modal-footer d-block">
+                <form id="chat-form">
+                    <div class="input-group">
+                        <input type="text" id="user-input" class="form-control" placeholder="Type a message..." value=""
+                            autocomplete="off" />
+
+                        <button type="submit" class="btn btn-primary">Send</button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<div class="pageWrapper">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="row gy-3 mb-4">
+                <div id="phone-list-wrapper" class="col-12" data-wow-delay="0.1s">
+                    <ul class="list-group" id="phone-list">
+
+                    </ul>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    let audio = new Audio('https://guru-sevak-singh.github.io/scan2food-static/static/sound/notification.wav');
+
+    function showToast(type, phone_number, message) {
+        // Create toast element
+        const toast = document.createElement('div');
+        toast.classList.add('toast', type);
+
+        // Add message and close icon
+        toast.innerHTML = `
+                <div class="row">
+                    <div class="col-12">
+                        <b>${phone_number}</b>
+                    </div>
+                    <div class="col-12">
+                        <span>${message}</span>
+                    </div>
+                </div>
+                <span class="close" onclick="closeToast(this)">&times;</span>
+                <div class="progress-bar"></div>
+            `;
+        audio.play();
+        
+        // Get the toast container and append the toast
+        const toastContainer = document.getElementById('toast-container');
+        toastContainer.appendChild(toast);
+
+        // Show the toast
+        setTimeout(() => {
+            toast.classList.add('show');
+        }, 100);
+
+        // Remove the toast after 3 seconds
+        setTimeout(() => {
+            if (toast.classList.contains('show')) {
+                closeToast(toast.querySelector('.close'));
+            }
+        }, 3000);
+    }
+
+    // Close toast function
+    function closeToast(element) {
+        const toast = element.parentElement;
+        toast.classList.remove('show');
+        setTimeout(() => {
+            toast.remove();
+        }, 300); // Wait for transition to finish before removing
+    }
+
+    function ShowAllMessages() {
+        let all_tags = document.getElementsByClassName('message-tag');
+        let messages = document.getElementsByClassName('server-message');
+
+        for (let i = 0; i < messages.length; i++) {
+            let message = messages[i].innerText;
+
+            let tag = all_tags[i].innerText;
+
+            if (tag == 'error') {
+                showToast('bg-danger', message);
+            }
+            else if (tag == 'success') {
+                showToast('bg-success', message);
+            }
+        }
+    }
+    ShowAllMessages()
+</script>
+
+<script src="{% static 'chatBox/index.js' %}"></script>
+{% endblock %}

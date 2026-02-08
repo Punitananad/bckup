@@ -1,0 +1,93 @@
+=== QUICK GIT COMMANDS ===
+
+STEP 1: INITIALIZE (Run once)
+------------------------------
+cd C:\Users\punit\Downloads\Documents\Desktop\s2f_bp
+git init
+git add .gitignore
+git add .
+git commit -m "Initial commit: Secure scan2food deployment"
+
+
+STEP 2: CREATE GITHUB REPO
+------------------------------
+1. Go to: https://github.com/new
+2. Name: scan2food-secure
+3. Set to: PRIVATE
+4. Click: Create repository
+
+
+STEP 3: PUSH TO GITHUB
+------------------------------
+git remote add origin https://github.com/YOUR_USERNAME/scan2food-secure.git
+git branch -M main
+git push -u origin main
+
+
+STEP 4: ON SERVER - CLONE
+------------------------------
+ssh username@YOUR_SERVER_IP
+cd /var/www
+git clone https://github.com/YOUR_USERNAME/scan2food-secure.git scan2food
+
+
+STEP 5: ON SERVER - SETUP
+------------------------------
+cd /var/www/scan2food/application/scan2food
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+pip install python-dotenv gunicorn
+
+
+STEP 6: ON SERVER - CREATE .env
+------------------------------
+nano .env
+
+# Add:
+DJANGO_ENV=production
+SECRET_KEY=^u_*nzz-$&m6jeyj=mml8rmp8^7btom(sj9(r3kb8_#uxn$f^*
+DB_NAME=scan2food_db
+DB_USER=scan2food_user
+DB_PASSWORD=YourStrongPassword123!
+DB_HOST=localhost
+DB_PORT=5432
+REDIS_PASSWORD=YourStrongRedisPassword123!
+
+# Save: Ctrl+X, Y, Enter
+
+
+FUTURE UPDATES
+------------------------------
+# On Windows:
+git add .
+git commit -m "Your change description"
+git push origin main
+
+# On Server:
+cd /var/www/scan2food
+git pull origin main
+sudo systemctl restart scan2food
+
+
+VERIFY BEFORE PUSHING
+------------------------------
+git status                    # See what will be committed
+git diff                      # See changes
+git log --oneline            # See commit history
+
+
+CHECK WHAT'S IGNORED
+------------------------------
+git status --ignored         # See ignored files
+git check-ignore -v .env     # Check if .env is ignored
+
+
+IMPORTANT
+------------------------------
+✅ .gitignore is created
+✅ .env will NOT be committed
+✅ db.sqlite3 will NOT be committed
+✅ Backup SQL files will NOT be committed
+✅ Repository should be PRIVATE
+✅ Each server has its own .env file

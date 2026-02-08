@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+
+{% load static %}
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: small;
+            line-height: 20px;
+        }
+
+        #logo {
+            height: 50px;
+            padding: 5% 0;
+            /* margin: 5px;
+            padding: 5px; */
+        }
+
+        #theatreLogo {
+            height: 50px;
+            padding: 5% 0;
+            /* margin: 5px;
+            padding: 5px;
+            position: absolute;
+            right: 10rem; */
+        }
+
+        table {
+            margin: 0 5%;
+            width: 85%;
+            text-align: left;
+            border-collapse: separate;
+            /* Ensure borders are drawn separately */
+            border-spacing: 10px;
+            /* Set the spacing between cells (rows and columns) */
+            /* border: 1px solid black; */
+        }
+
+        tr {
+            padding: 5%;
+        }
+
+        td th {
+            line-height: 1.2;
+        }
+
+        #theatre-logo {
+            text-align: right;
+        }
+
+        tfoot {
+            height: 30px;
+            padding: 5%;
+            margin: 5%;
+        }
+
+        .detail-box {
+            border-bottom: 1px solid black;
+            width: 100%;
+            padding: 0 5%;
+        }
+
+        #stemp {
+            height: 150px;
+        }
+    </style>
+</head>
+
+<body>
+    <table>
+        <thead>
+            <tr>
+                <th>
+                    <img id="logo" src="{% static '/assets/images/brand/Scan2Food-whiteBG.png' %}" alt="scan2food">
+                </th>
+                <th id="theatre-logo">
+                    <img id="theatreLogo" src="{{theatre.detail.logo.url}}" alt="scan2food">
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <th colspan="2">
+                    AGREEMENT BETWEEN SCAN2FOOD AND THEATRE PARTNER {{theatre.gstdetails.firm_name}}</b>
+                </th>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    This Agreement ("Agreement") is made and entered into on this
+                    <b>
+                        {{current_date|date:"j"}}th of {{current_date|date:"F, Y"}},
+                    </b>
+                    by and
+                    between:
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <b>
+                        Scan2Food,
+                    </b>
+                    a proprietorship firm registered under the applicable laws of India, having <b>GST number :-
+                        06BEBPA0763C1ZB</b> its registered
+                    office Situated at
+                    <b>
+                        NEAR MAIN BAZAR 211/12 KALANAUR KALAN ROAD, KALANAUR ROHTAK, HARYANA
+                        (124113)
+                    </b> (hereinafter referred to as "Scan2Food"), and a theatre with registered firm name :-
+                    <b>
+                        {{theatre.gstdetails.firm_name}}
+                    </b>
+                    , having
+                    <b>
+                        GST number :- {{theatre.gstdetails.gst_number}}
+                    </b>
+                    with registered office Situated at
+                    <b>
+                        {{theatre.gstdetails.gst_address}}
+                    </b>
+                    , registered under the applicable laws of India (hereinafter referred to as
+                    "Theatre").
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    Both parties, intending to be legally bound, agree as follows:
+                </td>
+            </tr>
+            <tr>
+                <th colspan="2">
+                    1. Scope of Services
+                </th>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    1.1 Scan2Food provides a QR-based food ordering platform that allows moviegoers to order food
+                    from their seats.
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    1.2 The Theatre agrees to integrate Scan2Food's services and facilitate order fulfillment.
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    1.3 Scan2Food will provide a dashboard for theatre staff to manage and process orders.
+                </td>
+            </tr>
+            <tr>
+                <th colspan="2">
+                    2. Revenue Sharing & Payment Terms
+                </th>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    2.1 Scan2Food charges a
+                    <b>
+                        {{theatre.detail.commission}}%
+                    </b>
+                    convenience fee on each transaction made through the platform.
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    2.2 The convenience fee is collected from customers at the time of placing an order.
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    2.3 The Theatre will receive the food order amount (excluding the convenience fee) in weekly
+                    settlements via bank transfer.
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    2.4 Both parties will be responsible for their applicable GST and tax liabilities.
+                </td>
+            </tr>
+            <tr>
+                <th colspan="2">
+                    3. Responsibilities of the Theatre
+                </th>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    3.1 Ensure timely preparation and delivery of food orders.
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    3.2 Maintain food hygiene, quality standards, and pricing consistency.
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    3.3 Provide customer support for food-related issues and order complaints.
+                </td>
+            </tr>
+            <tr>
+                <th colspan="2">
+                    4. Responsibilities of Scan2Food
+                </th>
+            </tr>
+
+
+            <tr>
+                <td colspan="2">
+                    4.1 Maintain a stable and secure platform for ordering and payment processing.
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    4.2 Provide technical support to the Theatre for system-related issues.
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    4.3 Facilitate real-time order notifications and analytics for better service management.
+                </td>
+            </tr>
+            <tr>
+                <th colspan="2">
+                    5. Data Privacy & Confidentiality
+                </th>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    5.1 Both parties agree to maintain confidentiality of customer data, including payment and order
+                    information.
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    5.2 The Theatre shall not misuse or share customer data with third parties.
+                </td>
+            </tr>
+            <tr>
+                <th colspan="2">
+                    6. Liability & Indemnification
+                </th>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    6.1 The Theatre is solely responsible for food preparation, pricing, quality, and delivery.
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    6.2 Scan2Food shall not be liable for food-related complaints or disputes.
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    6.3 Each party agrees to indemnify the other against any claims arising from a breach of this
+                    Agreement.
+                </td>
+            </tr>
+            <tr>
+                <th colspan="2">
+                    7. Marketing & Branding Rights
+                </th>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    7.1 The Theatre grants Scan2Food permission to use its name and logo for marketing and promotional
+                    activities.
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    7.2 The Theatre agrees to display Scan2Food QR codes, branding materials, and app references at
+                    appropriate locations.
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    8. Term & Termination
+                </th>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    8.1 This Agreement is valid for a period of 1 year, with an automatic renewal unless either party
+                    provides a written notice 30 days prior to expiration.
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    8.2 Either party may terminate this Agreement with 30 days' prior written notice.
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    8.3 In case of a breach, the affected party may terminate the Agreement immediately upon written
+                    notice.
+                </td>
+            </tr>
+            <tr>
+                <th colspan="2">
+                    9. Dispute Resolution
+                </th>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    9.1 Any disputes arising from this Agreement shall be resolved through negotiation and mediation.
+                </td>
+            </tr>
+            <tr>
+                <th colspan="2">
+                    10. Force Majeure
+                </th>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    10.1 Neither party shall be liable for failure to perform obligations due to events beyond their
+                    control (e.g., natural disasters, government restrictions, etc.).
+                </td>
+            </tr>
+            <tr>
+                <th colspan="2">
+                    11. Miscellaneous
+                </th>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    11.1 Amendments to this Agreement shall be made in writing and signed by both parties.
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    11.2 Both parties agree to comply with all applicable government laws and regulations.
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    IN WITNESS WHEREOF, the parties have executed this Agreement as of the date first written above.
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    For Scan2Food
+                </td>
+                <td>
+                    For {{theatre.gstdetails.firm_name}}
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Authorized Signatory
+                </td>
+                <td>
+                    Authorized Signatory
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Name: <span class="detail-box">
+                        Jatin Arora
+                    </span>
+                </td>
+                <td>
+                    Name: ______________________________
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Designation: <span class="detail-box">PROPRIETOR</span>
+                </td>
+                <td>
+                    Designation: ______________________________
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Date: <span class="detail-box">{{current_date|date:"j F, Y"}}</span>
+                </td>
+                <td>
+                    Date: ______________________________
+                </td>
+            </tr>
+        </tbody>
+        <!-- <tfooter> -->
+        <!-- </tfooter> -->
+        <tfoot>
+            <tr>
+                <th>
+                    <img id="stemp" src="{% static '/assets/stemp/scan2food-stemp.jpg' %}" alt="">
+
+                </th>
+            </tr>
+        </tfoot>
+    </table>
+</body>
+
+</html>

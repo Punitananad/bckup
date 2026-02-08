@@ -1,0 +1,148 @@
+{% extends "theatre/base.html" %}
+
+{% block title %}
+
+{% load static %}
+<title>
+    OTP Verification Number.
+</title>
+
+{% endblock %}
+
+{% block content %}
+
+
+<div class="modal fade" id="otpPopUp" tabindex="-1" role="dialog" aria-labelledby="otpTitle" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">OTP Required</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+
+            </div>
+            <div>
+                <div class="modal-body">
+                    <div class="card-title">
+                        Please enter the OTP sent to your registered mobile number.
+                    </div>
+                    <div class="card-body">
+                        <div class="form-floating">
+                            <input type="text" class="form-control" id="otp-value" name="otp"
+                                placeholder="Enter OTP" required>
+                            <label for="otp-value">Enter Your OTP</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="resend-otp" class="btn btn-secondary btn-custom">Resend OTP</button>
+                    <button type="button" id="submit-otp" class="btn btn-primary">Submit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<section class="bg-light p-3 p-md-4 p-xl-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-12 col-xxl-11">
+                <div class="card border-light-subtle shadow-sm">
+                    <div class="row g-0">
+                        <div class="col-12 col-md-6 d-flex align-items-center justify-content-center">
+                            <div class="col-12 col-lg-11 col-xl-10">
+                                <div class="card-body p-3 p-md-4 p-xl-5">
+
+                                    <form method="post" id="myForm">
+                                        {% csrf_token %}
+                                        <div class="row gy-3 overflow-hidden">
+                                            {% for field in form %}
+                                            <div class="col-12">
+                                                <div class="form-floating mb-3">
+                                                    {{ field }}
+                                                    <label class="form-label">Theatre
+                                                        {{field.label }}</label>
+                                                </div>
+                                            </div>
+                                            {% endfor %}
+
+                                            <div class="col-12">
+                                                <div class="d-grid">
+                                                    <button id="update-details" class="btn btn-primary btn-lg"
+                                                        type="submit">Update Details</button>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-md-6">
+                            <img class="img-fluid rounded-start w-100 h-100 object-fit-cover d-none-sm" loading="lazy"
+                                src="{% static 'assets//images/restorent.jpg' %}"
+                                alt="Welcome back you've been missed!">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+
+    async function sendOtp() {
+        data = await getRequest('/theatre/api/generate-update-otp');
+        $('#otpPopUp').modal('show');
+        showToast('bg-success', data.message);
+    }
+
+    async function getRequest(url) {
+        const response = await fetch(url, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    }
+
+    const form = document.getElementById('myForm');
+    form.addEventListener('submit', async function (event) {
+        event.preventDefault();
+        await sendOtp();
+    });
+
+    const sendOtpButton = document.getElementById('resend-otp');
+    sendOtpButton.addEventListener('click', async function (event) {
+        event.preventDefault();
+        await sendOtp();
+    });
+
+    const submitOtpButton = document.getElementById('submit-otp');
+    submitOtpButton.addEventListener('click', function() {
+        otp = document.getElementById('otp-value').value;
+        if (otp === '') {
+            showToast('bg-danger', 'Please enter the OTP');
+            return;
+        }
+        else {
+            document.getElementById('id_otp').value = otp;
+            $('#otpPopUp').modal('hide');
+            form.submit();
+        }
+    })
+
+    const otpInput = document.getElementById('id_otp')
+    const parentDiv = otpInput.parentElement.parentElement;
+    parentDiv.setAttribute('class', 'd-none');
+
+
+</script>
+
+{% endblock %}

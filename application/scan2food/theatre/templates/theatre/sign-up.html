@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {% load static %}
+    <meta charset="utf-8">
+    <title>scan2food Login</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="" name="keywords">
+    <meta content="" name="description">
+    <!-- Favicon -->
+    <link href="{% static 'assets/images/brand/Scan2FoodFabIcon.png' %}" rel="icon">
+
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600&family=Nunito:wght@600;700;800&family=Pacifico&display=swap"
+        rel="stylesheet">
+
+    <!-- Icon Font Stylesheet -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Libraries Stylesheet -->
+    <link href="{% static 'assets/lib/animate/animate.min.css' %}" rel="stylesheet">
+    <link href="{% static 'assets/lib/owlcarousel/assets/owl.carousel.min.css' %}" rel="stylesheet">
+    <link href="{% static 'assets/lib/tempusdominus/css/tempusdominus-bootstrap-4.min.css' %}" rel="stylesheet" />
+
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="{% static 'assets/css/bootstrap.min.css' %}" rel="stylesheet">
+
+    <!-- Template Stylesheet -->
+    <link href="{% static 'assets/css/style.css' %}" rel="stylesheet">
+    <style>
+        /* Container for the toast messages */
+        #toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+        }
+
+        /* Toast message styles */
+        .toast {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            min-width: 250px;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            opacity: 0;
+            transform: translateX(100%);
+            transition: transform 0.3s, opacity 0.3s;
+            position: relative;
+            /* position: absolute;  */
+            overflow: hidden;
+            top: 0px;
+            left: 0px;
+        }
+
+        /* Toast types (success, error, warning) */
+        .toast.success {
+            background-color: #28a745;
+        }
+
+        .toast.error {
+            background-color: #dc3545;
+        }
+
+        .toast.warning {
+            background-color: #ffc107;
+        }
+
+        /* Show the toast */
+        .toast.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        /* Close (cross) icon styles */
+        .toast .close {
+            margin-left: 15px;
+            cursor: pointer;
+            font-weight: bold;
+            color: white;
+        }
+
+        /* Progress bar */
+        .toast .progress-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 4px;
+            background-color: rgba(255, 255, 255, 0.5);
+            width: 100%;
+            animation: progress 3s linear forwards;
+        }
+
+        @keyframes progress {
+            from {
+                width: 100%;
+            }
+
+            to {
+                width: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="position-relative w-100">
+
+
+        <section class="bg-light p-3 p-md-4 p-xl-5 position-relative">
+            <!-- toast message -->
+            {% if messages %}
+            {% for message in messages %}
+            <div>
+                {% if message %}
+                <div class="d-none">
+                    <div class="message-tag">{{message.tags}}</div>
+                    <div class="text-left col-6 server-message">{{message}}</div>
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+            {% endif %}
+
+            <div id="toast-container"></div>
+
+            <script>
+                function showToast(type, message) {
+                    // Create toast element
+                    const toast = document.createElement('div');
+                    toast.classList.add('toast', type);
+
+                    // Add message and close icon
+                    toast.innerHTML = `
+             <span>${message}</span>
+             <span class="close" onclick="closeToast(this)">&times;</span>
+             <div class="progress-bar"></div>
+         `;
+
+                    // Get the toast container and append the toast
+                    const toastContainer = document.getElementById('toast-container');
+                    toastContainer.appendChild(toast);
+
+                    // Show the toast
+                    setTimeout(() => {
+                        toast.classList.add('show');
+                    }, 100);
+
+                    // Remove the toast after 3 seconds
+                    setTimeout(() => {
+                        if (toast.classList.contains('show')) {
+                            closeToast(toast.querySelector('.close'));
+                        }
+                    }, 3000);
+                }
+
+                // Close toast function
+                function closeToast(element) {
+                    const toast = element.parentElement;
+                    toast.classList.remove('show');
+                    setTimeout(() => {
+                        toast.remove();
+                    }, 300); // Wait for transition to finish before removing
+                }
+
+                function ShowAllMessages() {
+                    let all_tags = document.getElementsByClassName('message-tag');
+                    let messages = document.getElementsByClassName('server-message');
+
+                    for (let i = 0; i < messages.length; i++) {
+                        let message = messages[i].innerText;
+
+                        let tag = all_tags[i].innerText;
+
+                        if (tag == 'error') {
+                            showToast('bg-danger', message);
+                        }
+                        else if (tag == 'success') {
+                            showToast('bg-success', message);
+                        }
+                    }
+                }
+                ShowAllMessages()
+
+            </script>
+            <div class="container">
+
+
+
+                <div class="row justify-content-center">
+                    <div class="col-12 col-xxl-11">
+                        <div class="card border-light-subtle shadow-sm">
+                            <div class="row g-0">
+                                <div class="col-12 col-md-6">
+                                    <img class="img-fluid rounded-start w-100 h-100 object-fit-cover d-none-sm"
+                                        loading="lazy" src="{% static 'assets/images/login.jpg' %}"
+                                        alt="Welcome back you've been missed!">
+                                </div>
+                                <div class="col-12 col-md-6 d-flex align-items-center justify-content-center">
+                                    <div class="col-12 col-lg-11 col-xl-10">
+                                        <div class="card-body p-3 p-md-4 p-xl-5">
+                                            <div class="row">
+                                                <div class="col-12">
+                                                    <div class="mb-5">
+                                                        <div class="text-center mb-4">
+                                                            <a href="#!">
+                                                                <img src="{% static 'assets/images/brand/Scan2Food-whiteBG.png' %}"
+                                                                    class="img-fluid brandLogo" alt="Scan2Food Logo">
+
+                                                                <p class="text-center mt-4 text-primary fw-bold">Sign
+                                                                    Up!</p>
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <form method="post">
+                                                {% csrf_token %}
+                                                <div class="row gy-3 overflow-hidden">
+
+                                                    {% for field in form %}
+                                                    <div class="col-12">
+                                                        <div class="form-floating mb-3">
+                                                            {{ field }}
+                                                            <label class="form-label">{{field.label}}</label>
+                                                        </div>
+                                                    </div>
+                                                    {% endfor %}
+
+                                                    <div class="col-12">
+                                                        <div class="d-grid">
+                                                            <button class="btn btn-primary btn-lg" type="submit">Sign Up
+                                                                now</button>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <!-- <div class="col-12">
+                                                            <div
+                                                                class="d-flex gap-2 gap-md-4 flex-column flex-md-row justify-content-md-center mt-4">
+                                                                <a href="#!"
+                                                                    class="link-secondary text-decoration-none">Skip for
+                                                                    Now</a>
+                                                            </div>
+                                                        </div> -->
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- JavaScript Libraries -->
+        <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/assets/js/bootstrap.bundle.min.js"></script>
+        <script src="{% static 'assets/lib/easing/easing.min.js' %}"></script>
+        <script src="{% static 'assets/lib/waypoints/waypoints.min.js' %}"></script>
+        <script src="{% static 'assets/lib/counterup/counterup.min.js' %}"></script>
+        <script src="{% static 'assets/lib/owlcarousel/owl.carousel.min.js' %}"></script>
+        <script src="{% static 'assets/lib/tempusdominus/js/moment.min.js' %}"></script>
+        <script src="{% static 'assets/lib/tempusdominus/js/moment-timezone.min.js' %}"></script>
+        <script src="{% static 'assets/lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js' %}"></script>
+        <script src="{% static 'assets/js/main.js' %}"></script>
+    </div>
+</body>
+
+</html>

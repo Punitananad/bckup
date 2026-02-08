@@ -1,0 +1,101 @@
+=== QUICK DEPLOYMENT COMMANDS ===
+
+1. CONNECT TO SERVER
+ssh username@YOUR_NEW_SERVER_IP
+
+2. UPDATE SYSTEM
+sudo apt update && sudo apt upgrade -y
+
+3. INSTALL EVERYTHING
+sudo apt install -y python3 python3-pip python3-venv postgresql postgresql-contrib redis-server nginx certbot python3-certbot-nginx git
+
+4. SETUP POSTGRESQL
+sudo -u postgres psql
+CREATE DATABASE scan2food_db;
+CREATE USER scan2food_user WITH PASSWORD 'YourStrongPassword123!@#';
+GRANT ALL PRIVILEGES ON DATABASE scan2food_db TO scan2food_user;
+\c scan2food_db
+GRANT ALL ON SCHEMA public TO scan2food_user;
+\q
+
+5. SETUP REDIS PASSWORD
+sudo nano /etc/redis/redis.conf
+# Add: requirepass YourStrongRedisPassword123!
+sudo systemctl restart redis
+
+6. UPLOAD CODE (from Windows)
+scp -r application username@YOUR_SERVER_IP:/var/www/scan2food/
+
+7. SETUP VIRTUAL ENVIRONMENT
+cd /var/www/scan2food/application/scan2food
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+pip install python-dotenv gunicorn
+
+8. CREATE .env FILE
+nano .env
+# Add all environment variables (see DEPLOY_NOW.md)
+
+9. RUN MIGRATIONS
+export DJANGO_ENV=production
+python manage.py migrate
+python manage.py createsuperuser
+python manage.py collectstatic --noinput
+
+10. CREATE SYSTEMD SERVICE
+sudo nano /etc/systemd/system/scan2food.service
+# Add service config (see DEPLOY_NOW.md)
+sudo chown -R www-data:www-data /var/www/scan2food
+sudo systemctl daemon-reload
+sudo systemctl start scan2food
+sudo systemctl enable scan2food
+
+11. CONFIGURE NGINX
+sudo nano /etc/nginx/sites-available/scan2food
+# Add nginx config (see DEPLOY_NOW.md)
+sudo ln -s /etc/nginx/sites-available/scan2food /etc/nginx/sites-enabled/
+sudo nginx -t
+sudo systemctl restart nginx
+
+12. TEST
+http://YOUR_SERVER_IP
+http://YOUR_SERVER_IP/admin/
+
+=== USEFUL COMMANDS ===
+
+Check service status:
+sudo systemctl status scan2food
+
+View logs:
+sudo journalctl -u scan2food -f
+
+Restart service:
+sudo systemctl restart scan2food
+
+Check Nginx:
+sudo nginx -t
+sudo systemctl status nginx
+
+Check PostgreSQL:
+sudo systemctl status postgresql
+psql -U scan2food_user -d scan2food_db -h localhost
+
+Check Redis:
+redis-cli
+AUTH YourStrongRedisPassword123!
+PING
+
+=== CREDENTIALS TO SAVE ===
+
+Django SECRET_KEY: ^u_*nzz-$&m6jeyj=mml8rmp8^7btom(sj9(r3kb8_#uxn$f^*
+Admin Username: punit
+Admin Password: [your new password]
+
+DB Name: scan2food_db
+DB User: scan2food_user
+DB Password: [your strong password]
+
+Redis Password: [your strong password]
+
+Server IP: [your new IP]

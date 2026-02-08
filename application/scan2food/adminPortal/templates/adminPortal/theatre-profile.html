@@ -1,0 +1,1236 @@
+{% load static %}
+
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Scan2Food • Analytics Dashboard</title>
+  <link href="{% static 'assets/images/brand/Scan2FoodFabIcon.png' %}" rel="icon">
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.css">
+
+
+  <!-- Customized Bootstrap Stylesheet -->
+  <link href="{% static 'dashboard/css/bootstrap.min.css' %}" rel="stylesheet">
+
+  <!-- Template Stylesheet -->
+  <link href="{% static 'dashboard/css/style.css' %}" rel="stylesheet">
+  <link href="{% static 'dashboard/css/custom.css' %}" rel="stylesheet">
+
+  <!-- Mini-sidebar style (modified) -->
+  <style>
+    /* unified variables */
+    :root {
+      --nav-h: 64px;
+      /* navbar height used throughout */
+      --sidebar-full: 220px;
+      /* desktop sidebar width */
+      --sidebar-mini: 60px;
+      /* compact sidebar width */
+      --sf-bg: var(--bs-dark, #071239);
+      /* fallback bg if not defined elsewhere */
+      --sf-text: #ffffff;
+      --accent: #FEA116;
+    }
+
+    /* Sidebar (desktop) fixed below navbar so main starts after it */
+    .sidebar,
+    #sidebar {
+      position: fixed;
+      top: var(--nav-h);
+      left: 0;
+      height: calc(100vh - var(--nav-h));
+      width: var(--sidebar-full);
+      background: var(--sf-bg);
+      color: var(--sf-text);
+      transition: width .25s ease, transform .25s ease, left .25s ease;
+      z-index: 1030;
+      box-shadow: 3px 0 12px rgba(2, 6, 23, .08);
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      margin-top: -5px;
+      border-top: 2px solid #fba325;
+    }
+
+    /* collapsed / compact variants */
+    .sidebar.collapsed,
+    #sidebar.collapsed {
+      width: var(--sidebar-mini);
+    }
+
+    #sidebar.mini {
+      width: var(--sidebar-mini) !important;
+      min-width: var(--sidebar-mini) !important;
+    }
+
+    /* Desktop: main starts after sidebar */
+    main.content,
+    .content {
+      margin-top: var(--nav-h);
+      margin-left: var(--sidebar-full);
+      padding: 0px;
+      transition: margin-left .18s ease, padding .18s ease;
+    }
+
+    .content-wrapper-inner {
+      padding: 1rem;
+    }
+
+    /* When sidebar is compact, shift main accordingly (support different class names) */
+    #sidebar.mini+main.content,
+    .sidebar.mini+.content,
+    .sidebar.collapsed~.content {
+      margin-left: var(--sidebar-mini);
+    }
+
+    /* Nav item visuals (kept from existing rules) */
+    .sidebar .menu {
+      padding: .5rem .5rem 2rem;
+    }
+
+    .sidebar .nav-link {
+      display: flex;
+      align-items: center;
+      gap: .75rem;
+      color: #fff;
+      border-radius: .75rem;
+      padding: .65rem .85rem;
+      font-weight: 500;
+      margin-bottom: 5px;
+    }
+
+    .sidebar .nav-link .bi {
+      font-size: 1.1rem;
+      width: 1.4rem;
+      text-align: center;
+      flex: 0 0 1.4rem;
+    }
+
+    .nav-text {
+      min-width: 0;
+      flex: 1 1 auto;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow-wrap: anywhere;
+      font-size: 14px;
+    }
+
+    .sidebar .nav-link:hover,
+    .sidebar .nav-link.active {
+      background: var(--sf-accent);
+      color: #111827;
+    }
+
+    .submenu .nav-link {
+      padding: .5rem .85rem .5rem 2.55rem;
+      color: #f8fafc;
+    }
+
+
+    .chev {
+      margin-left: auto;
+      transition: transform .2s;
+    }
+
+    .nav-link[aria-expanded="true"] .chev {
+      transform: rotate(90deg);
+    }
+
+    .drop-list {
+      background: #1f2e52;
+      border-radius: .75rem;
+      padding: .25rem;
+      margin: .25rem .25rem .5rem 2.6rem;
+    }
+
+    .drop-list .dropdown-item {
+      color: #fff;
+      border-radius: .5rem;
+    }
+
+    .drop-list .dropdown-item:hover {
+      background: var(--sf-accent);
+      color: #111827;
+    }
+
+    .dropdown-item {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 100%;
+    }
+
+    /* mini state: hide labels and center icons */
+    #sidebar.mini .nav-text,
+    #sidebar.mini .chev,
+    #sidebar.mini .drop-list {
+      display: none !important;
+    }
+
+    #sidebar.mini .menu .nav-link {
+      justify-content: center;
+      padding-left: .5rem;
+      padding-right: .5rem;
+    }
+
+    #sidebar.mini .menu .nav-link .bi {
+      margin-right: 0 !important;
+    }
+
+    .brdr-left-2px {
+      border-left: 2px solid #fba325;
+    }
+
+    /* Mobile behaviour: overlay under navbar; ensure main has no left margin */
+    @media (max-width: 991.98px) {
+
+      /* Sidebar is an overlay on mobile */
+      .sidebar,
+      #sidebar {
+        position: fixed;
+        top: var(--nav-h);
+        /* guarantee overlay starts below navbar */
+        left: 0;
+        transform: translateX(-100%);
+        width: 85vw;
+        max-width: 400px;
+        height: calc(100vh - var(--nav-h));
+        box-shadow: 3px 0 12px rgba(2, 6, 23, .08);
+      }
+
+      /* When shown, slide in under navbar */
+      .sidebar.show,
+      #sidebar.show {
+        transform: translateX(0);
+      }
+
+      /* main content on mobile must not have side margin and should start below navbar */
+      main.content,
+      .content {
+        margin-left: 0;
+        margin-top: var(--nav-h);
+      }
+
+      /* ensure mini/collapsed states don't force widths on mobile */
+      #sidebar.mini {
+        width: auto;
+        min-width: 0;
+      }
+
+      .sidebar.collapsed {
+        width: auto;
+      }
+    }
+
+    .dashboard-navbar.sf-navbar,
+    .dashboard-sideBar#sidebar {
+      background: #2c406e;
+    }
+
+    /* other existing helpers kept (cards, kpi, etc.) */
+    .card {
+      border: 0;
+      box-shadow: 0 8px 24px rgba(2, 6, 23, .06);
+      border-radius: 1rem;
+    }
+
+    .kpi {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .kpi .icon {
+      width: 44px;
+      height: 44px;
+      border-radius: .9rem;
+      background: rgba(254, 161, 22, .12);
+      display: grid;
+      place-items: center;
+      font-size: 1.25rem;
+    }
+
+    #miniToggle {
+      height: 36px;
+      width: 36px;
+      padding: 0.25rem;
+    }
+
+    /* Quick buttons: enhanced look */
+    #quickBtns {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .5rem;
+      background: rgba(254, 161, 22, 0.06);
+      border-radius: 999px;
+      padding: .4rem .6rem;
+      backdrop-filter: saturate(160%) blur(2px);
+      box-shadow: inset 0 0 0 1px rgba(254, 161, 22, 0.18);
+      width: 100%;
+      justify-content: flex-end;
+    }
+
+    #quickBtns .quick {
+      border: 0 !important;
+      border-radius: 999px !important;
+      padding: .45rem .9rem !important;
+      background: linear-gradient(180deg, #ffffff, #f7fafc);
+      color: #1f2937;
+      box-shadow: 0 2px 8px rgba(2, 6, 23, .06);
+      transition: transform .15s ease, box-shadow .15s ease, background .2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: .4rem;
+      font-size: 11px;
+    }
+
+    #quickBtns .quick .bi {
+      opacity: .85;
+      font-size: .95rem;
+    }
+
+    #quickBtns .quick:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 18px rgba(2, 6, 23, .12);
+      background: linear-gradient(180deg, #ffffff, #eef2f7);
+    }
+
+    #quickBtns .quick.active {
+      background: linear-gradient(180deg, var(--accent), #ffb345);
+      color: #111827;
+      box-shadow: 0 8px 22px rgba(254, 161, 22, .45);
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar navbar-expand sf-navbar py-2 dashboard-navbar">
+    <div class="container-fluid">
+      <a class="navbar-brand d-flex align-items-center gap-2" href="#">
+        <img src="{% static 'assets/images/brand/Scan2Food.png' %}" style="height:34px" alt="Scan2Food">
+      </a>
+
+      <!-- Mini-toggle (visible on large devices) -->
+      <button id="miniToggle" class="btn btn-outline-light d-none d-lg-inline-flex align-items-center ms-2"
+        aria-pressed="false" title="Toggle sidebar (compact)">
+        <!-- use hamburger icon for collapsing on large screens -->
+        <i class="bi bi-list mx-auto"></i>
+      </button>
+
+      <!-- Search (md+) -->
+      <form class="d-none d-md-flex mx-auto w-50" role="search">
+        <div class="input-group">
+          <span class="input-group-text border-0"><i class="bi bi-search"></i></span>
+          <input class="form-control border-0" type="search" placeholder="Search orders, theatres, items…">
+          <button class="btn btn-primary" type="button"><i class="bi bi-arrow-right"></i></button>
+        </div>
+      </form>
+
+      <div class="navbar-actions ms-auto">
+        <!-- Profile dropdown (teleported body) -->
+        <div class="dropdown" id="profileDropdownRoot">
+          <button id="profileDropdownBtn" class="btn btn-outline-light d-flex align-items-center gap-2"
+            data-bs-toggle="dropdown" data-bs-auto-close="outside" data-bs-display="static" aria-expanded="false">
+            <img src="https://i.pravatar.cc/40?img=5" class="rounded-circle" width="28" height="28" alt="">
+            <span class="d-none d-sm-inline">Admin</span>
+            <i class="bi bi-caret-down-fill small"></i>
+          </button>
+          <ul id="profileDropdownMenu" class="dropdown-menu dropdown-menu-end shadow">
+            <li>
+              <h6 class="dropdown-header">Signed in as<br><span class="fw-semibold">admin@scan2food.com</span></h6>
+            </li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+            <li><a class="dropdown-item" href="#"><i class="bi bi-gear me-2"></i>Settings</a></li>
+            <li><a class="dropdown-item" href="#"><i class="bi bi-shield-lock me-2"></i>Privacy</a></li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+            <li><a class="dropdown-item text-danger" href="#"><i class="bi bi-box-arrow-right me-2"></i>Logout</a></li>
+          </ul>
+        </div>
+
+        <button class="btn btn-primary d-lg-none" id="hamburger" type="button" aria-label="Toggle sidebar"
+          aria-expanded="false">
+          <i class="bi bi-list fs-5"></i>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="app-shell">
+    <!-- SIDEBAR -->
+    <aside id="sidebar" class="sidebar dashboard-sideBar">
+      <div class="menu mt-2">
+        <a class="nav-link active" href="#"><i class="bi bi-speedometer2"></i><span
+            class="nav-text">Dashboard</span></a>
+
+        <a class="nav-link d-flex align-items-center collapsed" data-bs-toggle="collapse" href="#ordersMenu">
+          <i class="bi bi-receipt-cutoff"></i><span class="nav-text">Orders</span><i
+            class="bi bi-chevron-right chev"></i>
+        </a>
+        <div id="ordersMenu" class="collapse submenu">
+          <a class="nav-link" href="#"><i class="bi bi-broadcast-pin"></i><span class="nav-text text-truncate">Live
+              Orders</span></a>
+          <a class="nav-link" href="#"><i class="bi bi-clipboard-data"></i><span class="nav-text text-truncate">All
+              Orders</span></a>
+          <a class="nav-link" href="#"><i class="bi bi-arrow-counterclockwise"></i><span
+              class="nav-text text-truncate">Refunds</span></a>
+        </div>
+
+        <a class="nav-link d-flex align-items-center collapsed" data-bs-toggle="collapse" href="#theatreMenu">
+          <i class="bi bi-building"></i><span class="nav-text">Theatres</span><i class="bi bi-chevron-right chev"></i>
+        </a>
+        <div id="theatreMenu" class="collapse submenu">
+          <a class="nav-link" href="#" role="button">
+            <i class="bi bi-list-check"></i><span class="nav-text text-truncate">All Theatres</span>
+          </a>
+          <a class="nav-link" href="#"><i class="bi bi-person-check"></i><span class="nav-text text-truncate">Onboarding
+              (Agreed, not live)</span></a>
+          <a class="nav-link" href="#"><i class="bi bi-grid-3x3-gap"></i><span class="nav-text text-truncate">Seat
+              Mapping</span></a>
+        </div>
+
+        <a class="nav-link" href="#"><i class="bi bi-cash-coin"></i><span
+            class="nav-text text-truncate">Payouts</span></a>
+        <a class="nav-link" href="#"><i class="bi bi-question-circle"></i><span
+            class="nav-text text-truncate">Queries</span></a>
+        <a class="nav-link" href="#"><i class="bi bi-gear"></i><span class="nav-text text-truncate">Settings</span></a>
+      </div>
+    </aside>
+
+    <!-- CONTENT -->
+    <main class="content">
+      <div class="content-wrapper-inner">
+        <div class="container-fluid">
+          <div class="page-wrapper">
+            <div class="row">
+              <div class="container-fluid">
+
+                <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
+                  <h5 class="section-title ff-secondary text-center text-primary fw-normal">Dashboard</h5>
+                  <h4 class="mb-5">Theatre Details</h4>
+
+                  <!-- Custom Tabs: OrdersProfile style -->
+                  <div class="tab-class text-center wow fadeInUp" data-wow-delay="0.1s">
+                    <ul class="nav nav-pills d-inline-flex justify-content-left border-bottom mb-1" id="myTab"
+                      role="tablist">
+                      <li class="nav-item" role="presentation">
+                        <a class="d-flex align-items-center text-start mx-3 ms-0 pb-3 active" id="dashboard-tab"
+                          data-bs-toggle="tab" data-bs-target="#dashboard" type="button" role="tab"
+                          aria-controls="dashboard" aria-selected="true">
+                          <i class="bi bi-speedometer2 fa-2x text-primary"></i>
+                          <div class="ps-3">
+                            <h6>Dashboard</h6>
+                          </div>
+                        </a>
+                      </li>
+
+                      <li class="nav-item" role="presentation">
+                        <a class="d-flex align-items-center text-start mx-3 pb-3" id="payment-tab" data-bs-toggle="tab"
+                          data-bs-target="#payment" type="button" role="tab" aria-controls="payment"
+                          aria-selected="false">
+                          <i class="bi bi-credit-card-fill fa-2x text-primary"></i>
+                          <div class="ps-3">
+                            <h6>Payment</h6>
+                          </div>
+                        </a>
+                      </li>
+
+                      <li class="nav-item" role="presentation">
+                        <a class="d-flex align-items-center text-start mx-3 pb-3" id="documents-tab"
+                          data-bs-toggle="tab" data-bs-target="#documents" type="button" role="tab"
+                          aria-controls="documents" aria-selected="false">
+                          <i class="bi bi-file-earmark-text fa-2x text-primary"></i>
+                          <div class="ps-3">
+                            <h6>Documents</h6>
+                          </div>
+                        </a>
+                      </li>
+
+                      <li class="nav-item" role="presentation">
+                        <a class="d-flex align-items-center text-start mx-3 pb-3" id="quicksetting-tab"
+                          data-bs-toggle="tab" data-bs-target="#quicksetting" type="button" role="tab"
+                          aria-controls="quicksetting" aria-selected="false">
+                          <i class="bi bi-lightning-charge fa-2x text-primary"></i>
+                          <div class="ps-3">
+                            <h6>Quick Setting</h6>
+                          </div>
+                        </a>
+                      </li>
+
+                      <li class="nav-item" role="presentation">
+                        <a class="d-flex align-items-center text-start mx-3 pb-3" id="information-tab"
+                          data-bs-toggle="tab" data-bs-target="#information" type="button" role="tab"
+                          aria-controls="information" aria-selected="false">
+                          <i class="bi bi-info-circle fa-2x text-primary"></i>
+                          <div class="ps-3">
+                            <h6>Information</h6>
+                          </div>
+                        </a>
+                      </li>
+
+                      <li class="nav-item" role="presentation">
+                        <a class="d-flex align-items-center text-start mx-3 pb-3" id="payouts-tab" data-bs-toggle="tab"
+                          data-bs-target="#payouts" type="button" role="tab" aria-controls="payouts"
+                          aria-selected="false">
+                          <i class="bi bi-cash-coin fa-2x text-primary"></i>
+                          <div class="ps-3">
+                            <h6>Payouts</h6>
+                          </div>
+                        </a>
+                      </li>
+
+                      <li class="nav-item" role="presentation">
+                        <a class="d-flex align-items-center text-start mx-3 pb-3" id="bankdetails-tab"
+                          data-bs-toggle="tab" data-bs-target="#bankdetails" type="button" role="tab"
+                          aria-controls="bankdetails" aria-selected="false">
+                          <i class="bi bi-bank fa-2x text-primary"></i>
+                          <div class="ps-3">
+                            <h6>Bank Details</h6>
+                          </div>
+                        </a>
+                      </li>
+
+                      <li class="nav-item" role="presentation">
+                        <a class="d-flex align-items-center text-start mx-3 pb-3" id="gstdetails-tab"
+                          data-bs-toggle="tab" data-bs-target="#gstdetails" type="button" role="tab"
+                          aria-controls="gstdetails" aria-selected="false">
+                          <i class="bi bi-file-earmark-medical fa-2x text-primary"></i>
+                          <div class="ps-3">
+                            <h6>GST Details</h6>
+                          </div>
+                        </a>
+                      </li>
+
+                      <li class="nav-item" role="presentation">
+                        <a class="d-flex align-items-center text-start mx-3 pb-3" id="stats-tab" data-bs-toggle="tab"
+                          data-bs-target="#stats" type="button" role="tab" aria-controls="stats" aria-selected="false">
+                          <i class="bi bi-file-earmark-medical fa-2x text-primary"></i>
+                          <div class="ps-3">
+                            <h6>Stats</h6>
+                          </div>
+                        </a>
+                      </li>
+
+                    </ul>
+                  </div>
+
+                  <div class="tab-content tab-content-cust" id="myTabContent">
+                    <!-- Dashboard Tab -->
+                    <div class="tab-pane fade show active" id="dashboard" role="tabpanel"
+                      aria-labelledby="dashboard-tab">
+                      <!-- ...dashboard content... -->
+                      <div class="card rounded-2 mt-4 " style="background-image: url('assets/images/infographic.png');">
+                        <div class="card-body brdr-left-2px">
+
+                          <div class="table-responsive">
+                            <table class="table custom-table">
+                              <tbody>
+                                <tr>
+                                  <td>
+                                    <img src="/media/theatre_logo/default.png" alt="Logo" width="100px" height="100px"
+                                      style="border: 1px solid black;" data-bs-toggle="modal"
+                                      data-bs-target="#logoModal">
+                                  </td>
+                                </tr>
+                                <tr>
+                                  <th class="text-start">
+                                    Theatre name:
+                                  </th>
+                                  <td class="text-start">
+                                    fudu theatre
+                                  </td>
+                                  <th class="text-end">
+                                    Owner Name:
+                                  </th>
+                                  <td class="text-start">
+                                    fudu banda
+                                  </td>
+
+                                  <th class="text-end">
+                                    Owner Name:
+                                  </th>
+                                  <td class="text-start">
+                                    fudu banda
+                                  </td>
+                                </tr>
+
+                                <tr>
+                                  <th class="text-start">
+                                    Theatre name:
+                                  </th>
+                                  <td class="text-start">
+                                    fudu theatre
+                                  </td>
+                                  <th class="text-end">
+                                    Owner Name:
+                                  </th>
+                                  <td class="text-start">
+                                    fudu banda
+                                  </td>
+
+                                  <th class="text-end">
+                                    Owner Name:
+                                  </th>
+                                  <td class="text-start">
+                                    fudu banda
+                                  </td>
+                                </tr>
+
+
+                                <tr>
+                                  <th class="text-start">
+                                    Theatre name:
+                                  </th>
+                                  <td class="text-start">
+                                    fudu theatre
+                                  </td>
+                                  <th class="text-end">
+                                    Owner Name:
+                                  </th>
+                                  <td class="text-start">
+                                    fudu banda
+                                  </td>
+
+                                  <th class="text-end">
+                                    Owner Name:
+                                  </th>
+                                  <td class="text-start">
+                                    fudu banda
+                                  </td>
+                                </tr>
+
+
+                                <tr>
+                                  <th class="text-start">
+                                    Theatre name:
+                                  </th>
+                                  <td class="text-start">
+                                    fudu theatre
+                                  </td>
+                                  <th class="text-end">
+                                    Owner Name:
+                                  </th>
+                                  <td class="text-start">
+                                    fudu banda
+                                  </td>
+
+                                  <th class="text-end">
+                                    Owner Name:
+                                  </th>
+                                  <td class="text-start">
+                                    fudu banda
+                                  </td>
+                                </tr>
+
+
+                                <tr>
+                                  <th class="text-start">
+                                    Theatre name:
+                                  </th>
+                                  <td class="text-start">
+                                    fudu theatre
+                                  </td>
+                                  <th class="text-end">
+                                    Owner Name:
+                                  </th>
+                                  <td class="text-start">
+                                    fudu banda
+                                  </td>
+
+                                  <th class="text-end">
+                                    Owner Name:
+                                  </th>
+                                  <td class="text-start">
+                                    fudu banda
+                                  </td>
+                                </tr>
+
+
+                              </tbody>
+                            </table>
+                          </div>
+
+                        </div>
+                        <!-- <img src="assets/images/wave.png" alt="" srcset=""> -->
+                      </div>
+                    </div>
+
+                    <!-- Payment Tab -->
+                    <div class="tab-pane fade" id="payment" role="tabpanel" aria-labelledby="payment-tab">
+                      <!-- payment icon + heading (theme-styled) -->
+                      <div class="d-flex align-items-center justify-content-center gap-3 mb-3">
+                        <i class="bi bi-credit-card-fill fs-2 text-primary"></i>
+                        <div class="text-start">
+                          <h5 class="mb-0">Payments</h5>
+                          <small class="text-muted">Manage payments and add new transactions</small>
+                        </div>
+                      </div>
+
+                      <!-- existing payment content card -->
+                      <div class="card rounded-2 mt-2">
+                        <div class="card-body">
+                          <div class="d-flex justify-content-between">
+                            <p class="text-muted">Payment Status</p>
+                            <h6 class="total-amount">Pending</h6>
+                          </div>
+                          <div class="d-flex justify-content-between">
+                            <p class="text-muted">Total Amount</p>
+                            <h6 class="total-amount">₹ 700</h6>
+                          </div>
+                          <div class="d-flex justify-content-between">
+                            <p class="text-muted">Paid Amount</p>
+                            <h6 class="total-amount">₹ 550</h6>
+                          </div>
+                          <div class="d-flex justify-content-between">
+                            <p class="text-muted">Pending Amount</p>
+                            <h6 class="total-amount">₹ 150</h6>
+                          </div>
+                          <div class="d-flex justify-content-between">
+                            <p class="text-muted">Payment Type</p>
+                            <h6 class="total-amount">Credit Card</h6>
+                          </div>
+                          <div class="d-flex justify-content-center">
+                            <div class="text-center mt-4 mx-2">
+                              <button class="btn btn-primary" onclick="redirectToPayment()">Add Payment</button>
+                            </div>
+                            <div class="text-center mt-4 mx-2">
+                              <button class="btn btn-primary" onclick="redirectToPayment()">Show QR</button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Documents Tab -->
+                    <div class="tab-pane fade" id="documents" role="tabpanel" aria-labelledby="documents-tab">
+                      <div class="card rounded-2 mt-4">
+                        <div class="card-body">
+                          <h6>Documents</h6>
+                          <p class="text-muted">Upload or view theatre related documents here.</p>
+                          <!-- Add document upload/view UI as needed -->
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Quick Setting Tab -->
+                    <div class="tab-pane fade" id="quicksetting" role="tabpanel" aria-labelledby="quicksetting-tab">
+                      <div class="card rounded-2 mt-4">
+                        <div class="card-body">
+                          <h6>Quick Setting</h6>
+                          <p class="text-muted">Access quick settings for this theatre.</p>
+                          <!-- Add quick setting controls as needed -->
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Information Tab -->
+                    <div class="tab-pane fade" id="information" role="tabpanel" aria-labelledby="information-tab">
+                      <div class="card rounded-2 mt-4">
+                        <div class="card-body">
+                          <h6>Information</h6>
+                          <p class="text-muted">General information about the theatre.</p>
+                          <!-- Add information fields as needed -->
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Payouts Tab -->
+                    <div class="tab-pane fade" id="payouts" role="tabpanel" aria-labelledby="payouts-tab">
+                      <div class="card rounded-2 mt-4">
+                        <div class="card-body">
+                          <h6>Payouts</h6>
+                          <p class="text-muted">View and manage payouts.</p>
+                          <!-- Add payout details as needed -->
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Bank Details Tab -->
+                    <div class="tab-pane fade" id="bankdetails" role="tabpanel" aria-labelledby="bankdetails-tab">
+                      <div class="card rounded-2 mt-4">
+                        <div class="card-body">
+                          <h6>Bank Details</h6>
+                          <p class="text-muted">Bank account information for settlements.</p>
+                          <!-- Add bank details fields as needed -->
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- GST Details Tab -->
+                    <div class="tab-pane fade" id="gstdetails" role="tabpanel" aria-labelledby="gstdetails-tab">
+                      <div class="card rounded-2 mt-4">
+                        <div class="card-body">
+                          <h6>GST Details</h6>
+                          <p class="text-muted">GST information for the theatre.</p>
+                          <!-- Add GST details fields as needed -->
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Stats Tab -->
+                    <div class="tab-pane fade" id="stats" role="tabpanel" aria-labelledby="stats-tab">
+                      <div class="card rounded-2 mt-4">
+                        <div class="card-body">
+
+                          <!-- Date/filter -->
+                          <div class="row align-items-center">
+                            <div class="col-lg-5 col-12">
+                              <div class="input-group" style="min-width:260px; max-width:380px">
+                                <span class="input-group-text"><i class="bi bi-calendar3"></i></span>
+                                <input id="datePicker" class="form-control" placeholder="Select range / month / year">
+                                <button class="btn btn-primary" id="applyRange"><i
+                                    class="bi bi-graph-up me-2"></i>Filter</button>
+                              </div>
+                            </div>
+                            <div class="col-lg-7 col-12">
+                              <div class="btn-group" id="quickBtns">
+                                <button class="btn quick" data-preset="today"><i
+                                    class="bi bi-calendar-day"></i><span>Today</span></button>
+                                <button class="btn quick" data-preset="yesterday"><i
+                                    class="bi bi-arrow-left-circle"></i><span>Yesterday</span></button>
+                                <button class="btn quick" data-preset="week"><i
+                                    class="bi bi-calendar-week"></i><span>This
+                                    Week</span></button>
+                                <button class="btn quick" data-preset="month"><i
+                                    class="bi bi-calendar-month"></i><span>This
+                                    Month</span></button>
+                                <button class="btn quick" data-preset="year"><i class="bi bi-calendar3"></i><span>This
+                                    Year</span></button>
+                              </div>
+                            </div>
+                          </div>
+                          <!-- </div> -->
+
+                          <!-- KPIs -->
+                          <div class="row g-3 g-lg-4 mt-1">
+                            <div class="col-6 col-md-3">
+                              <div class="card p-3">
+                                <div class="kpi">
+                                  <div class="icon"><i class="bi bi-lightning-charge-fill"></i></div>
+                                  <div>
+                                    <div class="text-muted small">Theatres</div>
+                                    <div id="kpiLive" class="fs-5 fw-bold">—</div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="col-6 col-md-3">
+                              <div class="card p-3">
+                                <div class="kpi">
+                                  <div class="icon"><i class="bi bi-currency-rupee"></i></div>
+                                  <div>
+                                    <div class="text-muted small">Revenue</div>
+                                    <div id="kpiGMV" class="fs-5 fw-bold">—</div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="col-6 col-md-3">
+                              <div class="card p-3">
+                                <div class="kpi">
+                                  <div class="icon"><i class="bi bi-people-fill"></i></div>
+                                  <div>
+                                    <div class="text-muted small">Orders</div>
+                                    <div id="kpiOrders" class="fs-5 fw-bold">—</div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="col-6 col-md-3">
+                              <div class="card p-3">
+                                <div class="kpi">
+                                  <div class="icon"><i class="bi bi-clipboard2-check-fill"></i></div>
+                                  <div>
+                                    <div class="text-muted small">Sales</div>
+                                    <div id="kpiFulfill" class="fs-5 fw-bold">—</div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          <!-- Charts -->
+                          <div class="row g-3 g-lg-4 mt-1 align-items-stretch">
+                            <div class="col-lg-8 d-flex ">
+                              <div class="card chart-card p-3 flex-fill w-100">
+                                <div class="d-flex align-items-center justify-content-between mb-3">
+                                  <h6 class="">Day by Day Sales</h6>
+                                  <small class="text-muted" id="rangeLabel">—</small>
+                                </div>
+                                <canvas id="salesLine"></canvas>
+                              </div>
+                            </div>
+                            <div class="col-lg-4 d-flex">
+                              <div class="card chart-card p-3 flex-fill w-100">
+                                <h6 class="mb-3">Most Selling Items</h6>
+                                <canvas id="topItemsBar"></canvas>
+                              </div>
+                            </div>
+
+                            <div class="col-xl-6 d-flex">
+                              <div class="card chart-card p-3 flex-fill">
+                                <h6 class="mb-3">Orders by Status</h6>
+                                <canvas id="statusStacked"></canvas>
+                              </div>
+                            </div>
+                            <div class="col-xl-6 d-flex">
+                              <div class="card chart-card p-3 flex-fill">
+                                <h6 class="mb-3">Payment Methods Split</h6>
+                                <canvas id="paymentPie" height="210"></canvas>
+                              </div>
+                            </div>
+
+
+                          </div>
+
+                        </div>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- <div class="d-flex flex-column flex-lg-row align-items-lg-center justify-content-lg-between gap-3"> -->
+
+          <!-- <p class="mt-4 mb-0 small text-secondary">© Scan2Food. All rights reserved.</p> -->
+        </div>
+      </div>
+      <div class="container-fluid bg-dark text-light footer wow fadeIn" data-wow-delay="0.1s">
+        <div class="container">
+          <div class="copyright">
+            <div class="row">
+              <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
+                © <a class="border-bottom" href="#">Scan2Food</a>, All Right Reserved.
+              </div>
+              <div class="col-md-6 text-center text-md-end">
+                <div class="footer-menu">
+                  <a href="">Home</a>
+                  <a href="">Dashboard</a>
+                  <a href="">Contact</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+
+  </div>
+
+  <!-- JS libs -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Chart.js + plugins -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0"></script>
+
+
+  <!-- Flatpickr -->
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.js"></script>
+
+  <script>
+    /* ====== SIDEBAR & NAVBAR BEHAVIOR (hamburger, mini toggle, resize, overlay) ====== */
+    const sidebar = document.getElementById('sidebar');
+    const hamburger = document.getElementById('hamburger');
+    const mqMobile = window.matchMedia('(max-width: 991.98px)');
+    const miniBtn = document.getElementById('miniToggle');
+
+    function openSidebar() {
+      sidebar.classList.add('show');
+      sidebar.classList.remove('collapsed');
+      if (hamburger) hamburger.setAttribute('aria-expanded', 'true');
+    }
+    function closeSidebar() {
+      sidebar.classList.remove('show');
+      if (hamburger) hamburger.setAttribute('aria-expanded', 'false');
+    }
+    function toggleSidebar() {
+      if (mqMobile.matches) {
+        sidebar.classList.contains('show') ? closeSidebar() : openSidebar();
+      } else {
+        // desktop legacy collapsed state (kept for compatibility)
+        sidebar.classList.toggle('collapsed');
+      }
+    }
+
+    // mobile hamburger (overlay behaviour)
+    if (hamburger) {
+      hamburger.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        toggleSidebar();
+      });
+    }
+
+    // large-screen mini toggle (hamburger icon on desktop)
+    if (miniBtn) {
+      miniBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        // mobile: act like overlay toggle
+        if (mqMobile.matches) {
+          toggleSidebar();
+          return;
+        }
+        // desktop: switch to compact (mini) mode
+        sidebar.classList.remove('show');
+        const isMini = sidebar.classList.toggle('mini');
+        // ensure we don't keep the old 'collapsed' class
+        sidebar.classList.remove('collapsed');
+        miniBtn.setAttribute('aria-pressed', isMini ? 'true' : 'false');
+      });
+    }
+
+    // close overlay when clicking outside (mobile only)
+    document.addEventListener('click', (e) => {
+      if (mqMobile.matches && sidebar.classList.contains('show')) {
+        if (e.target.closest('.navbar-actions')) return;
+        if (!sidebar.contains(e.target) && !e.target.closest('#hamburger')) closeSidebar();
+      }
+    });
+
+    // ensure correct layout when resizing
+    function onResize() {
+      if (mqMobile.matches) {
+        // mobile: remove desktop-only compact classes
+        sidebar.classList.remove('mini');
+        sidebar.classList.remove('collapsed');
+      } else {
+        // desktop: close mobile overlay so fixed sidebar + main margin apply
+        closeSidebar();
+      }
+    }
+    window.addEventListener('resize', onResize);
+    onResize();
+
+
+    /* ====== PROFILE DROPDOWN TELEPORT (kept near nav logic) ====== */
+    const profileBtn = document.getElementById('profileDropdownBtn');
+    const profileMenu = document.getElementById('profileDropdownMenu');
+    const profileRoot = document.getElementById('profileDropdownRoot');
+    const placeholder = document.createComment('profile-menu-placeholder');
+
+    function positionProfileMenu() {
+      const r = profileBtn.getBoundingClientRect();
+      profileMenu.style.position = 'fixed';
+      profileMenu.style.transform = 'none';
+      profileMenu.style.display = 'block';
+      profileMenu.style.zIndex = '2000';
+      const w = profileMenu.offsetWidth || 240;
+      let left = Math.round(r.right - w);
+      left = Math.max(8, Math.min(left, window.innerWidth - w - 8));
+      const top = Math.round(r.bottom + 8);
+      profileMenu.style.left = left + 'px';
+      profileMenu.style.top = top + 'px';
+    }
+
+    if (profileBtn) {
+      profileBtn.addEventListener('shown.bs.dropdown', () => {
+        profileRoot.insertBefore(placeholder, profileMenu);
+        document.body.appendChild(profileMenu);
+        positionProfileMenu();
+        window.addEventListener('scroll', positionProfileMenu, { passive: true });
+        window.addEventListener('resize', positionProfileMenu);
+      });
+      profileBtn.addEventListener('hide.bs.dropdown', () => {
+        if (placeholder.parentNode) placeholder.parentNode.replaceChild(profileMenu, placeholder);
+        profileMenu.style.cssText = '';
+        window.removeEventListener('scroll', positionProfileMenu);
+        window.removeEventListener('resize', positionProfileMenu);
+      });
+    }
+
+
+    /* ====== SEARCH BAR & DATE PICKER UI ====== */
+    /* Search input is present in markup; keep minimal JS here for extensibility.
+       Date picker + quick presets are grouped here since they're part of the filter UI. */
+
+    let picker;
+    const mode = 'range';
+    const dateInput = document.getElementById('datePicker');
+    const rangeLabel = document.getElementById('rangeLabel');
+
+    function initPicker() {
+      if (picker) picker.destroy();
+      picker = flatpickr(dateInput, { mode: 'range', dateFormat: 'Y-m-d' });
+    }
+    initPicker();
+
+    const quickGroup = document.getElementById('quickBtns');
+    function setQuickActive(el) {
+      if (!quickGroup) return;
+      quickGroup.querySelectorAll('.quick').forEach(b => b.classList.remove('active'));
+      if (el) el.classList.add('active');
+    }
+
+    document.querySelectorAll('.quick').forEach(btn => {
+      btn.addEventListener('click', () => {
+        setQuickActive(btn);
+        const now = new Date();
+        let start, end;
+        const p = btn.dataset.preset;
+        if (p === 'today') { start = startOfDay(now); end = endOfDay(now); }
+        if (p === 'yesterday') { const y = subDays(now, 1); start = startOfDay(y); end = endOfDay(y); }
+        if (p === 'week') { start = startOfWeek(now); end = endOfWeek(now); }
+        if (p === 'month') { start = startOfMonth(now); end = endOfMonth(now); }
+        if (p === 'year') { start = startOfYear(now); end = endOfYear(now); }
+        picker.setDate([start, end], true);
+        applyRange();
+      });
+    });
+
+    document.getElementById('applyRange').addEventListener('click', () => { setQuickActive(null); applyRange(); });
+
+    /* DATE HELPERS */
+    function startOfDay(d) { const x = new Date(d); x.setHours(0, 0, 0, 0); return x; }
+    function endOfDay(d) { const x = new Date(d); x.setHours(23, 59, 59, 999); return x; }
+    function subDays(d, n) { const x = new Date(d); x.setDate(x.getDate() - n); return x; }
+    function startOfWeek(d) { const x = new Date(d); const day = (x.getDay() + 6) % 7; x.setDate(x.getDate() - day); return startOfDay(x); }
+    function endOfWeek(d) { const s = startOfWeek(d); const e = new Date(s); e.setDate(e.getDate() + 6); return endOfDay(e); }
+    function startOfMonth(d) { return new Date(d.getFullYear(), d.getMonth(), 1); }
+    function endOfMonth(d) { return endOfDay(new Date(d.getFullYear(), d.getMonth() + 1, 0)); }
+    function startOfYear(d) { return new Date(d.getFullYear(), 0, 1); }
+    function endOfYear(d) { return endOfDay(new Date(d.getFullYear(), 11, 31)); }
+
+
+    /* ====== CHARTS, THEME & UPDATE FLOW ====== */
+    /* Theme / palette */
+    Chart.defaults.font.family = "'Inter', system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial";
+    const accent = "#FEA116",
+      accent12 = "rgba(254,161,22,.12)",
+      accent28 = "rgba(254,161,22,.28)",
+      accent50 = "rgba(254,161,22,.50)",
+      accent75 = "rgba(254,161,22,.75)",
+      accent85 = "rgba(254,161,22,.85)",
+      grid = "#e5e7eb";
+
+    /* Removed demo data & theatre filler; expect real data later. */
+    // Mock data removed; provide window.allDays from real data when available.
+
+
+    /* BUILD CHARTS (declarations) */
+    const salesLine = new Chart(document.getElementById('salesLine'), {
+      type: 'line',
+      data: { datasets: [{ label: 'GMV (₹)', data: [], borderColor: accent85, backgroundColor: accent28, fill: true, tension: .35, pointRadius: 2 }] },
+      options: { responsive: false, maintainAspectRatio: false, scales: { x: { type: 'time', time: { unit: 'day' }, grid: { color: grid } }, y: { beginAtZero: true, grid: { color: grid }, ticks: { callback: v => '₹' + Math.round(v).toLocaleString('en-IN') } } }, plugins: { legend: { display: false } } }
+    });
+
+    const topItemsBar = new Chart(document.getElementById('topItemsBar'), {
+      type: 'bar',
+      data: { labels: [], datasets: [{ label: 'Units Sold', data: [], backgroundColor: accent75, borderRadius: 8 }] },
+      options: { indexAxis: 'y', responsive: false, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true, grid: { color: grid } }, y: { grid: { display: false } } } }
+    });
+
+    const statusStacked = new Chart(document.getElementById('statusStacked'), {
+      type: 'bar',
+      data: { labels: [], datasets: [{ label: 'Accepted', data: [], stack: 'st', backgroundColor: accent12 }, { label: 'Preparing', data: [], stack: 'st', backgroundColor: accent50 }, { label: 'Delivered', data: [], stack: 'st', backgroundColor: accent75 }, { label: 'Cancelled', data: [], stack: 'st', backgroundColor: '#ef4444' }] },
+      options: { responsive: false, maintainAspectRatio: false, scales: { x: { stacked: true, grid: { color: grid } }, y: { stacked: true, beginAtZero: true, grid: { color: grid } } } }
+    });
+
+    const paymentPie = new Chart(document.getElementById('paymentPie'), {
+      type: 'doughnut',
+      data: { labels: ["UPI", "Card", "Cash"], datasets: [{ data: [0, 0, 0], backgroundColor: [accent75, accent50, accent12], borderWidth: 0 }] },
+      options: { responsive: false, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+    });
+
+
+    let allDays = window.allDays || [];
+    (function ensureDemoData() {
+      if (!Array.isArray(allDays) || allDays.length === 0) {
+        const ITEMS = ["Popcorn Bucket", "Coke 500ml", "Nachos Combo", "Veg Burger", "Cold Coffee"];
+        const today = new Date();
+        const data = [];
+        for (let i = 0; i < 30; i++) {
+          const d = new Date(today);
+          d.setDate(d.getDate() - (29 - i));
+          d.setHours(0, 0, 0, 0);
+          const orders = 50 + (i % 10);
+          const amount = orders * 250;
+          const items = {};
+          ITEMS.forEach((n, idx) => items[n] = (orders % (idx + 3)) + 5);
+          const paymentSplit = { UPI: Math.round(orders * 0.5), Card: Math.round(orders * 0.3), Cash: orders - Math.round(orders * 0.5) - Math.round(orders * 0.3) };
+          const statusSplit = { Accepted: Math.round(orders * 0.2), Preparing: Math.round(orders * 0.4), Delivered: Math.round(orders * 0.35), Cancelled: orders - (Math.round(orders * 0.2) + Math.round(orders * 0.4) + Math.round(orders * 0.35)) };
+          const hourly = Array.from({ length: 24 }, (_, h) => (h > 10 && h < 22) ? Math.round(orders / 24) + ((h % 3) === 0 ? 2 : 0) : Math.round(orders / 48));
+          data.push({ date: d, orders, amount, items, paymentSplit, statusSplit, hourly });
+        }
+        window.allDays = data;
+        allDays = data;
+      }
+    })();
+    /* UPDATE FLOW (applies selected range -> updates KPI + charts) */
+    function applyRange() {
+      let start, end, label = '';
+      if (mode === 'range') {
+        const [a, b] = picker.selectedDates;
+        start = a ? startOfDay(a) : startOfDay(new Date());
+        end = b ? endOfDay(b) : endOfDay(new Date());
+        label = start.toDateString() + ' → ' + end.toDateString();
+      } else if (mode === 'month') {
+        const d = picker.selectedDates[0] || new Date(); start = startOfMonth(d); end = endOfMonth(d);
+        label = start.toLocaleString('default', { month: 'long', year: 'numeric' });
+      } else {
+        const d = picker.selectedDates[0] || new Date(); start = startOfYear(d); end = endOfYear(d); label = d.getFullYear();
+      }
+      // Normalize label formatting
+      label = (start && end) ? (start.toDateString() + ' — ' + end.toDateString()) : label;
+      if (rangeLabel) rangeLabel.textContent = label;
+
+      const filtered = allDays.filter(x => x.date >= start && x.date <= end);
+
+      const totalGMV = filtered.reduce((s, d) => s + d.amount, 0);
+      const totalOrders = filtered.reduce((s, d) => s + d.orders, 0);
+      const delivered = filtered.reduce((s, d) => s + d.statusSplit.Delivered, 0);
+      const fulfill = totalOrders ? Math.round(100 * delivered / totalOrders) : 0;
+      document.getElementById('kpiGMV').textContent = '₹' + Math.round(totalGMV).toLocaleString('en-IN');
+      document.getElementById('kpiOrders').textContent = totalOrders.toLocaleString('en-IN');
+      document.getElementById('kpiFulfill').textContent = fulfill + '%';
+      document.getElementById('kpiLive').textContent = Math.max(3, Math.round(totalOrders * 0.02));
+
+      salesLine.data.datasets[0].data = filtered.map(d => ({ x: d.date, y: Math.round(d.amount) }));
+      salesLine.update();
+
+      const itemAgg = {};
+      filtered.forEach(d => { for (const k in d.items) itemAgg[k] = (itemAgg[k] || 0) + d.items[k]; });
+      const sorted = Object.entries(itemAgg).sort((a, b) => b[1] - a[1]).slice(0, 10);
+      topItemsBar.data.labels = sorted.map(x => x[0]); topItemsBar.data.datasets[0].data = sorted.map(x => x[1]); topItemsBar.update();
+
+      statusStacked.data.labels = filtered.map(d => d.date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' }));
+      statusStacked.data.datasets[0].data = filtered.map(d => d.statusSplit.Accepted);
+      statusStacked.data.datasets[1].data = filtered.map(d => d.statusSplit.Preparing);
+      statusStacked.data.datasets[2].data = filtered.map(d => d.statusSplit.Delivered);
+      statusStacked.data.datasets[3].data = filtered.map(d => d.statusSplit.Cancelled);
+      statusStacked.update();
+
+      const pay = { UPI: 0, Card: 0, Cash: 0 };
+      filtered.forEach(d => { for (const k in d.paymentSplit) pay[k] += d.paymentSplit[k]; });
+      paymentPie.data.datasets[0].data = [pay.UPI, pay.Card, pay.Cash]; paymentPie.update();
+
+      // heatmap removed
+    }
+
+    /* DEFAULT: SELECT TODAY ON LOAD */
+    (function setDefaultToday() {
+      const todayBtn = document.querySelector('.quick[data-preset="today"]');
+      setQuickActive(todayBtn);
+      initPicker();
+      const s = startOfDay(new Date()), e = endOfDay(new Date());
+      picker.setDate([s, e], true);
+      applyRange();
+    })();
+  </script>
+</body>
+
+</html>

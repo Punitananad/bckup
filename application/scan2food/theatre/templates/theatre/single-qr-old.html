@@ -1,0 +1,152 @@
+{% extends "website/base.html" %}
+{% load static %}
+{% block title %}
+<title>
+
+</title>
+
+<style>
+    #discount-message {
+        position: fixed;
+        z-index: 10;
+        margin: 2.5% 10%;
+        width: 80%;
+    }
+    .menuPageWrappe.cust {
+        min-height: calc(100vh - 0px)!important
+    }
+</style>
+<meta name="csrf-token" content="{{ csrf_token }}">
+{% endblock %}
+{% block body %}
+
+
+<!-- MODAL TO SELECT THE SEAT -->
+<div class="modal fade" id="seat-modal" tabindex="-1" role="dialog" aria-labelledby="seat-modalTitle"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Select Your Seat</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+
+            </div>
+            <div class="modal-body">
+
+                <div class="form-group mb-3">
+                    <label for="selected-hall" class="form-label">Selected hall</label>
+                    <select type="text" class="form-control" name="selected-hall" id="selected-hall"
+                        placeholder="Enter Refund ID" required disabled>
+
+                    </select>
+                </div>
+
+                <div class="form-group position-relative mb-3">
+                    <label for="selected-seat" class="form-label">Enter Your Seat</label>
+                    <input name="selected-seat" id="selected-seat" rows="3" class="form-control" required>
+                    <ul id="suggestions" class="dropdown-menu w-100"></ul>
+                </div>
+                <!-- <div class="form-floating mb-3">
+                <input name="selected-seat" id="selected-seat" rows="3" class="form-control" required>
+                <label for="selected-seat" class="form-label">Enter Your Seat</label>
+                <ul id="suggestions" class="dropdown-menu w-100"></ul>
+                </div> -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="open-menu-button">Open Menu</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- MODAL TO SELECT THE SEAT ENDS -->
+
+<div class="bg-white p-0">
+    <!-- Spinner Start -->
+    <div id="spinner"
+        class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
+        <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+    </div>
+    <!-- Spinner End -->
+    <div class="pageWrapper menuPageWrapper cust">
+        <!-- starting from this till theatre and seats details this will remain same for categrory and menu page -->
+        <!-- search bar start-->
+        <div class="bg-dark py-1 px-3 mt-sm-0-cust position-fixed w-100 z-index-9">
+            <div class="container-fluid m-0">
+                <div class="row align-items-center">
+                    <div class="col-4 col-md-8 col-lg-4">
+                        <img src="{% static 'assets/images/brand/Scan2Food.png' %}" class="app-brand-logo"
+                            alt="Scan2Food Logo">
+                    </div>
+                    <div class="col-md-8 col-8 col-lg-5 offset-lg-3">
+                        <div class="text-white text-end">
+                            <h6 id="restorent-name" class=" text-white smaller mb-1"></h6>
+                            <h6 class="text-primary smaller mb-0">
+                                Theatre Name -
+                                <span class="small text-white smaller" id="theatre-name-label">
+
+                                </span>
+                            </h6>
+                        </div>
+                        <!-- Search Bar -->
+                        <div class="input-group d-none">
+                            <input type="text" class="form-control" placeholder="Search">
+                            <span class="input-group-text bg-primary text-dark white border-left-0">
+                                <i class="fas fa-search"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="menu-app-wrapper">
+            <!-- Theatre and seats details -->
+            <div class="container-xxl pb-0 app-theatre-details">
+                <div class="container category-wrapper-outer d-none">
+                    <div class="row justify-content-between align-items-center">
+                        <div class="col-lg-6 col-6">
+                            <h6 id="restorent-name"></h6>
+                            <h6 class="small">Rohtak</h6>
+                        </div>
+                        <div class="col-lg-6 col-6 text-end">
+                            <h6 class="small" id="menuePopUpLabel">Hall 1 |
+                                F10 </h6>
+                        </div>
+                    </div>
+                    <hr>
+                </div>
+            </div>
+            <!-- common part end here -->
+
+            <!-- Dynamic code commented by Kanika -->
+            <div class="container-xxl pb-3">
+                <div class="container">
+                    <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
+                        <h5 class="section-title ff-secondary text-center text-primary fw-normal mb-5 mt-5">Select Your Hall
+                        </h5>
+
+                    </div>
+
+                    <!-- Here All Halls -->
+
+                    <div class="row" id="hall-box">
+
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+{{theatre_id|json_script:'theatre-id'}}
+<script src="{% static 'theatre_js/single-qr.js' %}"></script>
+
+{% endblock %}

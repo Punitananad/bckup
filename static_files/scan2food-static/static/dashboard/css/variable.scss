@@ -1,0 +1,27 @@
+// theme color
+$theme-color: #FEA116;
+
+:root {
+    --primary: #FEA116;    
+    --secondary: #FF6B53;
+    --gradient: linear-gradient(73.08deg, #2C406E 15.14%, #d5bdff 92.25%);
+    --primary-hover: #ec8f04;
+    --primary-dark: #11547d;
+    --rgba-primary-1: rgba(66, 167, 229, 0.1);
+    --rgba-primary-2: rgba(66, 167, 229, 0.2);
+    --rgba-primary-3: rgba(66, 167, 229, 0.3);
+    --rgba-primary-4: rgba(66, 167, 229, 0.4);
+    --rgba-primary-5: rgba(66, 167, 229, 0.5);
+    --rgba-primary-6: rgba(66, 167, 229, 0.6);
+    --rgba-primary-7: rgba(66, 167, 229, 0.7);
+    --rgba-primary-8: rgba(66, 167, 229, 0.8);
+    --rgba-primary-9: rgba(66, 167, 229, 0.9);
+    --font-family-base: Lato, sans-serif;
+    --font-family-title: Lato, sans-serif;
+    --border-radius-base: 8px;
+    --border-color: #E8EFF3;
+    --body-color: #7D8FAB;
+    --dark: #2C406E;
+    --bg-white: #FFF;
+    --box-shadow: 0px 12px 30px 0px rgba(48, 48, 48, 0.14);
+    --title: #4f658b; }

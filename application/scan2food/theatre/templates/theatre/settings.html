@@ -1,0 +1,252 @@
+{% extends "theatre/base.html" %}
+
+{% load static %}
+{% block title %}
+
+<title>
+    Settings
+</title>
+
+{% endblock %}
+
+{% block content %}
+
+
+<!-- Log Out Modal -->
+
+<div class="modal fade" id="logout" tabindex="-1" role="dialog" aria-labelledby="logoutTitle" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Log Out</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+
+            </div>
+            <form method="post" action="{% url 'logout' %}">
+                <div class="modal-body">
+                    {% csrf_token %}
+                    <div class="card-title">
+                        Do You Want To End the Session
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary btn-custom" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Log Out</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- log out modal ends here... -->
+
+<div class="pageWrapper">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
+                <h5 class="section-title ff-secondary text-center text-primary fw-normal">Settings</h5>
+                <h5 class="mb-0">Make changes in the settings from below Options</h5>
+            </div>
+
+            <div class="row gy-3 mb-4">
+                <div class="col-lg-2 col-sm-6 col-6 wow fadeInUp" data-wow-delay="0.1s">
+                    <a href="{% url 'theatre:all-users' %}">
+                        <div class="service-item rounded pt-3">
+                            <div class="p-3 text-center">
+                                <!-- <i class="fa fa-3x fa-user-tie text-primary mb-4"></i> -->
+                                <img class="howItWorkImg" src="{% static 'assets/images/staff-img.png' %}" alt="">
+
+                                <h6>
+                                    All Staff
+                                </h6>
+
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-lg-2 col-sm-6 col-6 wow fadeInUp" data-wow-delay="0.3s">
+                    <a href="{% url 'theatre:add-hall' %}">
+                        <div class="service-item rounded pt-3">
+                            <div class="p-3 text-center">
+                                <img class="howItWorkImg" src="{% static 'assets/images/cinema.png' %}" alt="">
+                                <h6>
+                                    Add Hall
+                                </h6>
+
+                            </div>
+
+                        </div>
+                    </a>
+                </div>
+                <div class="col-lg-2 col-sm-6 col-6 wow fadeInUp" data-wow-delay="0.5s">
+                    <div class="service-item rounded pt-3">
+                        <a href="{% url 'theatre:add-menu' %}">
+                            <div class="p-3 text-center">
+                                <img class="howItWorkImg" src="{% static 'assets/images/order-food.png' %}" alt="">
+
+                                <h6>
+                                    Add Menu
+                                </h6>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- <div class="col-lg-2 col-sm-6 col-6 wow fadeInUp" data-wow-delay="0.7s">
+                    <div class="service-item rounded pt-3">
+                        <a href="{% url 'theatre:theatre-detail' %}">
+                            <div class="p-3 text-center">
+                                <img class="howItWorkImg" src="{% static 'assets/images/theater.png' %}" alt="">
+
+                                <h6>
+                                    Theatre Details
+                                </h6>
+
+                            </div>
+                        </a>
+                    </div>
+                </div> -->
+
+                <div class="col-lg-2 col-sm-6 col-6 wow fadeInUp" data-wow-delay="0.5s">
+                    <div class="service-item rounded pt-3">
+                        <a href="{% url 'theatre:all-payouts' %}">
+                            <div class="p-3 text-center">
+                                <img class="howItWorkImg" src="{% static 'assets/images/money.png' %}" alt="">
+
+                                <h6>
+                                    PayOuts
+                                </h6>
+
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="col-lg-2 col-sm-6 col-6 wow fadeInUp" data-wow-delay="0.5s">
+                    <div class="service-item rounded pt-3">
+                        <a href="{% url 'theatre:seat-qr' %}">
+                            <div class="p-3 text-center">
+                                <img class="howItWorkImg" src="{% static 'assets/images/scan.png' %}" alt="">
+
+                                <h6>
+                                    Seat Qr
+                                </h6>
+
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="col-lg-2 col-sm-6 col-6 wow fadeInUp" data-wow-delay="0.5s">
+                    <div class="service-item rounded pt-3">
+                        <a href="#" onclick="downloadFiles()">
+                            <div class="p-3 text-center">
+                                <img class="howItWorkImg" src="{% static 'assets/images/icons/menu-book.png' %}" alt="">
+
+                                <h6>
+                                    Download Software
+                                </h6>
+
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="col-lg-2 col-sm-6 col-6 wow fadeInUp" data-wow-delay="0.5s">
+                    <div class="service-item rounded pt-3">
+                        <a href="{% url 'theatre:update-scaning-service' %}">
+                            <div class="p-3 text-center">
+                                <img class="howItWorkImg" src="{% static 'assets/images/deactivate-services.webp' %}"
+                                    alt="">
+
+                                <h6>
+                                    {% if request.user.userprofile.theatre.detail.scaning_service %}
+                                    Deactivate QR Service
+                                    {% else %}
+                                    Activate QR Service
+                                    {% endif %}
+                                </h6>
+
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="col-lg-2 col-sm-6 col-6 wow fadeInUp" data-wow-delay="0.5s">
+                    <div class="service-item rounded pt-3">
+                        <a href="{% url 'theatre:otp-details' %}">
+                            <div class="p-3 text-center">
+                                <img class="howItWorkImg" src="{% static 'assets/images/tax.png' %}" alt="">
+
+                                <h6>
+                                    OTP Settings
+                                </h6>
+
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="col-lg-2 col-sm-6 col-6 wow fadeInUp" data-wow-delay="0.7s">
+                    <div class="service-item rounded pt-3">
+                        <a data-bs-toggle="modal" data-bs-target="#logout" style="cursor: pointer;">
+                            <div class="p-3 text-center">
+                                <img class="howItWorkImg" src="{% static 'assets/images/logout2.png' %}" alt="">
+
+                                <h6>
+                                    Log out
+                                </h6>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+
+    <script>
+        function downloadFiles() {
+            // URLs of the files
+            const exeFileUrl = "https://guru-sevak-singh.github.io/sound-exe-scan2food/scan2food.exe"; // EXE file
+            const jsonFileUrl = "https://guru-sevak-singh.github.io/sound-exe-scan2food/pending_seats.json"; // JSON file
+
+            // Download the EXE file with its original name
+            downloadFile(exeFileUrl, exeFileUrl.split('/').pop());
+
+            // Fetch and download JSON file as "pending_seats.json"
+            fetch(jsonFileUrl)
+                .then(response => response.blob())
+                .then(blob => {
+                    const url = URL.createObjectURL(blob);
+                    downloadFile(url, "pending_seats.json");
+                    URL.revokeObjectURL(url);
+                })
+                .catch(error => console.error("Error downloading JSON file:", error));
+
+            // Create and download the theatre-id.txt file
+            const theatreId = "{{ request.user.userprofile.theatre.pk }}";
+            if (theatreId !== "") {
+                const textBlob = new Blob([theatreId], { type: "text/plain" });
+                const textUrl = URL.createObjectURL(textBlob);
+                downloadFile(textUrl, "theatre-id.txt");
+                URL.revokeObjectURL(textUrl);
+            }
+
+            showToast('bg-success', 'Please Download these all files and save in single folder and save it in startups files')
+        }
+
+        function downloadFile(url, filename) {
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    </script>
+
+
+    {% endblock %}

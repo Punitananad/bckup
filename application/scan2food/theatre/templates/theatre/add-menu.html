@@ -1,0 +1,362 @@
+{% extends "theatre/base.html" %}
+
+{% block title %}
+<title>
+    Add Menu
+</title>
+
+<style>
+    .min {
+        font-size: xx-small;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+{% load static %}
+<!-- Add category -->
+<!-- <div class="modal fade" id="addcategory" tabindex="-1" role="dialog" aria-labelledby="addcategoryTitle"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Add category</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+
+            </div>
+            <form method="post" action="{% url 'theatre:add-category' %}">
+                <div class="modal-body">
+                    <div>
+                        {% csrf_token %}
+                        {% for field in category_form %}
+                        <div class="form-group">
+                            <label for="category_name" class="col-form-label">{{field.label}}</label>
+                            {{field}}
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary btn-custom" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Add Category</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div> -->
+
+<!-- delete Category -->
+<!-- <div class="modal fade" id="deleteCategory" tabindex="-1" role="dialog" aria-labelledby="deleteCategoryTitle"
+    aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post" id="delete-category-form" enctype="multipart/form-data" action="#">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="deleteCategoryLabel">Delete Food Category</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Do You Want To Delete This Category !
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary btn-custom" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Delete Category</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div> -->
+
+
+<!-- Upload Image category -->
+<div class="modal fade" id="imageModal" tabindex="-1" role="dialog" aria-labelledby="imageModalTitle"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="imageModalLabel">Add category</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+
+            </div>
+            <div class="modal-body">
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-custom" data-bs-dismiss="modal">Cansel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal to show all item of same category -->
+<!-- Model to Deactivate all the Items -->
+<div class="modal fade" id="DeactivateCategory" tabindex="-1" role="dialog" aria-labelledby="deleteCategoryTitle"
+    aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="DeactivateCategoryLabel">Message</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <ul>
+                    <li>
+                        Total Number of Items: <span id="total-items"></span>
+                    </li>
+                    <li class="text-danger">
+                        You can only Activate the items which are automatically Deactivated by You. Not the Items which
+                        may Deactivated indiuavidully.
+                    </li>
+                </ul>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
+                    onclick="updateBulkStatus(this)">Deactivate Items</button>
+                <button type="button" class="btn btn-success" data-bs-dismiss="modal"
+                    onclick="updateBulkStatus(this)">Activate Items</button>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- End the Modal -->
+
+
+<!-- Add Item -->
+<form method="post" id="item-form" enctype="multipart/form-data" action="{% url 'theatre:add-food-item' %}">
+    <div class="modal fade" id="addItem" tabindex="-1" role="dialog" aria-labelledby="addItemTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-scrollable">
+
+            <div class="modal-content">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="addItemLabel">Edit Food Item</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    {% csrf_token %}
+                    {% for field in form %}
+                    <div class="form-group">
+                        <label class="col-form-label">{{field.label}}</label>
+                        {{field}}
+                    </div>
+                    {% endfor %}
+
+                </div>
+                <div class="modal-footer">
+
+                    <button type="button" class="btn btn-secondary btn-custom" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Update Item</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+
+
+<!-- Delete Item -->
+<div class="modal fade" id="deleteItem" tabindex="-1" role="dialog" aria-labelledby="deleteItemTitle"
+    aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post" id="delete-item-form" action="{% url 'theatre:delete-food-item' %}">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="deleteItemLabel">Delete Food Item</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label class="col-form-label">Do You Want To Remove This Item From Your Restorent</label>
+                        <input type="text" name="pk" id="deleted-item-id" style="display: none;">
+                    </div>
+
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-secondary">Delete Item</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Main Content -->
+<div class="pageWrapper">
+    <div class="container-xxl pb-4 pt-2">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-12">
+                    <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
+                        <h5 class="section-title ff-secondary text-center text-primary fw-normal">Add Menu</h5>
+                        <h6 class="mb-3">Add the Delicious Food Items</h6>
+                    </div>
+                </div>
+                <hr>
+                <div class="row">
+                    <div class="col-lg-5">
+                        <div class="row align-items-center">
+                            <div class="col-6 col-lg-6">
+                                Number of items: <span id="item-count">0</span>
+                            </div>
+                            <div class="col-6 col-lg-6">
+                                <button class="btn btn-success btn-sm ms-2" onclick="showActionPopup()">
+                                    Take Action</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-7 text-end tabs-button">
+                        <div class="border-bottom">
+                            <button class="btn btn-success ms-2" onclick="openDeactivatePopUp(this)">
+                                All Items <span id="total-count" class="count-value d-none"></span>
+                            </button>
+                            <button class="btn btn-primary ms-2" onclick="openDeactivatePopUp(this)">
+                                Packaged Items <span id="packaged-count" class="count-value d-none">0</span>
+                            </button>
+                            <button class="btn btn-primary ms-2" onclick="openDeactivatePopUp(this)">
+                                In House Items <span id="in-house-count" class="count-value d-none">0</span>
+                            </button>
+                            <button class="btn btn-primary ms-2" onclick="openDeactivatePopUp(this)">
+                                Third Party Items <span id="third-party-count" class="count-value d-none">0</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="container">
+                    {% for food_category in food_categories %}
+                    <div class="card rounded-4 mt-3 border-0 bg-dark">
+                        <div class="card-body shadow">
+                            <div class="row text-align-center mb-2">
+                                <div class="col text-left">
+                                    <h5 class="text-capitalize text-primary">{{food_category.name}}</h5>
+                                </div>
+                                <div class="col text-end">
+
+                                    <button class="btn btn-primary btn-sm mb-2" data-bs-target="#addItem"
+                                        data-bs-toggle="modal" onclick="OpenAddItem('{{food_category.pk}}')">
+                                        <i class="fas fa-plus me-1"></i> Add Items
+                                    </button>
+                                    <!-- <button class="btn btn btn-secondary btn-custom btn-sm mb-2"
+                                        onclick="deleteCategory('{{food_category.pk}}')">
+                                        <i class="fas fa-trash-alt me-1"></i> Delete Category
+                                    </button> -->
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                {% for item in food_category.fooditem_set.all %}
+                                <div class="col-md-4 col-sm-6 mb-4 item-ids" item-id="{{item.pk}}"
+                                    unavailable_by="{{item.unavailable_by}}">
+                                    <div class="card p-2 h-100">
+                                        <div class="d-flex align-items-center">
+                                            {% if item.is_approved %}
+                                            <img class="flex-shrink-0 img-fluid rounded menu-food-img"
+                                                src="{{item.food_image.url}}" alt="" id="food-id-{{item.pk}}"
+                                                style="width: 80px;"
+                                                onclick="openImagePopUp(this, '{{item.pk}}', '{{item.name}}')">
+                                            {% else %}
+                                            <img class="flex-shrink-0 img-fluid rounded menu-food-img" alt=""
+                                                onclick="openImagePopUp(this, '{{item.pk}}', '{{item.name}}')"
+                                                id="food-id-{{item.pk}}" style="width: 80px;"
+                                                src="https://media.istockphoto.com/id/1325539274/vector/grunge-red-under-review-word-round-rubber-seal-stamp-on-white-background.jpg?s=612x612&w=0&k=20&c=LSEnHL_JYbD0ZsIzxgUIJ-h1zr-Q1xbfva8oMt-ZDwI="
+                                                alt="">
+                                            {% endif %}
+                                            <div class="w-100 d-flex flex-column text-start ps-4">
+                                                <h5
+                                                    class="d-flex align-items-center border-bottom food-details-add-menu pb-2">
+                                                    <span class="{{item.food_type}}-icon food-type"></span><span
+                                                        class="food-name">{{item.name}}</span>
+
+                                                    <span class="made-by d-none">{{item.made_by}}</span>
+                                                    {% if item.price == item.discounted_price %}
+                                                    <span class="text-primary ms-auto">₹ <span class="food-price">
+                                                            {{ item.price}}</span>
+                                                    </span>
+                                                    {% else %}
+                                                    <span class="text-danger ms-auto">
+                                                        <s>
+                                                            ₹ <span class="food-price">
+                                                                {{ item.price}}</span>
+                                                        </s>
+                                                    </span>
+                                                    <span class="text-primary ms-auto">
+                                                        ₹ <span>
+                                                            {{ item.discounted_price}}</span>
+                                                    </span>
+                                                    {% endif %}
+                                                </h5>
+
+                                                <small class="fst-italic food-description">{{item.description}}</small>
+                                                <small class="fst-italic min">Min Time:
+                                                    <small class="min-time">
+                                                        {{item.min_time}}
+                                                    </small>
+                                                </small>
+                                                <small class="fst-italic min">Max Time:
+                                                    <small class="max-time">
+                                                        {{item.max_time}}
+                                                    </small>
+                                                </small>
+                                                <small
+                                                    class="fst-italic d-none priority-number">{{item.priority_number}}</small>
+                                                <div class="row">
+                                                    <div class="col-md-12 col-sm-12">
+                                                        <button type="button"
+                                                            class="btn  btn-secondary btn-custom btn-sm mt-2 "
+                                                            onclick="DeleteItem('{{item.pk}}')"><i
+                                                                class="fas fa-trash-alt me-1"></i>Delete</button>
+                                                        <button type="button" class="btn btn-primary btn-sm mt-2"
+                                                            data-bs-toggle="modal" data-bs-target="#addItem"
+                                                            onclick="EditItem('{{food_category.pk}}', this, '{{item.pk}}')"><i
+                                                                class="far fa-edit me-1"></i>Edit</button>
+
+                                                        {% if item.is_available %}
+                                                        <a class="btn btn-success btn-sm mt-2"
+                                                            href="{% url 'theatre:change-availablity' item.pk %}">
+                                                            Available
+                                                        </a>
+                                                        {% else %}
+                                                        <a class="btn btn-danger btn-sm mt-2"
+                                                            href="{% url 'theatre:change-availablity' item.pk %}">
+                                                            Unavailable
+                                                        </a>
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+
+                </div>
+            </div>
+        </div>
+        <!-- <button class="btn btn-primary checkout-btn" data-bs-toggle="modal" data-bs-target="#addcategory">Add
+        Category</button> -->
+    </div>
+</div>
+
+<script src="{% static 'theatre_js/add-menu.js' %}"></script>
+
+{% endblock %}

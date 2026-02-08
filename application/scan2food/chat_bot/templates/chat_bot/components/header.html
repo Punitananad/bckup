@@ -1,0 +1,34 @@
+{% load static %}
+<!-- Navbar & Hero Start -->
+<div class="container-xxl position-relative p-0">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark px-4 px-lg-5 py-lg-0 nav-custom">
+        <a href="" class="navbar-brand p-0">
+            <a href="#" class="navbar-brand p-0">
+                <img src="{% static 'assets/images/brand/Scan2Food.png' %}"
+                    alt="Scan2Food Logo">
+            </a>
+            <!-- <img src="assets/images/logo.png" alt="Logo"> -->
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+            <span class="fa fa-bars"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+            <div class="navbar-nav ms-auto py-0 pe-4">
+                <a href="#" class="nav-item nav-link">Dashboard</a>
+                <a href="#" class="nav-item nav-link">Orders</a>
+                <a href="#" class="nav-item nav-link">Payments</a>
+                <a href="#" class="nav-item nav-link">All Seats</a>
+                <div class="nav-item dropdown d-none">
+                    <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
+                    <div class="dropdown-menu m-0">
+                        <a href="#" class="dropdown-item">Our Team</a>
+                        <a href="#" class="dropdown-item">Testimonial</a>
+                    </div>
+                </div>
+                <a href="#" class="nav-item nav-link">Contact</a>
+            </div>
+            <a href="#" class="btn btn-primary py-2 px-4"><i class="fas fa-users-cog me-2"></i>Settings</a>
+        </div>
+    </nav>
+
+</div>

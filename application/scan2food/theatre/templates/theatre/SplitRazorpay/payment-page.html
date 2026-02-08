@@ -1,0 +1,269 @@
+{% extends "theatre/base.html" %}
+
+{% load static %}
+{% block title %}
+
+
+{% endblock %}
+
+{% block content %}
+<div class="pageWrapper" id="paymentPage">
+    <!-- templates/payment_page.html -->
+
+    <div class="row align-items-center justify-content-center m-0">
+        <div class="container text-center">
+            <h5 class="section-title ff-secondary text-center text-primary fw-normal">Payment Details</h5>
+            <!-- added the phone number field -->
+            <div class="row mt-3">
+                <div>
+                    <div class="col-lg-6 col-sm-6 col-12">
+                        <div class="form-floating mb-3">
+                            <input type="tel" class="form-control" autofocus name="getPhoneNumber" id="getPhoneNumber"
+                                placeholder="Phone Number" required="" inputmode="tel" autocomplete="tel"
+                                value="{{order.payment.phone_number}}" maxlength="10">
+                            <label for="getPhoneNumber" class="form-label">Please enter your Whatsapp Number</label>
+                            <p class="mb-0 text-danger text-start float-start mt-2 mb-3">Please provide your whatsapp
+                                number!</p>
+                        </div>
+
+                        <div class="mt-4">
+                            <label for="notes" class="col-12 text-start ">notes :</label>
+                            <textarea class="form-control" name="notes" id="notes" rows="3"
+                                placeholder="Extra Cheese, Extra Sauses">{{order.notes}}</textarea>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+            <!-- added the phone number field -->
+            <div class="card rounded-2 mt-4 mb-3">
+                <div class="card-body">
+
+
+                    <div class="d-flex justify-content-between">
+                        <p class="text-muted" id="payment-tab-panding-amount-heading">Order Amount
+
+                        </p>
+                        <h6 class="total-amount">₹ <span class="amount-with-tax">{{order.full_payment}}</span>
+                        </h6>
+                    </div>
+
+                    <hr>
+                    <div class="d-flex justify-content-between">
+                        <p class="text-muted">Total Amount</p>
+                        <h6 class="total-amount">₹ <span class="amount-with-tax">{{visible_amount}}</span></h6>
+                    </div>
+
+
+                    <div class="d-flex justify-content-center">
+                        {% if order.seat.row.hall.theatre.cash_activated %}
+                        {% if request.user.is_anonymous %}
+                        <div class="text-center mt-4 mx-2">
+                            <button id="pay-by-cash" url="{% url 'theatre:generate-cash-order' order.id %}"
+                                class="btn btn-secondary btn-custom">
+                                Pay by Cash
+                            </button>
+                        </div>
+
+                        {% else %}
+                        <div class="text-center mt-4 mx-2">
+                            <a href="{% url 'theatre:add-payment-manually' order.id %}"
+                                class="btn btn-secondary btn-custom">Cash Collected</a>
+                        </div>
+
+                        <div class="text-center mt-4 mx-2">
+                            <a href="{% url 'theatre:cancel-cash-order' order.id%}"
+                                class="btn btn-danger btn-custom">Cancel Order</a>
+
+                        </div>
+                        {% endif %}
+                        {% endif %}
+                        <div class="text-center mt-4 mx-2">
+                            <form action="{% url 'theatre:split-razorpay-payment-callback' %}" method="POST">
+                                {% csrf_token %}
+                                <div class="row">
+                                    <button class="btn btn-primary" type="button" id="rzp-button1"
+                                        onclick="submitForm()">Pay</button>
+
+                                    <div class="col-lg-6 col-md-6 col-12 col-sm-6">
+                                        <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+                                        <script>
+
+                                            let theatre_mail = "{{order.seat.row.hall.theatre.name}}"
+                                            theatre_mail = theatre_mail.replaceAll(" ", ".")
+                                            theatre_mail = theatre_mail.toLowerCase();
+
+                                            // function to hit the post request for saving the phone number
+                                            async function PostRequest(url, data) {
+                                                csrftoken = document.getElementsByName('csrfmiddlewaretoken')[0].value;
+                                                return fetch(url, {
+                                                    method: 'POST',
+                                                    headers: {
+                                                        'Content-Type': 'application/json',
+                                                        'X-CSRFToken': csrftoken
+                                                    },
+                                                    body: JSON.stringify(data),
+                                                })
+                                                    .then(function (response) {
+                                                        return response.json();
+                                                    })
+                                                    .then(function (data) {
+                                                        return data;
+                                                    })
+                                                    .catch(function (error) {
+                                                        throw new Error('Failed to fetch data');
+                                                    });
+                                            }
+
+                                            async function getRequest(url) {
+                                                return fetch(url)
+                                                    .then(function (response) {
+                                                        return response.json();
+                                                    })
+                                                    .then(function (data) {
+
+                                                        return data;
+
+                                                    })
+                                                    .catch(function (error) {
+                                                        console.error('Error:', error);
+                                                        throw new Error('Failed to fetch data');
+                                                    });
+                                            }
+
+                                            const phoneInput = document.getElementById('getPhoneNumber');
+                                            phoneInput.addEventListener('input', function (e) {
+                                                this.value = this.value.replace(/[^0-9]/g, '');
+                                                if (this.value.length != 10) {
+                                                    this.setAttribute('class', 'form-control is-invalid');
+                                                }
+                                                else {
+                                                    this.setAttribute('class', 'form-control is-valid');
+                                                }
+                                            });
+
+                                            const notesInput = document.getElementById('notes');
+
+                                            const cashButton = document.getElementById('pay-by-cash');
+                                            if (cashButton != null) {
+
+                                                async function payByCash() {
+                                                    let phone_number = document.getElementById('getPhoneNumber').value;
+                                                    let notes = notesInput.value;
+
+                                                    if (phone_number.length < 10) {
+                                                        phoneInput.setAttribute('class', 'form-control is-invalid');
+                                                        phoneInput.focus();
+                                                        return;
+                                                    }
+                                                    let data = {
+                                                        'phone_number': phone_number,
+                                                        'notes': notes
+                                                    }
+
+                                                    let url = `/theatre/order-status/{{order.pk}}`;
+                                                    let update_status = await PostRequest(url, data);
+
+                                                    console.log(update_status);
+
+                                                    if (update_status.status == true) {
+                                                        console.log('Now i want to run this code ....');
+
+                                                        const url = cashButton.getAttribute('url')
+                                                        window.open(url, '_self')
+                                                    }
+                                                }
+
+                                                cashButton.addEventListener('click', async function () {
+                                                    await payByCash();
+                                                })
+                                            }
+
+                                            async function submitForm() {
+                                                let phone_number = document.getElementById('getPhoneNumber').value;
+                                                let notes = notesInput.value;
+
+                                                if (phone_number.length < 10) {
+                                                    phoneInput.setAttribute('class', 'form-control is-invalid');
+                                                    phoneInput.focus();
+                                                    return;
+                                                }
+
+                                                let data = {
+                                                    'phone_number': phone_number,
+                                                    'notes': notes
+                                                }
+                                                let url = `/theatre/order-status/{{order.pk}}`;
+                                                let update_status = await PostRequest(url, data);
+
+                                                if (update_status.status == true) {
+                                                    var options = {
+                                                        "key": "{{ razorpay_key }}", // Enter the Key ID generated from the Dashboard
+                                                        "amount": "{{ amount }}", // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+                                                        "currency": "INR",
+                                                        "name": "{{order.seat.row.hall.name}} ({{order.seat.name}})",
+                                                        "description": "Payment for seat {{order.seat.row.hall.name}} ({{order.seat.name}})",
+                                                        "order_id": "{{order_id}}", //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+                                                        "handler": function (response) {
+
+                                                            document.getElementById('razorpay_payment_id').value = response.razorpay_payment_id;
+                                                            document.getElementById('razorpay_order_id').value = response.razorpay_order_id;
+                                                            document.getElementById('razorpay_signature').value = response.razorpay_signature;
+
+                                                            document.getElementById('submit-form-button').click()
+                                                        },
+                                                        "prefill": {
+                                                            "name": "{{order.seat.row.hall.theatre.name}} #{{order.seat.row.hall.theatre.pk}}",
+                                                            "email": `${theatre_mail}@scan2food.com`,
+                                                            "contact": phone_number, // Placeholder phone number, replace with actual if available
+                                                        },
+                                                        "notes": {
+                                                            "theatre_name": '{{order.seat.row.hall.theatre.name}}',
+                                                            "theatre_id": '{{order.seat.row.hall.theatre.id}}',
+                                                            "order_id": '{{order.id}}',
+                                                            "payment_id": '{{order.payment.id}}'
+                                                        },
+                                                        "theme": {
+                                                            "color": "#3399cc"
+                                                        }
+                                                    };
+                                                    var rzp1 = new Razorpay(options);
+                                                    rzp1.on('payment.failed', function (response) {
+                                                        // console.log(response.error.code);
+                                                        // console.log(response.error.description);
+                                                        // console.log(response.error.source);
+                                                        // console.log(response.error.step);
+                                                        // console.log(response.error.reason);
+                                                        // console.log(response.error.metadata.order_id);
+                                                        // console.log(response.error.metadata.payment_id);
+                                                        console.log('some thing happend');
+
+                                                    });
+
+                                                    rzp1.open();
+                                                }
+                                            }
+                                        </script>
+                                        <input type="hidden" name="razorpay_order_id" id="razorpay_order_id">
+                                        <input type="hidden" name="razorpay_payment_id" id="razorpay_payment_id">
+                                        <input type="hidden" name="razorpay_signature" id="razorpay_signature">
+                                        <button style="display: none;" id="submit-form-button"
+                                            type="submit">Submit</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+{{order.id|json_script:"order-id"}}
+
+
+{% endblock %}

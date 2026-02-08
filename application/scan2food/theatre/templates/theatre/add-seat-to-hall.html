@@ -1,0 +1,90 @@
+{% extends "theatre/base.html" %}
+
+{% block title %}
+
+<title>
+    Add Sitting Area
+</title>
+
+{% endblock %}
+
+{% block content %}
+
+{% load static %}
+
+
+<form action="{% url 'theatre:add-seat-to-hall' hall.pk %}" method="post" style="display: none;">
+    {% csrf_token %}
+    <textarea type="text" name="send-data" id="send-data">
+        </textarea>
+
+    <button id="main-submit" type="submit">
+        submit
+    </button>
+</form>
+
+
+<!-- Table Start Here -->
+<div class="pageWrapper">
+    <div class="container-xxl pb-4 pt-2">
+        <div class="container">
+            <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
+                <h5 class="section-title ff-secondary text-center text-primary fw-normal mt-3">Sitting Area</h5>
+                <h6 class="mb-5">Add Seatng Plan - {{hall.name}} </h6>
+            </div>
+
+            <div class="row m-0 mt-1 card">
+                <div class="card-body">
+
+                    <div class="col-md-8 col-lg-9 col-12">
+                        <div class="row align-items-center g-3">
+                            <div class="col-lg-2 col-md-3 col-12">
+                                <label for="start-alphabet" class="fw-bold">First Row</label>
+                            </div>
+                            <div class="col-lg-3 col-md-5 col-12">
+                                <div class="input-group">
+                                    <input type="text" id="start-alphabet" class="form-control br-2"
+                                        name="start-alphabet" aria-label="start-alphabet"
+                                        aria-describedby="basic-addon1" value="A" disabled>
+                                </div>
+                            </div>
+                            <div class="col-lg-2 col-md-3 col-12">
+                                <label for="last-alphabet">Last Row</label>
+                            </div>
+                            <div class="col-lg-3 col-md-5 col-12">
+                                <div class="input-group">
+                                    <select name="last-alphabet" id="last-alphabet" class="form-control">
+
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-lg-2 col-md-3 col-12">
+                                <button type="button" class="btn btn-primary" id="add-rows"> Add Rows</button>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div style="min-height: 40vh;" class="card mt-3">
+                <div id="all-hall-list" class="card-body">
+
+                </div>
+
+                <div class="col-12 mt-3 mb-3 pe-5 float-end text-end">
+                    <button class="btn btn-primary" id="update-button">Update Seating Plan</button>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+</div>
+<!-- Table End Here -->
+
+{{hall.name|json_script:"hall-name"}}
+
+<script src="{% static 'theatre_js/set-all-seats.js' %}"></script>
+<script src="{% static 'theatre_js/add-seat-to-hall.js' %}"></script>
+
+{% endblock %}

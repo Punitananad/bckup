@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Theatre KOT</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            width: 58mm;
+            /* Width suitable for a thermal printer */
+            margin: 0;
+            padding: 0;
+        }
+
+        .bill-container {
+            padding: 10px;
+            text-align: center;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .header h2 {
+            margin: 0;
+        }
+
+        .item {
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px dashed #000;
+            padding: 5px 0;
+        }
+
+        .total {
+            font-weight: bold;
+            border-top: 2px solid #000;
+            padding-top: 10px;
+            margin-top: 10px;
+        }
+
+        .footer {
+            margin-top: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bill-container">
+        <div class="header">
+            <h2>{{request.user.userprofile.theatre.name}}</h2>
+            <p>{{request.user.userprofile.theatre.address}}</p>
+            <p>KOT</p>
+            <h3>Seat:-{{order.seat.row.hall.name}} ({{order.seat.name}})</h3>
+            <p>{{order.payment.time}}</p>
+        </div>
+        <div class="item">
+            <span>Item Name</span>
+            <span>Qty</span>
+        </div>
+        <div class="total">
+
+        </div>
+
+        {% for item in order.items.all %}
+        <div class="item">
+            <span>{{item.name}}</span>
+            <span>{{item.quantity}}</span>
+        </div>
+        {% endfor %}
+        <div class="total">
+
+        </div>
+
+        <div class="footer">
+            <p>Thank you for dining with us!</p>
+            <p>Visit again!</p>
+        </div>
+    </div>
+
+
+    <script>
+        window.print();
+
+        // Close the window after the print dialog is closed
+        window.addEventListener('afterprint', function () {
+            window.close();
+        });
+    </script>
+
+</body>
+
+</html>

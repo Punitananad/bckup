@@ -1,0 +1,332 @@
+{% extends "website/website-base.html" %}
+
+{% block title %}
+<title>
+    Scan2Food
+</title>
+{% endblock %}
+
+{% block content %}
+
+
+<div class="container-xxl bg-white p-0">
+    <!-- Spinner Start -->
+    <!-- <div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
+        <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+    </div> -->
+    <!-- Spinner End -->
+
+
+    <!-- Navbar & Hero Start -->
+    <div class="container-xxl bg-dark hero-header mb-5 p-0">
+        <div class="row align-items-center g-5 m-0">
+            <div class="col-lg-7 text-center text-lg-start px-5">
+                <h2 class="text-white animated slideInLeft">Welcome to <span class="text-primary">
+                        Scan2Food</span></h2>
+                <h5 class="section-title ff-secondary text-start text-white fw-normal">Order Food from Your
+                    Seat!</h5>
+                <!-- <h5 class="text-white slideInLeft mb-4 pb-2"> Order Food from Your Seat!</h5> -->
+                <p class="text-white animated slideInLeft mb-4 pb-2 mt-4">
+                    With Scan2Food, you can order snacks and meals right to your seat while watching a movie.
+                    Just scan the QR code, pick what you want, and enjoy without leaving your seat.
+                </p>
+                <a href="" class="btn btn-primary py-sm-3 px-sm-5 me-3 animated slideInLeft">Sign Up</a>
+            </div>
+            <div class="col-lg-5 text-center text-lg-end overflow-hidden pe-0 m-0">
+                <img class="img-fluid" src="https://guru-sevak-singh.github.io/scan2food-static/static/assets/images/hero-scan.jpeg"
+                    alt="Person sitting in theatre and ordering through scan2Food">
+            </div>
+        </div>
+    </div>
+    <!-- Navbar & Hero End -->
+    <!-- About Us Start -->
+    <div class="container-xxl py-3" id="about">
+        <div class="container">
+            <div class="col-lg-12 text-center">
+                <h5 class="section-title ff-secondary text-center text-primary fw-normal pb-3">About Us</h5>
+                <p class="fw-bold mt-2">
+                    At Scan2Food, we make watching movies even better by letting you order your favorite snacks and
+                    meals without leaving your seat. With our service, you won’t miss any part of the movie. Just scan
+                    the QR code, choose what you want from the menu, and get your food delivered right to you.
+                </p>
+            </div>
+        </div>
+    </div>
+    <!-- About us End -->
+    <!-- why choose us -->
+    <div class="container-xxl py-5 px-0 wow fadeInUp" data-wow-delay="0.1s">
+        <div class="row g-0 bg-dark ">
+            <div class="col-12 text-center p-4 pt-5">
+                <h5 class="section-title ff-secondary text-center text-white fw-normal">Why Choose Scan2Food?</h5>
+            </div>
+            <div class="col-12 col-lg-12 p-4">
+                <div class="row">
+
+                    <div class="col-md-4 col-12 align-items-center">
+                        <div class="row">
+                            <div class="col-lg-3 col-md-4">
+                                <img src="https://guru-sevak-singh.github.io/scan2food-static/static/assets/images/queue.png" class="howItWorkImg" alt="People Queue">
+                            </div>
+                            <div class="col-lg-9 col-md-8">
+                                <h6 class="text-primary">
+                                    Skip the Long Lines
+                                </h6>
+                                <p class="text-white">
+                                    Forget standing in long concession lines. With Scan2Food, you can order without
+                                    leaving your
+                                    seat, saving time and avoiding crowds.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 col-12 align-items-center">
+                        <div class="row">
+                            <div class="col-lg-3 col-md-4">
+                                <img src="https://guru-sevak-singh.github.io/scan2food-static/static/assets/images/theater.png" class="howItWorkImg"
+                                    alt="Theatre Hall">
+                            </div>
+                            <div class="col-lg-9 col-md-8">
+                                <h6 class="text-primary">
+                                    Never Miss a Scene
+                                </h6>
+                                <p class="text-white">
+                                    No more rushing during movie breaks or waiting until intermission. With our service,
+                                    you can
+                                    order anytime — before or during the movie.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 col-12 align-items-center">
+                        <div class="row">
+                            <div class="col-lg-3 col-md-4">
+                                <img src="https://guru-sevak-singh.github.io/scan2food-static/static/assets/images/order-food-staff.png" class="howItWorkImg"
+                                    alt="Theatre Staff Taking order from phone">
+                            </div>
+                            <div class="col-lg-9 col-md-8">
+                                <h6 class="text-primary">
+                                    Easy for Theatre Staff
+                                </h6>
+                                <p class="text-white">
+                                    Theatre staff can manage orders efficiently using tablets or mobile phones, ensuring
+                                    quick
+                                    service without disrupting the movie experience.
+                                </p>
+                            </div>
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <!-- why choose us -->
+    <!-- How it Works section -->
+    <div class="container-xxl py-4" id="working">
+        <div class="container">
+            <h4 class="mb-5 text-center">How it works</h4>
+            <div class="row g-4">
+                <div class="col-lg-3 col-sm-6 wow fadeInUp" data-wow-delay="0.1s">
+                    <div class="service-item rounded pt-3">
+                        <div class="p-4">
+                            <!-- <i class="fa fa-3x fa-user-tie text-primary mb-4"></i> -->
+                            <img class="howItWorkImg" src="https://guru-sevak-singh.github.io/scan2food-static/static/assets/images/scan.png" alt="">
+                            <h6>Scan the QR Code</h6>
+                            <p>Use your phone to scan the QR code available at your seat.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-sm-6 wow fadeInUp" data-wow-delay="0.3s">
+                    <div class="service-item rounded pt-3">
+                        <div class="p-4">
+                            <img class="howItWorkImg" src="https://guru-sevak-singh.github.io/scan2food-static/static/assets/images/menu.png" alt="">
+                            <h6>Choose from the Menu</h6>
+                            <p>Browse a wide range of snacks, beverages, and meals.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-sm-6 wow fadeInUp" data-wow-delay="0.5s">
+                    <div class="service-item rounded pt-3">
+                        <div class="p-4">
+                            <img class="howItWorkImg" src="https://guru-sevak-singh.github.io/scan2food-static/static/assets/images/order-food.png" alt="">
+                            <h6>Order with Ease</h6>
+                            <p>Place your order, pay securely, and sit back while your food is prepared.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-sm-6 wow fadeInUp" data-wow-delay="0.7s">
+                    <div class="service-item rounded pt-3">
+                        <div class="p-4">
+                            <img class="howItWorkImg" src="https://guru-sevak-singh.github.io/scan2food-static/static/assets/images/delivery-man.png" alt="">
+                            <h6>Enjoy Delivery to Your Seat</h6>
+                            <p>No more long lines or missing the movie — your food is delivered right to your seat!!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--  How it Works section End -->
+
+    <!-- Contact Start -->
+    <div class="container-xxl pt-5 px-0 wow fadeInUp" data-wow-delay="0.1s" id="contact">
+        <div class="row g-0">
+            <div class="col-md-6">
+                <div class="video">
+                    <!-- <button type="button" class="btn-play" data-bs-toggle="modal"
+                        data-src="https://www.youtube.com/embed/DWRcNpR6Kdc" data-bs-target="#videoModal">
+                        <span></span>
+                    </button> -->
+                </div>
+            </div>
+            <div class="col-md-6 bg-dark d-flex align-items-center brdr-bottom">
+                <div class="p-5 wow fadeInUp" data-wow-delay="0.2s">
+                    <h5 class="section-title ff-secondary text-start text-primary fw-normal">Contact Us</h5>
+                    <h6 class="text-white mb-4">Contact us today to learn more about how Scan2Food can improve your
+                        customers' experience and transform your theatre's food service.</h6>
+                    <form>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="text" class="form-control" id="name" placeholder="Your Name">
+                                    <label for="name">Name</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="email" class="form-control" id="email" placeholder="Your Email">
+                                    <label for="email">Email</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="number" class="form-control" id="contactNo"
+                                        placeholder="Your Contact Number">
+                                    <label for="contactNo">Phone</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="text" class="form-control" id="contactNo"
+                                        placeholder="Your Contact Number">
+                                    <label for="contactNo">Place</label>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-floating">
+                                    <textarea class="form-control" placeholder="Write your Question Here" id="message"
+                                        style="height: 100px"></textarea>
+                                    <label for="message">Please Enter your Question Here</label>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <button class="btn btn-primary w-100 py-3" type="submit">Contact Now</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="videoModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content rounded-0">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Youtube Video</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- 16:9 aspect ratio -->
+                    <div class="ratio ratio-16x9">
+                        <iframe class="embed-responsive-item" src="" id="video" allowfullscreen
+                            allowscriptaccess="always" allow="autoplay"></iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Contact End -->
+
+
+    <!-- Team Start -->
+    <div class="container-xxl pt-5 pb-3 d-none">
+        <div class="container">
+            <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
+                <h5 class="section-title ff-secondary text-center text-primary fw-normal">Team Members</h5>
+                <h1 class="mb-5">Our Master Chefs</h1>
+            </div>
+            <div class="row g-4">
+                <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
+                    <div class="team-item text-center rounded overflow-hidden">
+                        <div class="rounded-circle overflow-hidden m-4">
+                            <img class="img-fluid" src="https://guru-sevak-singh.github.io/scan2food-static/static/assets/images/team-1.jpg" alt="">
+                        </div>
+                        <h5 class="mb-0">Full Name</h5>
+                        <small>Designation</small>
+                        <div class="d-flex justify-content-center mt-3">
+                            <a class="btn btn-square btn-primary mx-1" href=""><i class="fab fa-facebook-f"></i></a>
+                            <a class="btn btn-square btn-primary mx-1" href=""><i class="fab fa-twitter"></i></a>
+                            <a class="btn btn-square btn-primary mx-1" href=""><i class="fab fa-instagram"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.3s">
+                    <div class="team-item text-center rounded overflow-hidden">
+                        <div class="rounded-circle overflow-hidden m-4">
+                            <img class="img-fluid" src="https://guru-sevak-singh.github.io/scan2food-static/static/assets/images/team-2.jpg" alt="">
+                        </div>
+                        <h5 class="mb-0">Full Name</h5>
+                        <small>Designation</small>
+                        <div class="d-flex justify-content-center mt-3">
+                            <a class="btn btn-square btn-primary mx-1" href=""><i class="fab fa-facebook-f"></i></a>
+                            <a class="btn btn-square btn-primary mx-1" href=""><i class="fab fa-twitter"></i></a>
+                            <a class="btn btn-square btn-primary mx-1" href=""><i class="fab fa-instagram"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.5s">
+                    <div class="team-item text-center rounded overflow-hidden">
+                        <div class="rounded-circle overflow-hidden m-4">
+                            <img class="img-fluid" src="https://guru-sevak-singh.github.io/scan2food-static/static/assets/images/team-3.jpg" alt="">
+                        </div>
+                        <h5 class="mb-0">Full Name</h5>
+                        <small>Designation</small>
+                        <div class="d-flex justify-content-center mt-3">
+                            <a class="btn btn-square btn-primary mx-1" href=""><i class="fab fa-facebook-f"></i></a>
+                            <a class="btn btn-square btn-primary mx-1" href=""><i class="fab fa-twitter"></i></a>
+                            <a class="btn btn-square btn-primary mx-1" href=""><i class="fab fa-instagram"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.7s">
+                    <div class="team-item text-center rounded overflow-hidden">
+                        <div class="rounded-circle overflow-hidden m-4">
+                            <img class="img-fluid" src="https://guru-sevak-singh.github.io/scan2food-static/static/assets/images/team-4.jpg" alt="">
+                        </div>
+                        <h5 class="mb-0">Full Name</h5>
+                        <small>Designation</small>
+                        <div class="d-flex justify-content-center mt-3">
+                            <a class="btn btn-square btn-primary mx-1" href=""><i class="fab fa-facebook-f"></i></a>
+                            <a class="btn btn-square btn-primary mx-1" href=""><i class="fab fa-twitter"></i></a>
+                            <a class="btn btn-square btn-primary mx-1" href=""><i class="fab fa-instagram"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Team End -->
+    <!-- Footer Start -->
+
+    <!-- footer for home screen -->
+
+
+    <!-- Back to Top -->
+    <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top d-none"><i class="bi bi-arrow-up"></i></a>
+</div>
+{% endblock %}

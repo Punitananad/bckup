@@ -1,0 +1,50 @@
+{% extends "website/website-base.html" %}
+
+{% load static %}
+
+{% block title %}
+<title>
+    Order Status | {{order.seat.name}}
+</title>
+<link rel="stylesheet" href="{% static 'assets/css/table_status.css' %}">
+
+{% endblock %}
+
+{% block content %}
+<div class="pageWrapper">
+    <div class="container">
+        <!-- id="remaining-part" -->
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="weather-card one">
+                    <div class="top text-center">
+                        <!-- You can add a heading or image here if needed -->
+                        <img src="{% static 'assets/images/food-cooking.gif' %}" alt="cooking icon" class="w-65">
+                    </div>
+                    <div class="bottom bg-light p-4 rounded">
+                        <div class="wrapper">
+                            <ul class="forecast list-unstyled">
+                                <li
+                                    class="active d-flex justify-content-between align-items-center p-2 mb-2 bg-success text-white rounded">
+                                    <span class="date">Our staff will collect payment, or you can pay online, and then
+                                        we’ll start preparing your order!</span>
+                                </li>
+
+                                <li
+                                    class="active d-flex justify-content-between align-items-center p-2 mb-2  text-white rounded">
+                                    <div class="row">
+                                        <a href="{% url 'theatre:initiate-payment' order.pk %}"
+                                            class="btn btn-primary">Pay Online</a>
+                                    </div>
+                                </li>
+                            </ul>
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

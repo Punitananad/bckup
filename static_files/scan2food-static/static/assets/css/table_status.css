@@ -1,0 +1,109 @@
+/* #remaining-part {
+    font-family: 'Montserrat', sans-serif;
+    background: #0d1b2a;
+    color: #f0f4f8;
+} */
+
+.weather-card {
+    margin: 10px auto;
+    /* height: 600px; */
+    width: 100%;
+    background: #ffffff;
+    border-radius: 10px;
+    /* box-shadow: 0 1px 15px rgba(0, 0, 0, 0.1), 0 5px 10px rgba(0, 0, 0, 0.2); */
+    overflow: hidden;
+}
+
+.weather-card .top {
+    position: relative;
+    /* height: 450px; */
+    width: 100%;
+    overflow: hidden;
+    /* background: url(https://guru-sevak-singh.github.io/scan2food-static/static/assets/images/food-cooking.gif) no-repeat; */
+    background-size: cover;
+    background-position: center center;
+    border-bottom: 3px solid #f79393;
+    border-radius: 10px 10px 0 0;
+}
+
+.weather-card .top .wrapper {
+    padding: 20px;
+    position: relative;
+    z-index: 1;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 10px 10px 0 0;
+}
+
+.weather-card .top .wrapper .mynav {
+    height: 20px;
+}
+
+.weather-card .top .wrapper .mynav .lnr {
+    color: #f0f4f8;
+    font-size: 20px;
+}
+
+.weather-card .top .wrapper .mynav .lnr-chevron-left,
+.weather-card .top .wrapper .mynav .lnr-cog {
+    display: inline-block;
+}
+
+.weather-card .top .wrapper .heading {
+    margin-top: 10px;
+    font-size: 28px;
+    font-weight: 500;
+    color: #f0f4f8;
+}
+
+.weather-card .top .wrapper .location {
+    margin-top: 10px;
+    font-size: 18px;
+    font-weight: 400;
+    color: #f0f4f8;
+}
+
+.weather-card .top .wrapper .temp {
+    margin-top: 20px;
+}
+
+.weather-card .top .wrapper .temp a {
+    text-decoration: none;
+    color: #f0f4f8;
+}
+
+.weather-card .bottom {
+    padding: 20px;
+    background: #f0f4f8;
+    border-radius: 0 0 10px 10px;
+}
+
+.weather-card .bottom .wrapper {
+    padding: 10px;
+}
+
+.weather-card .bottom .wrapper .status-list li {
+    margin-bottom: 10px;
+}
+
+.weather-card .bottom .wrapper .status-list li.active {
+    background: #2a9d8f;
+    color: #ffffff;
+}
+
+.weather-card .bottom .wrapper .status-list li {
+    padding: 10px;
+    background: #3f3e43;
+    color: #ffffff;
+    border-radius: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.weather-card .bottom .wrapper .status-list li .status-icon {
+    font-size: 16px;
+}
+
+.comp {
+    background-color: #f79393;
+}

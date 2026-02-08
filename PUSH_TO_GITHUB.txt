@@ -1,0 +1,103 @@
+=== PUSH TO YOUR GITHUB REPO ===
+
+Repository: https://github.com/Punitananad/bckup.git
+
+=== COMMANDS TO RUN ===
+
+STEP 1: Open PowerShell or CMD
+-------------------------------
+cd C:\Users\punit\Downloads\Documents\Desktop\s2f_bp
+
+
+STEP 2: Initialize Git (if not already)
+-------------------------------
+git init
+
+
+STEP 3: Add All Files
+-------------------------------
+git add .
+
+
+STEP 4: Check What Will Be Committed
+-------------------------------
+git status
+
+# You should see:
+# - Python files
+# - Templates
+# - Static files
+# - Documentation
+# 
+# You should NOT see:
+# - .env files
+# - db.sqlite3
+# - *.sql files
+
+
+STEP 5: Commit
+-------------------------------
+git commit -m "Secure deployment: Updated credentials to use environment variables"
+
+
+STEP 6: Add Your GitHub Repo
+-------------------------------
+git remote add origin https://github.com/Punitananad/bckup.git
+
+
+STEP 7: Push to GitHub
+-------------------------------
+git branch -M main
+git push -u origin main --force
+
+# Note: Using --force because repo might have existing content
+# This will overwrite with your secure version
+
+
+STEP 8: Verify on GitHub
+-------------------------------
+1. Go to: https://github.com/Punitananad/bckup
+2. Check files are there
+3. VERIFY: No .env files visible
+4. VERIFY: No db.sqlite3 visible
+
+
+=== IF YOU GET ERRORS ===
+
+Error: "remote origin already exists"
+Solution:
+git remote remove origin
+git remote add origin https://github.com/Punitananad/bckup.git
+
+
+Error: "Authentication failed"
+Solution:
+# Use Personal Access Token
+# GitHub Settings → Developer Settings → Personal Access Tokens
+# Generate token and use as password
+
+
+Error: "Updates were rejected"
+Solution:
+git push -u origin main --force
+
+
+=== AFTER PUSHING ===
+
+ON YOUR SERVER:
+-------------------------------
+ssh username@YOUR_SERVER_IP
+cd /var/www
+git clone https://github.com/Punitananad/bckup.git scan2food
+
+# Or if already cloned:
+cd /var/www/scan2food
+git pull origin main
+
+
+=== IMPORTANT ===
+
+✅ .gitignore is already created
+✅ Sensitive files will NOT be pushed
+✅ Your code is secure
+✅ Ready to deploy!

@@ -1,0 +1,210 @@
+{% extends "theatre/base.html" %}
+
+{% block title %}
+<title> Dashboard</title>
+
+{% endblock %}
+
+
+{% block content %}
+
+{% load static %}
+
+<div class="row m-0 align-items-center">
+    <div class="col-lg-12 col-md-12">
+        <div class="row m-0 mt-1 align-items-center g-2">
+            <div class="col-lg-3 col-md-4 col-sm-12 br-right-1 text-center">
+                <h6 class="text-muted pt-2">
+                    Current Balance <small><i class="fas fa-info-circle ms-2"></i></small>
+                </h6>
+                <a href="{% url 'theatre:all-payouts' %}" class="cursor-pointer">
+                    <p class="amountDetails fs-5">
+                        ₹ <span id="unsettled-amount"></span>
+                        <i class="fas fa-long-arrow-alt-right"></i>
+                    </p>
+                </a>
+            </div>
+            <div class="col-md-12 col-lg-7 offset-lg-2 col-12">
+                <div class="row align-items-center g-3 mb-2">
+                    <div class="col-lg-2 col-md-3 col-12">
+                        <label for="daterange" class="fw-bold">Filter Result</label>
+                    </div>
+                    <div class="col-lg-7 col-md-6 col-9">
+                        <div class="input-group">
+                            <span class="input-group-text" id="basic-addon1"> <i class="fa fa-calendar"></i></span>
+                            <input type="text" id="daterange" class="form-control br-2" name="daterange"
+                                aria-label="daterange" aria-describedby="basic-addon1">
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-3 col-3">
+
+                        <button type="button" class="btn btn-primary" id="submit-button"> Submit</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+</div>
+<div class="container-xxl pb-4 pt-2 bg-grey dashboard">
+    <div class="px-3 mb-5">
+        <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
+            <h5 class="section-title ff-secondary text-center text-primary fw-normal">Main Dashboard</h5>
+            <h4 class="mb-5">All Details</h4>
+        </div>
+        <div class="row">
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-success shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs fw-bold text-success text-uppercase mb-1">
+                                    Staff Orders</div>
+                                <div class="h4 mb-0 fw-black text-gray-800" id="staff-orders">0</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-utensils fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-primary shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs fw-bold text-primary-custm text-uppercase mb-1">
+                                    Self Orders</div>
+                                <div class="h4 mb-0 fw-black text-gray-800" id="self-orders">0</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-motorcycle fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-info shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs fw-bold text-info text-uppercase mb-1">
+                                    Total Payments</div>
+                                <div class="h4 mb-0 fw-black text-gray-800">
+                                    <span id="total-payment">
+                                        0
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-rupee-sign fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-warning shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs fw-bold text-warning text-uppercase mb-1">
+                                    Running Orders
+                                </div>
+                                <div class="h4 mb-0 fw-black text-gray-800" id="running-orders">0</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-chair fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-4">
+            
+            <div class="col-xl-8 col-md-12 col-12">
+                <h6 class="mb-3">
+                    Top Selling Items
+                </h6>
+                <div class="card shadow h-100 py-2">
+                    <div class="card-body">
+                        <!-- Canvas Element for Chart -->
+                        <canvas id="topSeelingChart" width="400" height="200"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-4 col-md-12 col-12">
+                <h6 class="mb-3">
+                    Staff Orders vs Self Orders
+                </h6>
+                <div class="card shadow h-100 py-2">
+                    <div class="card-body">
+                        <!-- Canvas Element for Chart -->
+                        <canvas id="orderComparisonChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-12 col-md-12 col-12 mt-5">
+                <h6 class="mb-3">
+                    Total Revenue :- <span id="running-year" style="cursor: pointer;"
+                        class="dropdown-toggle text-primary" data-bs-toggle="dropdown">{{current_year}}</span>
+                    <div class="dropdown-menu m-0" id="year-dropdown">
+
+                    </div>
+                </h6>
+                <div class="card shadow h-100 py-2">
+                    <div class="card-body">
+                        <!-- Canvas Element for Chart -->
+                        <canvas id="revenueChart" width="400" height="200"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<!-- Chart.js Library -->
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+
+    $(document).ready(function () {
+        $('#daterange').daterangepicker({
+            locale: {
+                format: 'DD/MMM/YYYY'
+            },
+            startDate: moment(), // Set start date to today
+            endDate: moment().add(1, 'days'),   // Set end date to today
+            showDropdowns: true,
+            opens: 'left',
+            ranges: {
+                'Today': [moment(), moment().add(1, 'days')],
+                'Yesterday': [moment().subtract(1, 'days'), moment()],
+                'Last 7 Days': [moment().subtract(7, 'days'), moment()],
+                'Last 30 Days': [moment().subtract(30, 'days'), moment()],
+                'This Month': [moment().startOf('month'), moment().endOf('month')],
+                'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+            }
+        });
+    });
+
+
+
+
+</script>
+
+<!-- <script src="{% static 'theatre_js/dashboard.js' %}"></script> -->
+
+{{  request.user.userprofile.theatre.pk|json_script:"theatre-id" }}
+
+<script src="{% static 'theatre_js/dashboard/main.js' %}"></script>
+
+
+{% endblock %}

@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    {% load static %}
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A4 QR Code Template</title>
+    <link href="{% static 'assets/css/style.css' %}" rel="stylesheet">
+    <link href="{% static 'assets/css/custom.css' %}" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="{% static 'assets/css/bootstrap.min.css' %}" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+        }
+
+        #qrCode.container {
+            width: 100% !important;
+            max-width: 100% !important;
+            height: 100%;
+            padding: 7px 25px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            /* gap: 3mm; */
+            align-items: center;
+            justify-items: center;
+        }
+
+        #qrCode .qr-block {
+            width: 100%;
+            height: auto;
+            text-align: center;
+            padding: 8mm 12mm;
+            border: 1px solid #000000;
+            border-radius: 0px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .qr-block hr {
+            margin: 10px 0px;
+        }
+
+        .qr-block:nth-child(1),
+        .qr-block:nth-child(2),
+        .qr-block:nth-child(5),
+        .qr-block:nth-child(6),
+        .qr-block:nth-child(9),
+        .qr-block:nth-child(10) {
+            /* margin-top: 10px; */
+            margin-bottom: 0px;
+        }
+
+        #qrCode img {
+            width: 25px;
+            height: auto;
+            margin-bottom: 0px;
+        }
+
+        h6 {
+            font-size: 8px;
+        }
+
+        h6.title {
+            font-size: 11px !important;
+            margin-bottom: 0px;
+            text-transform: uppercase;
+
+        }
+
+        .qr-code {
+            margin-top: 0px;
+            /* width: 136px !important;
+            height: 136px !important; */
+            width: 210px !important;
+            height: 210px !important;
+        }
+
+        .QRbrandLogo {
+            /* width: 60%!important; */
+            /* width: 60%!important; */
+            width: 68% !important;
+            display: block;
+            margin-left: 20px;
+        }
+
+        .theatreLogo {
+            width: 30.5% !important;
+            height: auto !important;
+            display: block;
+            margin-left: 20px;
+            float: right;
+            margin-right: 40px;
+        }
+
+        #qrCode h2,
+        #qrCode h5 {
+            margin-bottom: 5px;
+            font-size: 16px;
+        }
+
+        .brandwrapper {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .steps {
+            text-align: left;
+        }
+
+        .steps li {
+            font-size: 13px;
+            list-style-type: none;
+        }
+
+        .theatreName,
+        .seatName {
+            /* font-size: 0.55em !important; */
+            font-size: 0.70em !important;
+            text-transform: capitalize;
+        }
+
+        .theatreName {
+            margin-top: -18px !important;
+            /* margin-top: -14px !important; */
+        }
+
+        .brdr-left {
+            border-left: 2px solid #fea116;
+        }
+
+        .custom-row {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .custom-row .col-lg-6 {
+            flex: 0 0 auto;
+            width: 50%;
+            max-width: 100%;
+        }
+
+        .col-lg-5 {
+            flex: 0 0 auto;
+            width: 41.66667%;
+        }
+
+        .col-lg-7 {
+            flex: 0 0 auto;
+            width: 58.33333%;
+        }
+
+        .custom-row .col-lg-12 {
+            flex: 0 0 auto;
+            width: 100%;
+            max-width: 100%;
+        }
+
+        .custom-row .col-lg-8 {
+            flex: 0 0 auto;
+            width: 66.66667%;
+            max-width: 100%;
+        }
+
+        .custom-row .col-lg-4 {
+            flex: 0 0 auto;
+            width: 33.33333%;
+            max-width: 100%;
+        }
+
+        .custom-row .col-lg-3 {
+            flex: 0 0 auto;
+            width: 25%;
+            max-width: 100%;
+        }
+
+        .outerBorder {
+            border: 1px solid #f7a62d;
+            padding: 10px 5px;
+        }
+
+        .ps-2 {
+            padding-left: 0.3rem !important;
+        }
+
+        .pe-2 {
+            padding-right: 0.3rem !important;
+        }
+
+        /* .br-1px {
+            border-right: 1.5px solid #aaa;
+        } */
+        .mt-2 {
+            margin-top: 15px !important;
+        }
+
+        .steps-to_order {
+            margin-left: 20px;
+            margin-right: 20px;
+        }
+
+        .steps-to_order .col-lg-3 {
+            padding: 0px 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="modal fade" id="QrStylePopup" tabindex="-1" role="dialog" aria-labelledby="QrStylePopupTitle"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">QR Style Popup</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+
+                </div>
+                <div class="modal-body">
+                    <div class="card-title">
+                        Now Your are seeing the Big Size QR Code.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary btn-custom" onclick="SmallQRCode()" data-bs-dismiss="modal">Small QR Code</button>
+                    <button type="button" class="btn btn-primary" onclick="LargeQRCode()">New QR Code</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="paginationWrapper mt-3 mb-2 container rounded-3 shadow p-3" id="paginationWrapper">
+        <div class="row m-0 align-items-center ">
+
+            <form style="display: none;">
+                <input type="number" id="page_number" name="page" style="display: none;">
+
+                <div class="col-lg-2 col-md-2 col-12">
+                    <button type="submit" class="btn btn-primary mt-4" id="submit-button"><i
+                            class="fa fa-filter me-2"></i>Filter Results</button>
+                </div>
+            </form>
+
+            <div class="col-lg-3">
+                <div class="current ">
+                    Page {{ seats.number }} of {{ seats.paginator.num_pages }}.
+                </div>
+            </div>
+            <div class="col-lg-3 brdr-left ps-4">
+                <ul class="pagination mb-0">
+                    {% if seats.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" onclick="OpenPage('1')" tabindex="-1">
+                            <i class="fas fa-angle-left"></i>
+                            <span class="sr-only">Previous</span>
+                        </a>
+                    </li>
+
+                    <li class="page-item">
+                        <a class="page-link" onclick="OpenPage('{{ seats.previous_page_number }}')" tabindex="-1">
+                            {{ seats.previous_page_number }}
+                        </a>
+                    </li>
+                    {% endif %}
+
+
+                    <li class="page-item active">
+                        <a class="page-link" href="#">{{seats.number}}</a>
+                    </li>
+
+                    {% if seats.has_next %}
+
+                    <li class="page-item">
+                        <a onclick="OpenPage('{{ seats.next_page_number }}')" class="page-link">
+                            {{ seats.next_page_number}}
+                        </a>
+                    </li>
+
+                    <li class="page-item">
+                        <a onclick="OpenPage('{{ seats.next_page_number }}')" class="page-link">
+                            <i class="fas fa-angle-right"></i>
+                            <span class="sr-only">Next</span>
+                        </a>
+                    </li>
+
+                    {% endif %}
+                </ul>
+            </div>
+            <div class="col-lg-3">
+                <div class="current ">
+                    QR Style:
+                    <span class="badge bg-success" data-bs-toggle="modal" data-bs-target="#QrStylePopup"
+                        style="cursor: pointer;">
+                        <i class="fa fa-print me-1"></i>Big QR Code.
+                    </span>
+                </div>
+            </div>
+            <div class="col-lg-3 text-end">
+                <button class="btn btn-primary" onclick="printQr()">
+                    <i class="fa fa-print me-1"></i>
+                    Print
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="container" id="qrCode">
+        <!-- <span class="cardMargin"> -->
+        {% for seat in seats %}
+        <div class="qr-block">
+            <div class="row custom-row align-items-center justify-content-center">
+                <div class="col-lg-4 col-md-4 br-1px">
+                    <img src="{% static 'assets/images/brand/Scan2Food-whiteBG.png' %}" class="img-fluid QRbrandLogo"
+                        alt="Scan2Food Logo">
+
+                </div>
+                <div class="col-lg-8 text-end float-end">
+                    <!-- <h6 class="title text-start">
+                         Scan to Food!
+                    </h6> -->
+                    <img src="{{seat.row.hall.theatre.detail.logo.url}}" class="img-fluid theatreLogo" alt="Scan2Food Logo">
+                </div>
+            </div>
+            <!-- old qr code -->
+            <div class="row custom-row align-items-center justify-content-center d-none">
+                <div class="col-lg-3">
+                    <div class="row g-1">
+                        <div class="col-lg-12">
+                            <div class="outerBorder">
+                                <img class="howItWorkImg" src="{% static 'assets/images/icons/scan-blue.png' %}"
+                                    alt="Scan">
+                                <h6 class="mb-0">Scan</h6>
+                            </div>
+                        </div>
+                        <div class="col-lg-12">
+                            <div class="outerBorder">
+                                <img class="howItWorkImg" src="{% static 'assets/images/icons/order-blue.png' %}"
+                                    alt="Order">
+                                <h6 class="mb-0">Order</h6>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-6 col-md-6 align-items-center justify-content-center ps-0">
+                    <!-- <h5>
+                        Scan this QR Code
+                    </h5> -->
+                    <canvas id="{{seat.pk2}}" class="qr-code2"></canvas>
+
+                    <h6 class="theatreName mb-0">{{seat.row.hall.theatre.name}} | {{seat.row.hall.name}} | {{seat.name}}
+                    </h6>
+
+                </div>
+                <div class="col-lg-3">
+                    <div class="row g-1">
+
+                        <div class="col-lg-12">
+                            <div class="outerBorder">
+                                <img class="howItWorkImg" src="{% static 'assets/images/icons/choose-blue.png' %}"
+                                    alt="Choose">
+                                <h6 class="mb-0">Choose</h6>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-12">
+                            <div class="outerBorder">
+                                <img class="howItWorkImg"
+                                    src="{% static 'assets/images/icons/mobile-payment-blue.png' %}" alt="Enjoy">
+                                <h6 class="mb-0">Pay</h6>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+            <!-- old qr code -->
+            <div class="row custom-row align-items-center justify-content-center">
+
+                <div class="col-lg-12 col-md-12 align-items-center justify-content-center ps-0">
+                    <!-- <h5>
+                        Scan this QR Code
+                    </h5> -->
+                    <canvas id="{{seat.pk}}" class="qr-code"></canvas>
+
+                    <h6 class="theatreName mb-0">{{seat.row.hall.theatre.name}} | {{seat.row.hall.name}} | {{seat.name}}
+                    </h6>
+
+                </div>
+
+
+            </div>
+            <div class="row custom-row align-items-center justify-content-center steps-to_order mt-2">
+
+
+                <div class="col-lg-3">
+                    <div class="outerBorder">
+                        <img class="howItWorkImg" src="{% static 'assets/images/icons/scan-blue.png' %}" alt="Scan">
+                        <h6 class="mb-0">Scan</h6>
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    <div class="outerBorder">
+                        <img class="howItWorkImg" src="{% static 'assets/images/icons/choose-blue.png' %}" alt="Choose">
+                        <h6 class="mb-0">Choose</h6>
+                    </div>
+                </div>
+
+                <div class="col-lg-3">
+                    <div class="outerBorder">
+                        <img class="howItWorkImg" src="{% static 'assets/images/icons/order-blue.png' %}" alt="Order">
+                        <h6 class="mb-0">Order</h6>
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    <div class="outerBorder">
+                        <img class="howItWorkImg" src="{% static 'assets/images/icons/mobile-payment-blue.png' %}"
+                            alt="Enjoy">
+                        <h6 class="mb-0">Pay</h6>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% endfor %}
+        <!-- </span> -->
+    </div>
+
+
+    <script src="{% static 'assets/lib/qr-generator/main.js' %}"></script>
+    <script src="{% static 'theatre_js/qr-page.js' %}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        function OpenPage(page_number) {
+            page_number = JSON.parse(page_number);
+            document.getElementById('page_number').value = page_number;
+            document.getElementById('submit-button').click();
+        }
+
+        function printQr() {
+            let paginationWrapper = document.getElementById('paginationWrapper');
+            paginationWrapper.classList.add('d-none');
+            window.print()
+            paginationWrapper.classList.remove('d-none');
+            paginationWrapper.click()
+        }
+
+        window.addEventListener('keydown', (event) => {
+            if (event.ctrlKey && event.key === 'p') {
+                event.preventDefault();
+                printQr()
+            }
+        })
+    </script>
+</body>
+
+</html>

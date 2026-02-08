@@ -1,0 +1,116 @@
+# Python
+*.py[cod]
+*$py.class
+*.so
+__pycache__/
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Django
+*.log
+db.sqlite3
+db.sqlite3-journal
+/staticfiles_collected/
+/media/
+
+# Environment variables - CRITICAL: Never commit these!
+.env
+.env.*
+*.env
+.env.local
+.env.production
+.env.development
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.pydevproject
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+*.bak
+
+# Database backups - Contains sensitive data!
+*.sql
+*.dump
+*.backup
+application/scan2food/media/backup_db/
+
+# Credentials and secrets
+*credentials*.json
+*secret*.json
+*key*.json
+
+# Virtual environment
+venv/
+env/
+ENV/
+.venv/
+
+# Byte-compiled files
+*.pyc
+*.pyo
+
+# Temporary files
+*.tmp
+*.temp
+~*
+
+# Logs
+*.log
+logs/
+*.log.*
+
+# Coverage reports
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+
+# pytest
+.pytest_cache/
+
+# mypy
+.mypy_cache/
+
+# Node modules (if any frontend)
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Compiled static files
+/static_root/
+/staticfiles/
+
+# Local settings (if you create one)
+local_settings.py
+
+# Media files (user uploads - too large for git)
+# Keep the directory structure but not the files
+application/scan2food/media/food_images/*
+application/scan2food/media/documents/*
+application/scan2food/media/theatre_logo/*
+!application/scan2food/media/food_images/.gitkeep
+!application/scan2food/media/documents/.gitkeep
+!application/scan2food/media/theatre_logo/.gitkeep
+
+# Keep default image
+!application/scan2food/media/default_food_img.png
+
+# Backup scripts output
+backupScript/backups/
+
+# Documentation that might contain sensitive info
+# Uncomment if you don't want to commit these
+# SECURITY_MIGRATION_CHECKLIST.md
+# OLD_VS_NEW_CREDENTIALS.md
+# deployment_config.json
+# .env.template

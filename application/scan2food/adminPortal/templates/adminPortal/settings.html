@@ -1,0 +1,194 @@
+{% extends 'adminPortal/base.html' %}
+
+{% block title %}
+<title>
+    Settings
+</title>
+{% endblock %}
+
+{% block content %}
+
+{% load static %}
+
+
+
+<!-- form to download excel for bulk payout -->
+
+<div class="modal fade" id="download-excel" tabindex="-1" role="dialog" aria-labelledby="download-excelTitle"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="download-excelLabel">Download Excel File</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+
+            </div>
+            <form action="{% url 'admin-portal:download-bulk-report' %}">
+                <div class="modal-body">
+                    <div class="row align-items-center g-3 mb-2">
+                        <div class="col-lg-4 col-md-6 col-12">
+                            <label for="daterange" class="fw-bold">Filter Result</label>
+                        </div>
+                        <div class="col-lg-7 col-md-6 col-12">
+                            <div class="input-group">
+                                <span class="input-group-text" id="basic-addon1"> <i class="fa fa-calendar"></i></span>
+                                <input type="text" id="daterange" class="form-control br-2" name="daterange"
+                                    aria-label="daterange" aria-describedby="basic-addon1">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary btn-custom" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Download Report</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- form end for download excel for bulk payout -->
+
+<div class="pageWrapper">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
+                <h5 class="section-title ff-secondary text-center text-primary fw-normal">Settings</h5>
+                <h5 class="mb-0">Make changes in the settings from below Options</h5>
+            </div>
+
+            <div class="row gy-3 mb-4">
+
+                <div class="col-lg-2 col-sm-6 col-6 wow fadeInUp" data-wow-delay="0.5s">
+                    <div class="service-item rounded pt-3">
+                        <a href="{% url 'admin-portal:gateways' %}">
+                            <div class="p-3 text-center">
+                                <img class="howItWorkImg" src="{% static 'assets/images/money.png' %}" alt="">
+
+                                <h6>
+                                    Gateway
+                                </h6>
+
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+
+                <div class="col-lg-2 col-sm-6 col-6 wow fadeInUp" data-wow-delay="0.7s">
+                    <div class="service-item rounded pt-3">
+                        <a data-bs-toggle="modal" data-bs-target="#logout" style="cursor: pointer;">
+                            <div class="p-3 text-center">
+                                <img class="howItWorkImg" src="{% static 'assets/images/logout2.png' %}" alt="">
+
+                                <h6>
+                                    Log out
+                                </h6>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="col-lg-2 col-sm-6 col-6 wow fadeInUp" data-wow-delay="0.5s">
+                    <div class="service-item rounded pt-3">
+                        <a href="{% url 'admin-portal:upload-food-image' %}">
+                            <div class="p-3 text-center">
+                                <img class="howItWorkImg" src="{% static 'assets/images/order-food.png' %}" alt="">
+
+                                <h6>
+                                    Upload Food Image
+                                </h6>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="col-lg-2 col-sm-6 col-6 wow fadeInUp" data-wow-delay="0.5s">
+                    <div class="service-item rounded pt-3">
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#download-excel" style="cursor: pointer;">
+                            <div class="p-3 text-center">
+                                <img class="howItWorkImg" src="{% static '/assets/images/excel-file.png' %}"
+                                    alt="">
+
+                                <h6>
+                                    Download Payout Excel File
+                                </h6>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="col-lg-2 col-sm-6 col-6 wow fadeInUp" data-wow-delay="0.5s">
+                    <div class="service-item rounded pt-3">
+                        <a url="{% url 'admin-portal:create-single-payout' %}" onclick="downloadMessage()"
+                            style="cursor: pointer;" id="create-single-payout">
+                            <div class="p-3 text-center">
+                                <img class="howItWorkImg" src="{% static '/assets/images/clipboard.png' %}"
+                                    alt="">
+
+                                <h6>
+                                    Create Single Payout
+                                </h6>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="col-lg-2 col-sm-6 col-6 wow fadeInUp" data-wow-delay="0.5s">
+                    <div class="service-item rounded pt-3">
+                        <a href="{% url 'admin-portal:get-db-files' %}" style="cursor: pointer;">
+                            <div class="p-3 text-center">
+                                <img class="howItWorkImg" src="{% static '/assets/images/db.png' %}" alt="">
+                                <h6>
+                                    Download DB Backup
+                                </h6>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+
+
+            </div>
+
+        </div>
+    </div>
+
+
+    <script>
+
+        $(document).ready(function () {
+            $('#daterange').daterangepicker({
+                locale: {
+                    format: 'DD/MMM/YYYY'
+                },
+                startDate: moment(), // Set start date to today
+                endDate: moment(),   // Set end date to today
+                showDropdowns: true,
+                opens: 'left',
+                ranges: {
+                    'Today': [moment(), moment().add(1, 'days')],
+                    'Yesterday': [moment().subtract(1, 'days'), moment()],
+                    'Last 7 Days': [moment().subtract(7, 'days'), moment()],
+                    'Last 30 Days': [moment().subtract(30, 'days'), moment()],
+                    'This Month': [moment().startOf('month'), moment().endOf('month')],
+                    'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+                }
+            });
+        });
+
+        function downloadMessage() {
+            const conformation = confirm('This Button will Create all The Pending Payouts, so Pleasee save this excel sheet...');
+            if (conformation) {
+                const url = document.getElementById('create-single-payout').getAttribute('url')
+                window.open(url, '_self');
+                showToast('bg-success', 'Excel Sheet is downloaded Successfully...');
+            }
+        }
+
+    </script>
+
+
+    {% endblock %}

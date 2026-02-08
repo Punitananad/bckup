@@ -1,0 +1,76 @@
+{% extends 'adminPortal/base.html' %}
+
+{% block title %}
+<title>
+    Settings
+</title>
+{% endblock %}
+
+{% block content %}
+
+{% load static %}
+
+<!-- Add category -->
+
+<div class="pageWrapper">
+    <div class="container-xxl pb-4 pt-2">
+        <div class="container">
+            <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
+                <h5 class="section-title ff-secondary text-center text-primary fw-normal">Gateway Details</h5>
+                <h4 class="mb-3">Add Gateway</h4>
+            </div>
+
+            <div class="row gx-4 ">
+
+                <div class="col-12">
+                    <div class="table-responsive">
+                        <table class="table table-custom custom-table table-scrollable">
+                            <thead>
+                                <tr>
+                                    <th scope="col">
+                                        #
+                                    </th>
+                                    <th scope="col">
+                                        Name
+                                    </th>
+                                    <th>
+                                        Size
+                                    </th>
+                                    <th>
+                                        Date
+                                    </th>
+                                    <th>
+                                        Actions
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for backup in backups %}
+                                <tr>
+                                    <th scop="row">
+                                        {{ forloop.counter }}
+                                    </th>
+                                    <td>
+                                        {{ backup.name }}
+                                    </td>
+                                    <td>
+                                        {{ backup.size }} MB
+                                    </td>
+                                    <td>
+                                        {{ backup.modified }}
+                                    </td>
+                                    <td>
+                                        <a href="/media/backup_db/{{backup.name}}" class="btn btn-primary">Download</a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

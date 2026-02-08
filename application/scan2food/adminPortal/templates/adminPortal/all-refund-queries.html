@@ -1,0 +1,262 @@
+{% extends 'adminPortal/base.html' %}
+
+{% block title %}
+<title>
+    Refund Queries
+</title>
+{% endblock %}
+
+{% block content %}
+
+{% load static %}
+
+<!-- Order History Start -->
+<div class="pageWrapper">
+    <div class="container-xxl pb-4 pt-2">
+        <div class="container p-0">
+            <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
+                <h5 class="section-title ff-secondary text-center text-primary fw-normal">All Reviews</h5>
+                <h4 class="mb-5">Your All Refund Queries</h4>
+            </div>
+            <!-- date range picker start -->
+            <form>
+
+                <div class="row mb-4">
+                    <div class="col-md-12 col-lg-12 col-12">
+                        <div class="shadow-lg bg-white p-3">
+                            <div class="row align-items-center g-3">
+                                <div class="col-lg-3 col-md-4 col-12">
+                                    <label for="daterange" class="fw-bold">Date Range</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text" id="basic-addon1"> <i
+                                                class="fa fa-calendar"></i></span>
+                                        <input type="text" id="daterange" class="form-control br-2" name="daterange"
+                                            aria-label="daterange" aria-describedby="basic-addon1">
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-3 col-md-4 col-12">
+                                    <label for="selected-theatre" class="fw-bold">Theatre</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text" id="basic-addon3"> <i
+                                                class="fa fa-credit-card"></i></span>
+                                        <select name="selected-theatre" class="form-control br-2" id="selected-theatre">
+                                            <option value="">All Theatre</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <input type="hidden" id="selected-theatre-id" value="{{selected_theatre}}">
+
+                                <div class="col-lg-3 col-md-4 col-12">
+                                    <label for="resolve_status" class="fw-bold">Resolved Status</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text" id="basic-addon1"> <i
+                                                class="fa fa-book"></i></span>
+                                        <select id="resolve_status" class="form-control br-2" name="resolve_status"
+                                            aria-label="resolve_status" aria-describedby="basic-addon1">
+
+                                            <option value="">All Status</option>
+                                            <option value="not-resolved">Not Resolved</option>
+                                            <option value="resolved">Resolved</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <input type="number" id="page_number" name="page" style="display: none;">
+
+                                <div class="col-lg-2 col-md-2 col-12">
+                                    <button type="submit" class="btn btn-primary mt-4" id="submit-button"><i
+                                            class="fa fa-filter me-2"></i>Filter Results</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+            <!-- date range picker end -->
+            <div id="order-list" class="row">
+
+
+                <div class="container-fluid">
+
+
+                    <div class="table-responsive">
+                        <table class="table custom-table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">
+                                        S No.
+                                    </th>
+                                    <th scope="col">
+                                        Theatre
+                                    </th>
+                                    <th scope="col">
+                                        Seat
+                                    </th>
+                                    <th scope="col">
+                                        Amount
+                                    </th>
+                                    <th>
+                                        Phone No
+                                    </th>
+                                    <th>
+                                        View Order
+                                    </th>
+                                    <th>
+                                        Problem Status
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for refund_query in refund_queries %}
+                                <tr>
+                                    <th scope="row">
+                                        {{ forloop.counter0|add:refund_queries.start_index }}
+                                    </th>
+                                    <th scope="row">
+                                        {{ refund_query.order.seat.row.hall.theatre.name }}
+                                    </th>
+                                    <td scope="row">
+                                        {{refund_query.order.seat.row.hall.name}}, {{ refund_query.order.seat.name }}
+                                    </td>
+                                    <td scope="row">
+                                        ₹{{ refund_query.order.payment.amount }}
+                                    </td>
+                                    <td scope="row">
+                                        {{ refund_query.order.payment.phone_number }}
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'admin-portal:order-profile' refund_query.order.id %}"
+                                            class="btn btn-sm btn-primary">View Order</a>
+                                    </td>
+                                    <td>
+                                        {% if refund_query.resolve_status %}
+                                        <a href="#">
+                                            <span id="btn-{{refund_query.pk}}" class="btn btn-sm btn-success"
+                                                onclick="updateRefundQueryStatus('{{refund_query.id}}')">Resolved</span>
+                                        </a>
+                                        {% else %}
+                                        <a id="btn-{{refund_query.pk}}" href="#" class="btn btn-sm btn-danger"
+                                            onclick="updateRefundQueryStatus('{{refund_query.id}}')">Not Resolved</a>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="7" scope="row">
+                                        No Refund Queries Found
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+
+                        </table>
+                    </div>
+                    <div class="custom-pagination">
+                        <div class="row m-0">
+                            <div class="col-lg-6 col-md-5 col-5">
+                                <div class="current">
+                                    Page {{ refund_queries.number }} of {{ refund_queries.paginator.num_pages }}.
+                                </div>
+                            </div>
+                            <div class="col-lg-6 col-7 col-md-7">
+                                <ul class="pagination justify-content-end mb-0">
+                                    {% if refund_queries.has_previous %}
+                                    <li class="page-item">
+                                        <a class="page-link" onclick="OpenPage('1')" tabindex="-1">
+                                            <i class="fas fa-angle-left"></i>
+                                            <span class="sr-only">Previous</span>
+                                        </a>
+                                    </li>
+
+                                    <li class="page-item">
+                                        <a class="page-link"
+                                            onclick="OpenPage('{{ refund_queries.previous_page_number }}')"
+                                            tabindex="-1">
+                                            {{ refund_queries.previous_page_number }}
+                                        </a>
+                                    </li>
+                                    {% endif %}
+
+
+                                    <li class="page-item active">
+                                        <a class="page-link" href="#">{{refund_queries.number}}</a>
+                                    </li>
+
+                                    {% if refund_queries.has_next %}
+
+                                    <li class="page-item">
+                                        <a onclick="OpenPage('{{ refund_queries.next_page_number }}')"
+                                            class="page-link">
+                                            {{ refund_queries.next_page_number}}
+                                        </a>
+                                    </li>
+
+                                    <li class="page-item">
+                                        <a onclick="OpenPage('{{ refund_queries.next_page_number }}')"
+                                            class="page-link">
+                                            <i class="fas fa-angle-right"></i>
+                                            <span class="sr-only">Next</span>
+                                        </a>
+                                    </li>
+
+                                    {% endif %}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+{{ start_date|json_script:"start-date"}}
+{{ end_date|json_script:"end-date"}}
+
+
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<script>
+    const start_date = JSON.parse(document.getElementById('start-date').innerText);
+    const end_date = JSON.parse(document.getElementById('end-date').innerText)
+
+    $(document).ready(function () {
+        $('#daterange').daterangepicker({
+            locale: {
+                format: 'DD/MMM/YYYY'
+            },
+            startDate: new Date(start_date), // Set start date to today
+            endDate: new Date(end_date),   // Set end date to today
+            showDropdowns: true,
+            opens: 'right',
+            ranges: {
+                'Today': [moment(), moment()],
+                'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+                'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+                'This Month': [moment().startOf('month'), moment().endOf('month')],
+                'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+            }
+        });
+    });
+
+    function OpenPage(page_number) {
+        page_number = JSON.parse(page_number);
+        document.getElementById('page_number').value = page_number;
+        document.getElementById('submit-button').click();
+    }
+
+
+    document.getElementById('resolve_status').value = "{{ resolve_status }}";
+
+</script>
+
+<script src="{% static 'dashboard/all-refund-queries.js' %}"></script>
+
+<!-- Order History End -->
+{% endblock %}

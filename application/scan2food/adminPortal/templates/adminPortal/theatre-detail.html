@@ -1,0 +1,494 @@
+{% extends "adminPortal/base.html" %}
+{% load static %}
+
+{% block title %}
+
+<title>
+    {{theatre.name}}
+</title>
+
+<style>
+
+</style>
+
+{% endblock %}
+
+{% block content %}
+
+<!-- Order History Start -->
+<div class="pageWrapper">
+    <div class="container-xxl pb-4 pt-2">
+        <div class="container mt-5">
+
+            <a href="{% url 'admin-portal:new-payout-payments' theatre.pk %}" class="btn btn-success">
+                Generate payout
+            </a>
+
+            <a href="{% url 'admin-portal:user-aggriment' theatre.pk %}" class="btn btn-info">Agreement</a>
+
+            <ul class="nav nav-tabs" id="myTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home"
+                        type="button" role="tab" aria-controls="home" aria-selected="true">Home</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="payout-tab" data-bs-toggle="tab" data-bs-target="#payout" type="button"
+                        role="tab" aria-controls="payout" aria-selected="false">Payouts</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="payments-tab" data-bs-toggle="tab" data-bs-target="#payments"
+                        type="button" role="tab" aria-controls="payments" aria-selected="false">Payments</button>
+                </li>
+                <li class="nav-item" role="document">
+                    <button class="nav-link" id="document-tab" data-bs-toggle="tab" data-bs-target="#document"
+                        type="button" role="tab" aria-controls="document" aria-selected="false">Document</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#gst-details"
+                        type="button" role="tab" aria-controls="gst-details" aria-selected="false">GST Details</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="bank-tab" data-bs-toggle="tab" data-bs-target="#bank-details"
+                        type="button" role="tab" aria-controls="bank-details" aria-selected="false">Bank
+                        Details</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="generate-hall-qr-tab" data-bs-toggle="tab"
+                        data-bs-target="#generate-hall-qr" type="button" role="tab" aria-controls="generate-hall-qr"
+                        aria-selected="false">Generate Hall Qr</button>
+                </li>
+            </ul>
+            <div class="tab-content mt-3" id="myTabContent">
+                <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+                    <div class="table-responsive">
+                        <table class="table custom-table">
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <img src="{{theatre.detail.logo.url}}" alt="Logo" width="100px" height="100px"
+                                            style="border: 1px solid black;" data-bs-toggle="modal"
+                                            data-bs-target="#logoModal">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>
+                                        Theatre name:
+                                    </th>
+                                    <td>
+                                        {{theatre.name}}
+                                    </td>
+                                    <th>
+                                        Owner Name:
+                                    </th>
+                                    <td>
+                                        {{theatre.owner_name}}
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <th>
+                                        Phone Number
+                                    </th>
+                                    <td>
+                                        {{theatre.phone_number}}
+                                    </td>
+                                    <th>
+                                        Active Status
+                                    </th>
+                                    <td>
+                                        {% if theatre.detail.is_active%}
+                                        Active
+                                        {% else %}
+                                        Deactive
+                                        {% endif %}
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <th>
+                                        Second Phone Number
+                                    </th>
+                                    <td>
+                                        {{theatre.detail.secondary_mobile}}
+                                    </td>
+                                    <th>
+                                        Plan Type
+                                    </th>
+                                    <td>
+                                        {{theatre.detail.payment_model}}
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <th>
+                                        Expire Date
+                                    </th>
+                                    <td>
+                                        {{theatre.detail.expire_date.date}}
+                                    </td>
+                                    <th>
+                                        Register Date
+                                    </th>
+                                    <td>
+                                        {{theatre.detail.start_date}}
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <th>
+                                        Commission
+                                    </th>
+                                    <td>
+                                        {{theatre.detail.commission}}
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="payout" role="tabpanel" aria-labelledby="payout-tab">
+                    <div class="table-responsive">
+                        <table class="table custom-table">
+                            <thead>
+                                <th>
+                                    s no.
+                                </th>
+                                <th>
+                                    From
+                                </th>
+                                <th>
+                                    To
+                                </th>
+                                <th>
+                                    Amount
+                                </th>
+                                <th>
+                                    Payments
+                                </th>
+                            </thead>
+                            <tbody>
+                                {% for payout in theatre.payoutlogs_set.all %}
+                                <tr>
+                                    <th>
+                                        {{forloop.counter}}
+                                    </th>
+                                    <td>
+                                        {{payout.start_time}}
+                                    </td>
+                                    <td>
+                                        {{payout.end_time}}
+                                    </td>
+                                    <td>
+                                        {{payout.amount}}
+                                    </td>
+                                    <td>
+                                        {{payout.payment_set.count}}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                            <tr>
+
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="payments" role="tabpanel" aria-labelledby="payments-tab">
+                    <div class="table-responsive">
+                        <table class="table custom-table">
+                            <thead>
+                                <th>
+                                    s no.
+                                </th>
+                                <th>
+                                    Date
+                                </th>
+                                <th>
+                                    Time
+                                </th>
+                                <th>
+                                    Amount
+                                </th>
+                                <th>
+                                    Status
+                                </th>
+                            </thead>
+                            <tbody>
+                                {% for payment in theatre.payment.all %}
+                                {% endfor %}
+                            </tbody>
+                            <tr>
+
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="document" role="tabpanel" aria-labelledby="document-tab">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-6 py-3">
+                                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#documentModal">
+                                    Add Document
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table custom-table">
+                            <thead>
+                                <th>
+                                    s no.
+                                </th>
+                                <th>
+                                    Document Name
+                                </th>
+                                <th colspan="2" style="text-align: center;">
+                                    Action
+                                </th>
+                            </thead>
+                            <tbody>
+                                {% for document in theatre.documents_set.all %}
+                                <tr>
+                                    <td>{{forloop.counter}}</td>
+                                    <td>{{document.document_name}}</td>
+                                    <td><a href="{{document.document.url}}" target="_blank">Download</a></td>
+                                    <td><a href="{% url 'admin-portal:delete-document' document.pk %}">Delete
+                                            Document</a></td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+
+                        </table>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="gst-details" role="tabpanel" aria-labelledby="gst-details-tab">
+                    <div class="table-responsive">
+                        <table class="table custom-table">
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <button data-bs-toggle="modal" data-bs-target="#gstModal"
+                                            class="btn btn-primary">GST Details</button>
+
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>
+                                        Firm Name
+                                    </th>
+                                    <td colspan="3">
+                                        {{gst_details.firm_name}}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>GST Number</th>
+                                    <td>{{gst_details.gst_number}}</td>
+                                    <th>PAN</th>
+                                    <td>{{gst_details.pan}}</td>
+                                </tr>
+                                <tr>
+                                    <th>
+                                        GST STATE
+                                    </th>
+                                    <td>
+                                        {{gst_details.gst_state}}
+                                    </td>
+                                    <th>
+                                        GST STATE Code
+                                    </th>
+                                    <td>
+                                        {{gst_details.state_code}}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>
+                                        GST Address
+                                    </th>
+                                    <td colspan="3">
+                                        {{gst_details.gst_address}}
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="bank-details" role="tabpanel" aria-labelledby="bank-details-tab">
+                    <div class="table-responsive">
+                        <table class="table custom-table">
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <button data-bs-toggle="modal" data-bs-target="#bankModal"
+                                            class="btn btn-primary">Bank Details</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Account Number</th>
+                                    <td>{{bank_details.account_number}}</td>
+                                    <th>Account Holder Name</th>
+                                    <td>{{bank_details.account_name}}</td>
+                                </tr>
+                                <tr>
+                                    <th>Bank Name</th>
+                                    <td>{{bank_details.bank_name}}</td>
+                                    <th>Branch Name</th>
+                                    <td>{{bank_details.branch_name}}</td>
+                                </tr>
+                                <tr>
+                                    <th>IFSC Code</th>
+                                    <td>{{bank_details.ifsc_code}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="generate-hall-qr" role="tabpanel" aria-labelledby="generate-hall-qr-tab">
+                    <div class="container">
+                        <div class="row justify-content-center">
+                            <div class="text-center wow fadeUp" data-wow-delay="0.1s">
+                                <h5 class="section-title fff-secondary text-center text-primary fw-normal">
+                                    All Halls
+                                </h5>
+                            </div>
+                        </div>
+
+                        <div class="row">
+
+                            {% for hall in theatre.hall_set.all %}
+                            <div class="col-lg-2 col-sm-6 col-6 wow fadeInUp my-2" data-wow-delay="0.7s">
+                                <div class="service-item rounded pt-3">
+                                    <a href="{% url 'admin-portal:download-hall-qr' hall.pk %}" style="cursor: pointer;">
+                                        <div class="p-3 text-center">
+                                            <img class="howItWorkImg" src="{% static 'assets/images/qr-code-mob.png' %}"
+                                                alt="">
+
+                                            <h6>
+                                                {{ hall.name }}
+                                            </h6>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                            {% endfor %}
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<!-- Document modal starts -->
+
+<div class="modal fade" id="documentModal" tabindex="-1" role="dialog" aria-labelledby="documentTitle"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Upload Document</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+
+            </div>
+            <form method="post" action="{% url 'admin-portal:upload-document' theatre.pk %}"
+                enctype="multipart/form-data">
+                <div class="modal-body">
+                    {% csrf_token %}
+                    {{document_form.as_p}}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary btn-custom" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Upload Document</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<!-- Document modal ends -->
+
+<!-- logo modal starts -->
+
+<div class="modal fade" id="logoModal" tabindex="-1" role="dialog" aria-labelledby="documentTitle" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="logoLabel">Theatre Logo</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+
+            </div>
+            <form method="post" action="{% url 'admin-portal:update-logo' theatre.pk %}" enctype="multipart/form-data">
+                <div class="modal-body">
+                    {% csrf_token %}
+                    {% for field in logo_form %}
+                    <label>Logo:</label>
+                    {{field}}
+                    {% endfor %}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary btn-custom" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Upload Document</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- logo modal ends -->
+
+<!-- GST Modal starts -->
+
+<div class="modal fade" id="gstModal" tabindex="-1" role="dialog" aria-labelledby="documentTitle" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="gstLabel">GST Detais</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+
+            </div>
+            <form method="post" action="{% url 'admin-portal:update-gst-details' theatre.pk %}">
+                <div class="modal-body">
+                    {% csrf_token %}
+                    {{gst_form.as_p}}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary btn-custom" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Update GST</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- GST modal ends -->
+
+<!-- BANK MODAL STARTS -->
+<div class="modal fade" id="bankModal" tabindex="-1" role="dialog" aria-labelledby="documentTitle" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="bankLabel">Bank Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+
+            </div>
+            <form method="post" action="{% url 'admin-portal:update-bank-details' theatre.pk %}">
+                <div class="modal-body">
+                    {% csrf_token %}
+                    {{bank_form.as_p}}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary btn-custom" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Update Bank Details</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- BANK MODAL ENDS -->
+{% endblock %}

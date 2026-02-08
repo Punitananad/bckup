@@ -1,0 +1,544 @@
+{% extends 'adminPortal/base.html' %}
+{% load static %}
+{% block title %}
+<title>
+    Live Order
+</title>
+
+<style>
+    .connection-status-badge {
+        position: relative;
+        top: -4vh;
+    }
+
+
+    .contact {
+        width: 30vw;
+    }
+
+    #chat-button {
+        position: fixed;
+        right: 0;
+        margin: 0 2.5%;
+        bottom: 15%;
+    }
+
+    .chat-badge {
+        position: absolute;
+        right: 0;
+        margin: 0 5%;
+    }
+
+    .chat-container {
+        height: 100vh;
+        display: flex;
+    }
+
+    /* Sidebar */
+    .chat-sidebar {
+        width: 25%;
+        background: #fff;
+        border-right: 1px solid #dee2e6;
+        overflow-y: auto;
+    }
+
+    .user-item {
+        display: flex;
+        align-items: center;
+        padding: 10px;
+        cursor: pointer;
+        transition: background 0.3s;
+    }
+
+    .user-item:hover {
+        background-color: #f1f1f1;
+    }
+
+    .user-item img {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        margin-right: 10px;
+    }
+
+    /* Chat Window */
+    .chat-window {
+        width: 75%;
+        display: flex;
+        flex-direction: column;
+        background: #fdfdfd;
+    }
+
+    /* .chat-header {
+        padding: 15px;
+        border-bottom: 1px solid #dee2e6;
+        display: flex;
+        align-items: center;
+    } */
+
+    .chat-header-img {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        margin-right: 10px;
+    }
+
+    .chat-header {
+        width: 100%;
+    }
+
+    .chat-messages {
+        flex-grow: 1;
+        padding: 15px;
+        overflow-y: auto;
+    }
+
+    .message-row {
+        display: flex;
+        align-items: flex-end;
+        margin-bottom: 12px;
+    }
+
+    .message-row.sent {
+        justify-content: flex-end;
+    }
+
+    .message-bubble {
+        max-width: 65%;
+        padding: 10px 15px;
+        border-radius: 15px;
+        position: relative;
+    }
+
+    .message-row.received .message-bubble {
+        background: #e9ecef;
+        color: #212529;
+        margin-left: 10px;
+        border-bottom-left-radius: 0;
+    }
+
+    .message-row.sent .message-bubble {
+        background: #fea116;
+        color: #fff;
+        margin-right: 10px;
+        border-bottom-right-radius: 0;
+    }
+
+    .message-avatar {
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+    }
+
+    .chat-input {
+        border-top: 1px solid #dee2e6;
+        padding: 10px;
+    }
+
+    .chat-input input {
+        border-radius: 20px;
+        padding: 10px 15px;
+    }
+
+    .contact-detail-view {
+        margin: 0 2.5%;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+
+<!-- All Orders PopUp -->
+<div class="modal fade bd-example-modal-lg" id="orderListPopUp" tabindex="-1" aria-labelledby="orderListPopUpLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="orderListPopUpLabel">
+                    [Theatre Name]
+                </h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="container-xxl pb-4 pt-2 p-sm-0">
+                    <div class="container p-sm-0">
+                        <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
+                            <h5 class="section-title ff-secondary text-center text-primary fw-normal mt-0">Running
+                                Orders</h5>
+
+                        </div>
+                        <div class="tab-class text-center wow fadeInUp" data-wow-delay="0.1s">
+                            <div class="container-fluid">
+                                <div class="table-responsive">
+                                    <table class="table custom-table">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col" class="text-center">
+                                                    Seat
+                                                </th>
+                                                <th scope="col" class="text-center">
+                                                    Order time
+                                                </th>
+                                                <th scope="col" class="text-center">
+                                                    Amount
+                                                </th>
+                                                <th scope="col" class="text-center">
+                                                    Payment Method
+                                                </th>
+                                                <th scope="col" class="text-center">
+                                                    Payment Status
+                                                </th>
+                                                <th scope="col" class="text-center">
+                                                    Seen Status
+                                                </th>
+
+                                                <th scope="col" class="text-center">
+                                                    Action
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="all-orders-list">
+                                            <!-- Order List Will Load Here... -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="modal-footer d-block">
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- order profile modal -->
+<div class="modal fade bd-example-modal-lg" id="orderPopUp" tabindex="-1" aria-labelledby="orderPopUpLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="orderPopUpLabel"></h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+
+                <!-- order html start here -->
+                <div class="container-xxl pb-4 pt-2">
+                    <div class="container">
+                        <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
+                            <h5 class="section-title ff-secondary text-center text-primary fw-normal">Order Summary</h5>
+                            <h4 class="mb-5">Order Details</h4>
+                        </div>
+                        <div class="tab-class text-center wow fadeInUp" data-wow-delay="0.1s"
+                            style="visibility: visible; animation-delay: 0.1s; animation-name: fadeInUp;">
+                            <ul class="nav nav-pills d-inline-flex justify-content-center border-bottom mb-3" id="myTab"
+                                role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <a class="d-flex align-items-center text-start mx-3 ms-0 pb-3 active" id="order-tab"
+                                        data-bs-toggle="tab" data-bs-target="#order" type="button" role="tab"
+                                        aria-controls="order" aria-selected="true">
+
+                                        <i class="far fa-bookmark fa-2x text-primary"></i>
+                                        <div class="ps-3">
+                                            <h6>Orders</h6>
+                                        </div>
+                                    </a>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <a class="d-flex align-items-center text-start mx-3 pb-3" id="items-tab"
+                                        data-bs-toggle="tab" data-bs-target="#items" type="button" role="tab"
+                                        aria-controls="items" aria-selected="false">
+
+                                        <i class="fas fa-list-ul fa-2x text-primary"></i>
+                                        <div class="ps-3">
+                                            <h6>Items</h6>
+                                        </div>
+                                    </a>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <a class="d-flex align-items-center text-start mx-3 pb-3" id="payments-tab"
+                                        data-bs-toggle="tab" data-bs-target="#payments" type="button" role="tab"
+                                        aria-controls="payments" aria-selected="false">
+                                        <i class="fa fa-credit-card fa-2x text-primary"></i>
+                                        <div class="ps-3">
+                                            <h6>Payments</h6>
+                                        </div>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="tab-content" id="myTabContent">
+                            <!-- Order Tab Start -->
+                            <div class="tab-pane fade show active" id="order" role="tabpanel"
+                                aria-labelledby="order-tab">
+                                <div class="card rounded-2 mt-4">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between">
+                                            <p class="text-muted">Order ID</p>
+                                            <h6 id="order-id">#{{order.id}}</h6>
+                                        </div>
+
+                                        <div class="d-flex justify-content-between">
+                                            <p class="text-muted">Order Seen</p>
+
+                                            <h6>
+                                                <a href="#" id="order-shown" class="text-dark"></a>
+                                            </h6>
+
+                                        </div>
+
+                                        <div class="d-flex justify-content-between">
+                                            <p class="text-muted">Theatre Name</p>
+                                            <h6 id="theatre-name"></h6>
+                                        </div>
+
+
+                                        <div class="d-flex justify-content-between">
+                                            <p class="text-muted">Seat</p>
+                                            <h6 id="seat-name"></h6>
+                                        </div>
+
+                                        <div class="d-flex justify-content-between">
+                                            <p class="text-muted">Order Date</p>
+                                            <h6 id="order-date"></h6>
+                                        </div>
+                                        <div class="d-flex justify-content-between">
+                                            <p class="text-muted">Order Time</p>
+                                            <h6 id="order-time"></h6>
+                                        </div>
+
+                                        <div class="d-flex justify-content-between">
+                                            <p class="text-muted">Phone Number</p>
+                                            <h6 id="phone-number"></h6>
+                                        </div>
+
+                                        <div class="d-flex justify-content-between">
+                                            <p class="text-muted">Payment Status</p>
+                                            <h6 id="payment-status"></h6>
+                                        </div>
+
+                                        <div class="d-flex justify-content-between">
+                                            <p class="text-muted" id="panding-amount-heading">Pending Amount</p>
+                                            <h6 class="total-amount">₹ <span id="panding-amount-heading-value"></span>
+                                            </h6>
+                                        </div>
+
+
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Order Tab End -->
+
+                            <!-- Items Tab Start -->
+                            <div class="tab-pane fade" id="items" role="tabpanel" aria-labelledby="items-tab">
+                                <div class="card rounded-2 mt-4">
+                                    <div class="card-body" id="order-items">
+
+                                        <div id="all-tax-area">
+                                            {% for tax in theatre.tax_set.all %}
+                                            <div class="d-flex justify-content-between">
+                                                <p class="text-muted">{{tax.name}} (<span
+                                                        class="tax-perscantage">{{tax.percentage}}</span>%)</p>
+                                                <h6 class="amounts">₹ <span class="tax-amount"></span></h6>
+                                            </div>
+                                            {% endfor %}
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Items Tab End -->
+
+                            <!-- Payments Tab Start -->
+                            <div class="tab-pane fade" id="payments" role="tabpanel" aria-labelledby="payments-tab">
+                                <div class="card rounded-2 mt-4">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between">
+                                            <p class="text-muted">Payment Status</p>
+
+                                            <h6 id="payment-tab-payment-status" class="total-amount">
+
+                                            </h6>
+                                        </div>
+
+                                        <div class="d-flex justify-content-between">
+                                            <p class="text-muted" id="payment-tab-panding-amount-heading">Paid Amount
+                                            </p>
+                                            <h6 class="total-amount">₹ <span
+                                                    id="payment-tab-panding-amount-value"></span>
+                                            </h6>
+                                        </div>
+
+                                        <div class="d-flex justify-content-between">
+                                            <p class="text-muted">Payment Method</p>
+                                            <h6 class="total-amount" id="payment-method-value">
+                                            </h6>
+                                        </div>
+
+
+                                        <div class="d-flex justify-content-between d-none" id="gateway-detail">
+                                            <p class="text-muted">
+                                                Payment Gateway
+                                            </p>
+                                            <h6 id="gateway-name">
+
+                                            </h6>
+                                        </div>
+
+                                        <div class="d-flex justify-content-between d-none"
+                                            id="scan2food-payment-id-detail">
+                                            <p class="text-muted">
+                                                Scan2food Payment Id
+                                            </p>
+                                            <h6 id="scan2food-payment-id-value">
+
+                                            </h6>
+                                        </div>
+
+                                        <div class="d-flex justify-content-between d-none" id="gateway-transaction">
+                                            <p class="text-muted">Transaction ID</p>
+                                            <h6 class="total-amount" id="gateway-transaction-id"></h6>
+                                        </div>
+
+
+                                        <div class="col-12 float-end text-end">
+                                            <button class="btn btn-danger d-none" id="refund-button"
+                                                data-bs-toggle="modal" data-bs-target="#refund-order"
+                                                style="cursor: pointer;">
+                                                Refund Amount
+                                            </button>
+
+                                        </div>
+
+
+                                    </div>
+                                </div>
+                                <!-- Repeat for other payments -->
+                            </div>
+                            <!-- Payments Tab End -->
+                        </div>
+                        <div class="row g-3">
+                            <div class="container-fluid text-center pt-3">
+                                <button class="btn btn-primary mx-2 mb-2 d-none" id="kot-button" order_id="">Print KOT
+                                </button>
+                                <button class="btn btn-primary mx-2 mb-2 d-none" id="bill-button" order_id="">Print Bill
+                                </button>
+                                <button class="btn btn-success mx-2 mb-2 d-none" id="order-deliver-button">Deliver
+                                    Order</button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- order html ends here -->
+
+            </div>
+            <div class="modal-footer">
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div class="pageWrapper">
+    <div class="container-fluid">
+        <div class="row justify-content-center">
+            <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
+                <h5 class="section-title ff-secondary text-center text-primary fw-normal">Live Orders</h5>
+            </div>
+        </div>
+
+        <div class="tab-class text-center wow fadeInUp mt-3" data-wow-delay="0.1s">
+            <ul class="nav nav-pills d-inline-flex justify-content-center mb-5" id="all-theatres">
+                <!-- all Theatres Load Here... -->
+            </ul>
+        </div>
+    </div>
+</div>
+
+
+
+
+<div class="modal fade bd-example-modal-lg show" id="msg-card-box" tabindex="-1" role="dialog"
+    aria-labelledby="msg-card-boxTitle" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <img src="https://img.freepik.com/premium-vector/person-with-blue-shirt-that-says-name-person_1029948-7040.jpg"
+                    class="message-avatar" alt="User">
+
+                <div class="contact-detail-view">
+                    <h6 id="chat-seat-label">
+                        Test Seat
+                    </h6>
+
+                    <div id="chat-phone-label" class="text-muted small mt-1 tmg">
+                        Test-Phone-Number
+                    </div>
+                </div>
+
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body">
+                <div id="chat-box" class="card-body overflow-auto mb-2" style="flex: 1; scroll-behavior: smooth;">
+                    <!-- Messages will appear here -->
+
+                    <!-- Example messages -->
+
+                </div>
+
+            </div>
+            <div class="modal-footer d-block">
+                <form id="chat-form">
+                    {% csrf_token %}
+                    <div class="input-group">
+                        <input type="text" id="user-input" class="form-control" placeholder="Type a message..." value=""
+                            autocomplete="off" />
+
+                        <button type="submit" class="btn btn-primary">Send</button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+
+<div class="nav-item dropup">
+    <button href="#" class="dropdown-toggle btn btn-success btn-sm" id="chat-button" data-bs-toggle="dropdown"
+        aria-expanded="false">
+        <i class="fa fa-comment-o" aria-hidden="true"></i>
+        All Chats
+    </button>
+    <div class="dropdown-menu m-0">
+        <ul class="list-group" id="all-chat-users">
+
+        </ul>
+    </div>
+</div>
+
+
+
+<script src="{% static '/dashboard/order-profile.js' %}"></script>
+<script src="{% static '/dashboard/live-order.js' %}"></script>
+
+
+
+<!-- SCRIPT FOR THE CHAT BOX -->
+
+<script src="{% static '/dashboard/chat-box/main.js' %}"></script>
+
+{% endblock %}

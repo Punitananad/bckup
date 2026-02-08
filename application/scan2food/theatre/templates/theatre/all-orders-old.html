@@ -1,0 +1,326 @@
+{% extends 'theatre/base.html' %}
+
+{% block title %}
+<title>
+    Order History
+</title>
+{% endblock %}
+
+{% block content %}
+
+<!-- Delete Order Modal
+<div class="modal fade" id="deleteOrderPopUp" tabindex="-1" aria-labelledby="deleteOrderPopUpLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post" action=" url 'theatre:delete-order'">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="deleteOrderPopUpLabel">Add Adjustment</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="col-form-label">
+                            Do You Want To Delete This Order !
+                        </label>
+                        <input style="display: none;" type="number" class="form-control" id="order-id" name="order-id"
+                            value="">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary btn-custom" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Delete</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div> -->
+
+
+<!-- Order History Start -->
+<div class="pageWrapper">
+    <div class="container-xxl pb-4 pt-2">
+        <div class="container-fluid">
+            <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
+                <h5 class="section-title ff-secondary text-center text-primary fw-normal">Order History</h5>
+                <h4 class="mb-5">Your Previous Orders</h4>
+            </div>
+            <!-- date range picker start -->
+            <form>
+                <div class="row mb-4">
+                    <div class="col-md-12 col-lg-12 col-12">
+                        <div class="shadow-lg bg-white p-3">
+                            <div class="row align-items-center g-3">
+                                <div class="col-lg-4 col-md-4 col-12">
+                                    <label for="daterange" class="fw-bold">Date Range</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text" id="basic-addon1"> <i
+                                                class="fa fa-calendar"></i></span>
+                                        <input type="text" id="daterange" class="form-control br-2" name="daterange"
+                                            aria-label="daterange" aria-describedby="basic-addon1">
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-4 col-md-4 col-12">
+                                    <label for="order-status" class="fw-bold">Order Status</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text" id="basic-addon1"> <i
+                                                class="fa fa-credit-card"></i></span>
+                                        <select name="order-status" class="form-control br-2" id="order-status">
+                                            <option value="Success">Successfull Orders</option>
+                                            <!-- <option value="Created">Incomplete Orders</option> -->
+                                            <option value="Refunded">Refunded Orders</option>
+                                            <option value="All">All Orders</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <input type="number" id="page_number" name="page" style="display: none;">
+
+                                <div class="col-lg-2 col-md-2 col-12">
+                                    <button type="submit" class="btn btn-primary mt-4" id="submit-button"><i
+                                            class="fa fa-filter me-2"></i>Filter Results</button>
+                                </div>
+
+                                <div class="col-lg-2 col-md-2 col-12">
+                                    <button type="button" class="btn btn-success mt-4" id="download-report" onclick="downloadReport()"><i
+                                            class="fa fa-file" aria-hidden="true"></i>
+                                        GetReport </button>
+                                </div>
+
+
+
+                                <div class="col-lg-6 col-md-4 col-6 br-right-1">
+                                    <h6 class="text-muted">
+                                        Total Amount<small><i class="fas fa-info-circle ms-2"></i></small>
+                                    </h6>
+
+                                    <p class="fs-5">
+                                        ₹ {{total_payment}}
+                                    </p>
+                                </div>
+
+                                <div class="col-lg-6 col-md-4 col-6">
+                                    <h6 class="text-muted">
+                                        Number of orders<small><i class="fas fa-info-circle ms-2"></i></small>
+                                    </h6>
+
+                                    <p class="fs-5">
+                                        {{ordr_count}}
+                                    </p>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+            <!-- date range picker end -->
+            <div id="order-list" class="row">
+                <div class="container-fluid">
+                    <div class="table-responsive">
+                        <table class="table custom-table">
+                            <thead>
+                                <tr>
+                                    <th scope="col text-end">
+                                        S No.
+                                    </th>
+                                    <th scope="col" class="text-start">
+                                        Seat
+                                    </th>
+                                    <th scope="col" class="text-start">
+                                        Time
+                                    </th>
+                                    <th scope="col" class="text-end min-w-110">
+                                        Amount
+                                    </th>
+                                    <th scope="col" class="text-end">
+                                        Quantity
+                                    </th>
+                                    <th class="w-140 text-start">
+                                        Taken By
+                                    </th>
+                                    <th class="w-140 text-center">
+                                        Delivered By
+                                    </th>
+                                    <th class="w-140 text-start">
+                                        Served By
+                                    </th>
+                                    <th scope="col" class="text-start">
+                                        Action
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for order in orders %}
+                                <tr>
+                                    <th scope="text-end">
+                                        {{forloop.counter}}
+                                    </th>
+                                    <td class="text-start">
+                                        {{order.seat.row.hall.name}} | {{order.seat.name}}
+                                    </td>
+                                    <td class="text-start">
+                                        {{order.start_time}}
+                                    </td>
+                                    <td class="text-end">
+                                        ₹ {{order.order_amount}}
+                                    </td>
+                                    <td class="text-end">
+                                        {{order.items.count}}
+                                    </td>
+                                    <td class="text-start">
+                                        {% if order.taken_by == None %}
+                                        Self
+                                        {% else %}
+                                        {{order.taken_by.first_name}}
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {{order.delivered_by.first_name}}
+                                    </td>
+                                    <td class="text-start">
+                                        {% if order.delivered_by == None %}
+                                        {% if order.payment.status == 'Created' %}
+                                        <span class="badge bg-warning">{{order.payment.status}}</span>
+                                        {% else %}
+                                        <span class="badge bg-danger">{{order.payment.status}}</span>
+                                        {% endif %}
+                                        {% else %}
+                                        <span class="badge bg-success">{{order.payment.status}}</span>
+                                        {% endif %}
+                                    </td>
+
+
+                                    <td class="text-start">
+                                        <a class="me-3" href="{% url 'theatre:order-profile' order.pk %}"> <i
+                                                class="fas fa-eye text-primary"></i></a>
+                                    </td>
+                                    <!-- <td class="text-center">
+                                    
+                                </td> -->
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+
+                        </table>
+                    </div>
+                    <div class="custom-pagination">
+                        <div class="row m-0">
+                            <div class="col-lg-6 col-5 col-md-5">
+                                <div class="current">
+                                    Page {{ orders.number }} of {{ orders.paginator.num_pages }}.
+                                </div>
+                            </div>
+                            <div class="col-lg-6 col-7 col-md-7">
+                                <ul class="pagination justify-content-end mb-0">
+                                    {% if orders.has_previous %}
+                                    <li class="page-item">
+                                        <a class="page-link" onclick="OpenPage('1')" tabindex="-1">
+                                            <i class="fas fa-angle-left"></i>
+                                            <span class="sr-only">Previous</span>
+                                        </a>
+                                    </li>
+
+                                    <li class="page-item">
+                                        <a class="page-link" onclick="OpenPage('{{ orders.previous_page_number }}')"
+                                            tabindex="-1">
+                                            {{ orders.previous_page_number }}
+                                        </a>
+                                    </li>
+                                    {% endif %}
+
+
+                                    <li class="page-item active">
+                                        <a class="page-link" href="#">{{orders.number}}</a>
+                                    </li>
+
+                                    {% if orders.has_next %}
+
+                                    <li class="page-item">
+                                        <a onclick="OpenPage('{{ orders.next_page_number }}')" class="page-link">
+                                            {{ orders.next_page_number}}
+                                        </a>
+                                    </li>
+
+                                    <li class="page-item">
+                                        <a onclick="OpenPage('{{ orders.next_page_number }}')" class="page-link">
+                                            <i class="fas fa-angle-right"></i>
+                                            <span class="sr-only">Next</span>
+                                        </a>
+                                    </li>
+
+                                    {% endif %}
+                                </ul>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+{{ start_date|json_script:"start-date"}}
+{{ end_date|json_script:"end-date"}}
+{{ order_status|json_script:"order_status"}}
+
+
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<script>
+    const start_date = JSON.parse(document.getElementById('start-date').innerText);
+    const end_date = JSON.parse(document.getElementById('end-date').innerText);
+    const order_status = JSON.parse(document.getElementById('order_status').innerText);
+
+    document.getElementById('order-status').value = order_status;
+
+    $(document).ready(function () {
+        $('#daterange').daterangepicker({
+            locale: {
+                format: 'DD/MMM/YYYY'
+            },
+            startDate: new Date(start_date), // Set start date to today
+            endDate: new Date(end_date),   // Set end date to today
+            showDropdowns: true,
+            opens: 'right',
+            ranges: {
+                'Today': [moment(), moment().add(1, 'days')],
+                'Yesterday': [moment().subtract(1, 'days'), moment()],
+                'Last 7 Days': [moment().subtract(6, 'days'), moment().add(1, 'days')],
+                'Last 30 Days': [moment().subtract(29, 'days'), moment().add(1, 'days')],
+                'This Month': [moment().startOf('month'), moment().endOf('month')],
+                'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().startOf('month')]
+            }
+        });
+    });
+
+    function OpenPopUp(id) {
+        $("#deleteOrderPopUp").modal('show');
+        document.getElementById('order-id').value = id;
+    }
+
+    // document.getElementById('order_type').value = JSON.parse(document.getElementById('order-type-value').innerText);
+    // document.getElementById('payment_status').value = JSON.parse(document.getElementById('payment-status-value').innerText);
+
+    function OpenPage(page_number) {
+        page_number = JSON.parse(page_number);
+        document.getElementById('page_number').value = page_number;
+        document.getElementById('submit-button').click();
+    }
+
+    function downloadReport() {
+        let report = "/theatre/api/get-excel-data?";
+        date_range = document.getElementById('daterange').value;
+        report = report + 'daterange=' + date_range;
+        window.open(report);   
+    }
+
+</script>
+
+<!-- Order History End -->
+{% endblock %}

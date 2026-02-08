@@ -1,0 +1,46 @@
+<div class="row m-0 mt-1">
+    <div class="col-md-12 col-lg-3 col-12"></div>
+    <div class="col-md-12 col-lg-9 col-12">
+        <div class="row align-items-center g-3">
+            <div class="col-lg-2 col-md-3 col-12">
+                <label for="daterange" class="fw-bold">Filter Result</label>
+            </div>
+            <div class="col-lg-7 col-md-6 col-12">
+                <div class="input-group">
+                    <span class="input-group-text" id="basic-addon1"> <i class="fa fa-calendar"></i></span>
+                    <input type="text" id="daterange" class="form-control br-2" name="daterange" aria-label="daterange"
+                        aria-describedby="basic-addon1">
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-3 col-12">
+
+                <button type="button" class="btn btn-primary" id="submit-button"> Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<script>
+
+    $(document).ready(function () {
+        $('#daterange').daterangepicker({
+            locale: {
+                format: 'DD/MMM/YYYY'
+            },
+            startDate: moment(), // Set start date to today
+            endDate: moment(),   // Set end date to today
+            showDropdowns: true,
+            opens: 'left',
+            ranges: {
+                'Today': [moment(), moment()],
+                'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+                'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+                'This Month': [moment().startOf('month'), moment().endOf('month')],
+                'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+            }
+        });
+    });
+
+</script>

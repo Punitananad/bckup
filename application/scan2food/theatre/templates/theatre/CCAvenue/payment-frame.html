@@ -1,0 +1,44 @@
+<!-- templates/payment_frame.html -->
+<html>
+
+<head>
+    <title>Sub-merchant checkout page</title>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <style>
+        .container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            width: 100%;
+        }
+        #paymentFrame {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+
+        <!-- width required minimum 482px -->
+        <iframe scrolling="No" frameborder="0" id="paymentFrame"
+            src="https://secure.ccavenue.com/transaction/transaction.do?command=initiateTransaction&merchant_id={{ mid }}&encRequest={{ encReq }}&access_code={{ xscode }}">
+        </iframe>
+    </div>
+
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('iframe#paymentFrame').load(function () {
+                window.addEventListener('message', function (e) {
+                    $("#paymentFrame").css("height", e.data['newHeight'] + 'px');
+                }, false);
+            });
+        });
+    </script>
+</body>
+
+</html>

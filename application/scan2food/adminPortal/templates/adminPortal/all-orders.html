@@ -1,0 +1,271 @@
+{% extends 'adminPortal/base.html' %}
+{% load static %}
+{% block title %}
+<title>
+    Order History
+</title>
+{% endblock %}
+
+{% block content %}
+
+<!-- Delete Order Modal
+<div class="modal fade" id="deleteOrderPopUp" tabindex="-1" aria-labelledby="deleteOrderPopUpLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post" action=" url 'theatre:delete-order'">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="deleteOrderPopUpLabel">Add Adjustment</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="col-form-label">
+                            Do You Want To Delete This Order !
+                        </label>
+                        <input style="display: none;" type="number" class="form-control" id="order-id" name="order-id"
+                            value="">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary btn-custom" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Delete</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div> -->
+
+
+<!-- Order History Start -->
+<div class="pageWrapper">
+    <div class="container-xxl pb-4 pt-2">
+        <div class="container p-0">
+            <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
+                <h5 class="section-title ff-secondary text-center text-primary fw-normal">Order History</h5>
+                <h4 class="mb-3">Your Previous Orders</h4>
+            </div>
+            <!-- date range picker start -->
+            <form>
+
+                <div class="row mb-4">
+                    <div class="col-md-12 col-lg-12 col-12">
+                        <div class="shadow-lg bg-white p-3">
+                            <div class="row align-items-center g-3">
+                                <div class="col-lg-4 col-md-3 col-4 br-right-1">
+                                    <h6 class="text-muted small">
+                                        Theatre Amount<small><i class="fas fa-info-circle ms-2"></i></small>
+                                    </h6>
+
+                                    <p class="fs-5">
+                                        ₹ <span id="theatre_amount">
+                                        </span>
+
+                                    </p>
+                                </div>
+
+                                <div class="col-lg-4 col-md-3 col-4 br-right-1">
+                                    <h6 class="text-muted small">
+                                        Total Amount<small><i class="fas fa-info-circle ms-2"></i></small>
+                                    </h6>
+
+                                    <p class="fs-5">
+                                        ₹ <span id="total_amount"></span>
+                                    </p>
+                                </div>
+
+                                <div class="col-lg-4 col-md-3 col-4 br-right-1">
+                                    <h6 class="text-muted small">
+                                        Net Profit <small><i class="fas fa-info-circle ms-2"></i></small>
+                                    </h6>
+                                    <p class="fs-5">
+                                        ₹ <span id="net_profit"></span>
+                                    </p>
+
+                                </div>
+
+                                <div class="col-lg-4 col-md-3 col-4">
+                                    <h6 class="text-muted small">
+                                        Number of orders<small><i class="fas fa-info-circle ms-2"></i></small>
+                                    </h6>
+
+                                    <p class="fs-5">
+                                        <span id="order_count">
+                                        </span>
+                                    </p>
+                                </div>
+
+                                <div class="col-lg-4 col-md-3 col-4">
+                                    <h6 class="text-muted small">
+                                        Deactivate theatres<small><i class="fas fa-info-circle ms-2"></i></small>
+                                    </h6>
+
+                                    <p class="fs-5">
+                                        {{deactivate_theatres}}
+                                    </p>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mb-4">
+                    <div class="col-md-12 col-lg-12 col-12">
+                        <div class="shadow-lg bg-white p-3">
+                            <div class="row align-items-center g-3">
+                                <div class="col-lg-3 col-md-4 col-12">
+                                    <label for="daterange" class="fw-bold">Date Range</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text" id="basic-addon1"> <i
+                                                class="fa fa-calendar"></i></span>
+                                        <input type="text" id="daterange" class="form-control br-2" name="daterange"
+                                            aria-label="daterange" aria-describedby="basic-addon1">
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-3 col-md-4 col-12">
+                                    <label for="order-status" class="fw-bold">Order Status</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text" id="basic-addon2"> <i
+                                                class="fa fa-check"></i></span>
+                                        <select name="order-status" class="form-control br-2" id="order-status">
+                                            <option value="Success">Successfull Orders</option>
+                                            <option value="Created">Incomplete Orders</option>
+                                            <option value="Refunded">Refunded Orders</option>
+                                            <option value="All">All Orders</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-3 col-md-4 col-12">
+                                    <label for="selected-theatre" class="fw-bold">Theatre</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text" id="basic-addon3"> <i
+                                                class="fa fa-building"></i></span>
+                                        <select name="selected-theatre" class="form-control br-2" id="selected-theatre">
+                                            <option value="">All Theatre</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <input type="hidden" id="selected-theatre-id" value="{{selected_theatre}}">
+                                <input type="number" id="page_number" name="page" style="display: none;">
+
+
+                                <div class="col-lg-3 col-md-4 col-12">
+                                    <label for="phone-number" class="fw-bold">Phone Number</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text" id="basic-addon3"> <i
+                                                class="fa fa-phone"></i></span>
+                                        <input name="phone-number" class="form-control br-2" id="phone-number" type="text" placeholder="+tel: 720XXXXX05">
+                                    </div>
+                                </div>
+
+
+                                <div class="col-lg-3 col-md-4 col-12">
+                                    <label for="payment-id" class="fw-bold">Gateway Payment ID</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text" id="basic-addon3"> <i
+                                                class="fa fa-credit-card"></i></span>
+                                        <input name="payment-id" class="form-control br-2" id="payment-id" type="text">
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-3 col-md-4 col-12">
+                                    <label for="scan2food-payment-id" class="fw-bold">Scan2food Payment ID</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text" id="basic-addon3"> <i
+                                                class="fa fa-credit-card"></i></span>
+                                        <input name="scan2food-payment-id" class="form-control br-2"
+                                            id="scan2food-payment-id" type="text">
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-3 col-md-4 col-12">
+                                    <button type="submit" class="btn btn-primary mt-3" id="submit-button"><i
+                                            class="fa fa-filter me-2"></i>Filter Results</button>
+                                </div>
+
+                                <div class="col-lg-2 col-md-2 col-12">
+                                    <button type="button" class="btn btn-success mt-4 d-none" id="download-report"
+                                        onclick="downloadReport()">
+                                        <i class="fa fa-file" aria-hidden="true"></i>
+                                        GetReport
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+            <!-- date range picker end -->
+            <div id="order-list" class="row">
+
+
+                <div class="container-fluid">
+
+
+                    <div class="table-responsive">
+                        <table class="table custom-table">
+                            <thead>
+                                <tr>
+                                    <th scope="col" class="text-start">
+                                        Theatre
+                                    </th>
+                                    <th scope="col" class="text-start">
+                                        Time
+                                    </th>
+                                    <th scope="col" class="text-end">
+                                        Amount
+                                    </th>
+                                    <th scope="col" class="text-end">
+                                        Theatre Amount
+                                    </th>
+                                    <th scope="col" class="text-end">
+                                        Quantity
+                                    </th>
+                                    <th class="w-140 text-start">
+                                        Payment Status
+                                    </th>
+                                    <th class="w-140 text-start">
+                                        View Status
+
+                                    </th>
+                                    <th colspan="2" scope="col" class="text-start">
+                                        Action
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody id="all-orders-tbody">
+                                <!-- All Orders Tbody... -->
+                            </tbody>
+
+                        </table>
+                        <div class="row m-0">
+                            <div class="col-lg-12 col-12 col-md-12">
+                                <div id="pagination"></div>
+                            </div>
+
+                        </div>
+
+
+                    </div>
+                </div>
+
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+
+<script src="{% static 'dashboard/all-orders/main.js' %}"></script>
+<!-- <script src="{% static 'theatre_js/all-orders.js' %}"></script> -->
+<!-- Order History End -->
+{% endblock %}

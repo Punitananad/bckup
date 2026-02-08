@@ -1,0 +1,259 @@
+{% extends "website/base.html" %}
+{% load static %}
+{% block title %}
+<title>
+    Menu | {{seat.row.hall.name}} ({{seat.name}})
+</title>
+
+<style>
+    #discount-message {
+        position: fixed;
+        z-index: 10;
+        margin: 2.5% 10%;
+        width: 80%;
+    }
+
+</style>
+<meta name="csrf-token" content="{{ csrf_token }}">
+{% endblock %}
+{% block body %}
+<!-- header code removed -->
+<!-- cart modal -->
+
+{% if discount.message %}
+<div class="alert alert-success" role="alert" id="discount-message">
+    {{discount.message}}
+</div>
+{% endif %}
+
+<div class="modal fade bd-example-modal-lg" id="cartPopUp" tabindex="-1" aria-labelledby="cartPopUpLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="cartPopUpLabel"></h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- cart html start here -->
+                <div class="container-xxl pb-4 pt-2 p-sm-0">
+                    <div class="container p-sm-0">
+                        <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
+                            <h5 class="section-title ff-secondary text-center text-primary fw-normal mt-0">Your Cart
+                            </h5>
+                            <h5 class="mb-4">Our Delicious Food Items</h5>
+                        </div>
+                        <div class="card rounded-2">
+                            <div class="card-body">
+                                <div class="row gy-3" id="cart-items">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row justify-content-end align-items-center">
+                            <div class="col-lg-7 col-md-6">
+                                <img class="w-50 mt-3 d-none-sm" src="{% static 'assets/images/subtotal.png' %}"
+                                    alt="Sub total">
+                            </div>
+                            <div class="col-lg-5 col-md-6">
+                                <div class="total-section" id="cart-area">
+                                    <div class="d-flex justify-content-between mt-3">
+                                        <p class=" small">Item(s) Total</p>
+                                        <h6 class="price small"><span class="me-1-cust">₹</span><span
+                                                id="total-cart-amount" class="amounts">0</span></h6>
+                                    </div>
+
+                                    <!-- convenience fee part-->
+                                    <div class="convenience-fees">
+                                        <div class="d-flex justify-content-between mt-1">
+                                            <a class=" cursor-pointer small" data-bs-toggle="collapse"
+                                                data-bs-target="#priceBreakdown" aria-expanded="false"
+                                                aria-controls="priceBreakdown">
+                                                Convenience fees <i class="bi bi-chevron-down"></i>
+                                            </a>
+                                            <h6 class="price small"><span class="me-1-cust">₹</span><span
+                                                    id="convenience-fees" class="amounts small">25.60</span></h6>
+                                        </div>
+
+                                        <div class="collapse mt-3" id="priceBreakdown">
+
+                                        </div>
+                                    </div>
+                                    <!-- convenience fee part-->
+                                    <hr>
+                                    <div class="d-flex justify-content-between">
+                                        <h5 class="mb-0 fw-bold ">Order Total</h5>
+                                        <h5 class="mb-0"><span class="me-1-cust">₹</span>
+                                            <span id="total-amount">0</span>
+                                        </h5>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-12 rounded-2">
+                                <p class="mb-0 text-normal small mt-4">
+                                    By proceeding, I express my consent to complete this transaction.
+                                </p>
+
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <!-- cart html end here -->
+            </div>
+            <div class="modal-footer">
+                <div class="row align-items-center text-center justify-content-center">
+                    <div class="col-lg-12 col-12 col-md-12 text-end">
+                        <a href="{% url 'theatre:show-menu' seat.pk%}"
+                            class="btn btn-secondary btn-custom checkout-btn">Go
+                            back</a>
+                        <button class="btn btn-primary checkout-btn" onclick="createOrder()">Confirm</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="bg-white p-0">
+    <!-- Spinner Start -->
+    <div id="spinner"
+        class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
+        <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+    </div>
+    <!-- Spinner End -->
+    <div class="pageWrapper menuPageWrapper">
+        <!-- starting from this till theatre and seats details this will remain same for categrory and menu page -->
+        <!-- search bar start-->
+        <div class="bg-dark p-3 mt-sm-0-cust brder-t-1 position-fixed w-100 z-index-9">
+            <div class="container-fluid m-0">
+                <div class="row align-items-center">
+                    <div class="col-4 col-md-8 col-lg-4">
+                        <img src="{% static 'assets/images/brand/Scan2Food.png' %}" class="app-brand-logo"
+                            alt="Scan2Food Logo">
+                    </div>
+                    <div class="col-md-8 col-8 col-lg-5 offset-lg-3">
+                        <!-- Search Bar -->
+                        <div class="input-group d-none">
+                            <input type="text" class="form-control" placeholder="Search">
+                            <span class="input-group-text bg-primary text-dark white border-left-0">
+                                <i class="fas fa-search"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- search bar -->
+        <!-- menu app wrapper start here -->
+        <div class="menu-app-wrapper">
+            <!-- Theatre and seats details -->
+            <div class="container-xxl pb-0 app-theatre-details">
+                <div class="container category-wrapper-outer">
+                    <div class="row justify-content-between align-items-center">
+                        <div class="col-lg-6 col-6">
+                            <h6 id="restorent-name"></h6>
+                            <h6 class="small">{{seat.row.hall.theatre.address}}</h6>
+                        </div>
+                        <div class="col-lg-6 col-6 text-end">
+                            <h6 class="small" id="menuePopUpLabel">{{seat.row.hall.name}} |
+                                {{seat.name}} </h6>
+                        </div>
+                    </div>
+                    <hr>
+                </div>
+            </div>
+            <!-- common part end here -->
+
+            <!-- Dynamic code commented by Kanika -->
+            <div class="container-xxl pb-3">
+                <div class="container">
+                    <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
+                        <h3 id="restorent-name2"></h3>
+                        <h5 class="section-title ff-secondary text-center text-primary fw-normal mb-3 mt-0">Our Menu
+                        </h5>
+                        <h5 class="tableNo mb-3">
+                            Your Seat : <span class="text-primary" id="menuePopUpLabel">{{seat.row.hall.name}} |
+                                {{seat.name}}</span>
+                        </h5>
+                    </div>
+                    <div class="tab-class text-center wow fadeInUp" data-wow-delay="0.1s">
+
+                        <!-- all catogaries visible here -->
+                        <div class="tab-content" id="food-item-content">
+                            <!-- all food items visible here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- menu app wrapper end here -->
+        <!-- cart-panel -->
+        <a class="cart-panel" href="#" selected-table-name="{{seat.row.hall.name}} | {{seat.name}}" id="cart-div"
+            onclick="openCart(this)" style="display: none;">
+            <div class="cart-content">
+                <div class="row">
+                    <div class="col text-start">
+                        <p class="mb-0"><span id="cart-length">0</span> Items added ; Amount: ₹<span
+                                id="cart-amount">0</span>
+                        </p>
+                    </div>
+                    <div class="col">
+                        <p class="mb-0">View Cart <i class="bi bi-chevron-right ms-2"></i></p>
+                    </div>
+                </div>
+            </div>
+        </a>
+        <!-- cart-panel -->
+        <!-- bottom categories -->
+        <div class="category-types-wrapper bg-dark position-fixed w-100 z-index-9">
+            <div class="row">
+                <ul id="food-category-list" class="nav nav-pills d-inline-flex justify-content-center">
+
+                </ul>
+            </div>
+        </div>
+        <!-- bottom categories -->
+    </div>
+</div>
+{{seat.row.hall.theatre.id|json_script:'theatre-id'}}
+<script src="{% static 'theatre_js/menu.js' %}"></script>
+<script src="{% static 'theatre_js/cart.js' %}"></script>
+<script src="{% static 'theatre_js/menu-functionality.js' %}"></script>
+
+<script>
+    document.getElementById('restorent-name').innerText = '{{seat.row.hall.theatre.name}}'
+    let seat_name = '{{seat.row.hall.name}} | {{seat.name}}'
+    localStorage.setItem(seat_name, '{}')
+    UpdateCart(seat_name);
+    //  add active class on click of the category type
+    //     document.querySelectorAll('.category-type-column').forEach(item => {
+    //   item.addEventListener('click', function() {
+    //     this.classList.toggle('active');
+    //   });
+    // });
+
+    document.querySelectorAll('.category-type-column').forEach(item => {
+        item.addEventListener('click', function () {
+            // Remove 'active' class from all other elements
+            document.querySelectorAll('.category-type-column.active').forEach(activeItem => {
+                if (activeItem !== this) {
+                    activeItem.classList.remove('active');
+                }
+            });
+
+            // Add 'active' class to the clicked element
+            this.classList.toggle('active');
+        });
+    });
+
+
+    // end
+
+</script>
+
+<!-- footer code removed from here -->
+{% endblock %}

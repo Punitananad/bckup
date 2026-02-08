@@ -1,0 +1,21 @@
+django
+daphne
+channels
+djangorestframework
+qrcode
+psycopg2-binary
+pillow
+razorpay
+django-debug-toolbar
+openpyxl
+pandas
+pycryptodome
+django-redis
+channels_redis
+phonepe_sdk
+cashfree-pg
+segno
+
+
+--index-url https://phonepe.mycloudrepo.io/public/repositories/phonepe-pg-sdk-python
+--extra-index-url https://pypi.org/simple

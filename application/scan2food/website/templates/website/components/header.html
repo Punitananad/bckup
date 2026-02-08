@@ -1,0 +1,23 @@
+{% load static %}
+<!-- Navbar & Hero Start -->
+<div class="container-xxl position-relative p-0 theatreHeader">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark px-4 px-lg-5 py-lg-1 nav-custom">
+        <a href="{% url 'website:index' %}" class="navbar-brand p-0">
+            <img src="{% static 'assets/images/brand/Scan2Food.png' %}" alt="Scan2Food Logo">
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+            <span class="fa fa-bars"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+            <div class="navbar-nav ms-auto py-0 pe-4">
+                <a href="#" class="nav-item nav-link">Home</a>
+                <a href="#about" class="nav-item nav-link">About</a>
+                <a href="#working" class="nav-item nav-link">Working</a>
+                <!-- <a href="#pricing" class="nav-item nav-link d-none">Pricing</a> -->
+                <a href="#contact" class="nav-item nav-link">Contact</a>
+            </div>
+        </div>
+    </nav>
+    
+</div>
+
