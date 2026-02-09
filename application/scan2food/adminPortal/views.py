@@ -54,9 +54,33 @@ import base64
 # imports for PayU gateways
 import hashlib
 
+
+# Helper function to check permissions for both superusers and regular users
+def user_has_permission(user, permission_codename):
+    """
+    Check if user has permission. Superusers always have all permissions.
+    Regular users need to have the permission in their group.
+    """
+    # Superusers have all permissions
+    if user.is_superuser:
+        return True
+    
+    # Check if user has groups and the permission
+    user_group = user.groups.first()
+    if user_group:
+        try:
+            permission = Permission.objects.get(codename=permission_codename)
+            return user_group.permissions.filter(id=permission.id).exists()
+        except Permission.DoesNotExist:
+            return False
+    
+    return False
+
+
 def pad(data):
     length = 16 - (len(data) % 16)
     return data + chr(length) * length
+
 
 def unpad(data):
     return data[:-ord(data[-1])]
@@ -87,8 +111,7 @@ def index(request):
 
 @login_required
 def all_theatre(request):
-    permission = Permission.objects.get(codename="change_theatre")
-    if request.user.groups.first().permissions.filter(id=permission.id).exists():
+    if user_has_permission(request.user, "change_theatre"):
         all_theatre = Theatre.objects.all()
         paginator = Paginator(all_theatre, 20)  # Show 20 Theatre Per Page.
 
@@ -102,8 +125,7 @@ def all_theatre(request):
 
 @login_required
 def theatre_detail(request, pk):
-    permission = Permission.objects.get(codename="change_theatre")
-    if request.user.groups.first().permissions.filter(id=permission.id).exists():
+    if user_has_permission(request.user, "change_theatre"):
         try:
             theatre = Theatre.objects.get(pk=pk)
             document_form = DocumentForm()
@@ -134,8 +156,7 @@ def theatre_profile(request):
 
 @login_required
 def update_gst_detail(request,pk):
-    permission = Permission.objects.get(codename="change_theatre")
-    if request.user.groups.first().permissions.filter(id=permission.id).exists():
+    if user_has_permission(request.user, "change_theatre"):
         try:
             theatre = Theatre.objects.get(pk=pk)
             if request.method == 'POST':
@@ -160,8 +181,7 @@ def update_gst_detail(request,pk):
 
 @login_required
 def update_bank_detail(request, pk):
-    permission = Permission.objects.get(codename="change_theatre")
-    if request.user.groups.first().permissions.filter(id=permission.id).exists():
+    if user_has_permission(request.user, "change_theatre"):
         try:
             theatre = Theatre.objects.get(pk=pk)
             if request.method == 'POST':
@@ -186,8 +206,7 @@ def update_bank_detail(request, pk):
 
 @login_required
 def update_logo(request, pk):
-    permission = Permission.objects.get(codename="change_theatre")
-    if request.user.groups.first().permissions.filter(id=permission.id).exists():
+    if user_has_permission(request.user, "change_theatre"):
         try:
             theatre = Theatre.objects.get(pk=pk)
             if request.method == 'POST':
@@ -224,8 +243,7 @@ def update_logo(request, pk):
 
 @login_required
 def upload_document(request, pk):
-    permission = Permission.objects.get(codename="change_theatre")
-    if request.user.groups.first().permissions.filter(id=permission.id).exists():
+    if user_has_permission(request.user, "change_theatre"):
         if request.method == 'POST':
             form = DocumentForm(request.POST, request.FILES)
 
@@ -249,8 +267,7 @@ def upload_document(request, pk):
 
 @login_required
 def delete_document(request, pk):
-    permission = Permission.objects.get(codename="change_theatre")
-    if request.user.groups.first().permissions.filter(id=permission.id).exists():
+    if user_has_permission(request.user, "change_theatre"):
         try:
             document = Documents.objects.get(pk=pk)
             theatre = document.theatre
@@ -269,8 +286,7 @@ def delete_document(request, pk):
 
 @login_required
 def new_payout_payments(request, pk):
-    permission = Permission.objects.get(codename="add_payoutlogs")
-    if request.user.groups.first().permissions.filter(id=permission.id).exists():
+    if user_has_permission(request.user, "add_payoutlogs"):
         try:
             theatre = Theatre.objects.get(pk=pk)
             pending_payments = theatre_payment.objects.filter(is_settled=False, status='Success', payment_method='Gateway', order__seat__row__hall__theatre=theatre).order_by('time')
@@ -348,8 +364,7 @@ def new_payout_payments(request, pk):
 
 @login_required
 def all_payouts(request):
-    permission = Permission.objects.get(codename="change_theatre")
-    if request.user.groups.first().permissions.filter(id=permission.id).exists():
+    if user_has_permission(request.user, "change_theatre"):
         date_range = request.GET.get('daterange', "")
         if date_range == "":
             start_date = timezone.now().date()
@@ -387,8 +402,7 @@ def all_payouts(request):
     
 @login_required
 def payout_payments(request, pk):
-    permission = Permission.objects.get(codename="change_theatre")
-    if request.user.groups.first().permissions.filter(id=permission.id).exists():
+    if user_has_permission(request.user, "change_theatre"):
         try:
             payout = PayOutLogs.objects.get(pk=pk)
             payments = payout.payment_set.order_by('-time')
@@ -402,8 +416,7 @@ def payout_payments(request, pk):
 
 @login_required
 def update_payout_settlement(request, pk):
-    permission = Permission.objects.get(codename="change_theatre")
-    if request.user.groups.first().permissions.filter(id=permission.id).exists():
+    if user_has_permission(request.user, "change_theatre"):
         try:
             payout = PayOutLogs.objects.get(pk=pk)
             return_data = {'status': ''}
@@ -426,16 +439,14 @@ def update_payout_settlement(request, pk):
     
 @login_required
 def settings(request):
-    permission = Permission.objects.get(codename="change_theatre")
-    if request.user.groups.first().permissions.filter(id=permission.id).exists():
+    if user_has_permission(request.user, "change_theatre"):
         return render(request, 'adminPortal/settings.html')
     else:
         return HttpResponse('Permission Denied')
     
 @login_required
 def gateways(request):
-    permission = Permission.objects.get(codename="change_theatre")
-    if request.user.groups.first().permissions.filter(id=permission.id).exists():
+    if user_has_permission(request.user, "change_theatre"):
         if request.method == 'POST':
             form = PaymentGatewayForm(request.POST)
             if form.is_valid():
@@ -457,8 +468,7 @@ def gateways(request):
 
 @login_required
 def activate_gateway(request, pk):
-    permission = Permission.objects.get(codename="change_theatre")
-    if request.user.groups.first().permissions.filter(id=permission.id).exists():
+    if user_has_permission(request.user, "change_theatre"):
         try:
             # DEACTIVATE ALL GATEWAYS
             PaymentGateway.objects.all().update(is_active=False)
@@ -476,8 +486,7 @@ def activate_gateway(request, pk):
 
 @login_required
 def all_orders_new_page(request):
-    permission = Permission.objects.get(codename="change_theatre")
-    if request.user.groups.first().permissions.filter(id=permission.id).exists():
+    if user_has_permission(request.user, "change_theatre"):
         date_range = request.GET.get('daterange', "")
         order_status = request.GET.get('order-status')
         selected_theatre = request.GET.get('selected-theatre', "")
@@ -570,8 +579,7 @@ def all_orders_new_page(request):
 
 @login_required
 def all_orders(request):
-    permission = Permission.objects.get(codename="change_theatre")
-    if request.user.groups.first().permissions.filter(id=permission.id).exists():
+    if user_has_permission(request.user, "change_theatre"):
         deactivate_theatres = Theatre.objects.filter(detail__scaning_service=False).count()
         context = {
             "deactivate_theatres": deactivate_theatres
@@ -582,8 +590,7 @@ def all_orders(request):
 
 @login_required
 def live_orders(request):
-    permission = Permission.objects.get(codename="change_theatre")
-    if request.user.groups.first().permissions.filter(id=permission.id).exists():
+    if user_has_permission(request.user, "change_theatre"):
         return render(request, 'adminPortal/live-orders.html')
     
     else:
@@ -591,8 +598,7 @@ def live_orders(request):
 
 @login_required
 def order_profile(request, pk):
-    permission = Permission.objects.get(codename="change_theatre")
-    if request.user.groups.first().permissions.filter(id=permission.id).exists():
+    if user_has_permission(request.user, "change_theatre"):
         try:
             order = Order.objects.get(pk=pk)
             theatre = order.seat.row.hall.theatre
@@ -604,8 +610,7 @@ def order_profile(request, pk):
 
 @login_required
 def refund_order(request, pk):
-    permission = Permission.objects.get(codename="delete_order")
-    if request.user.groups.first().permissions.filter(id=permission.id).exists():
+    if user_has_permission(request.user, "delete_order"):
         order = Order.objects.get(pk=pk)
         reason = request.POST.get('Refunded By Admin')
         payment = order.payment
@@ -953,8 +958,7 @@ def refund_order(request, pk):
     
 @login_required
 def delete_order(request, pk):
-    permission = Permission.objects.get(codename="delete_order")
-    if request.user.groups.first().permissions.filter(id=permission.id).exists():
+    if user_has_permission(request.user, "delete_order"):
     
         try:
             order = Order.objects.get(pk=pk)
@@ -973,8 +977,7 @@ def delete_order(request, pk):
 
 @login_required
 def upload_food_image(request):
-    permission = Permission.objects.get(codename="change_theatre")
-    if request.user.groups.first().permissions.filter(id=permission.id).exists():
+    if user_has_permission(request.user, "change_theatre"):
         if request.method == 'POST':
             form = ImageUploadform(request.POST, request.FILES)
             if form.is_valid():
@@ -1006,8 +1009,7 @@ def upload_food_image(request):
 
 @login_required
 def item_approved_list(request):
-    permission = Permission.objects.get(codename="change_theatre")
-    if request.user.groups.first().permissions.filter(id=permission.id).exists():
+    if user_has_permission(request.user, "change_theatre"):
         page_number = request.GET.get("page")
         if page_number == None:
             page_number = 1
@@ -1020,8 +1022,7 @@ def item_approved_list(request):
 
 @login_required
 def approve_food_item(request, pk):
-    permission = Permission.objects.get(codename="change_theatre")
-    if request.user.groups.first().permissions.filter(id=permission.id).exists():
+    if user_has_permission(request.user, "change_theatre"):
         try:
             item = FoodItem.objects.get(pk=pk)
             if item.is_approved:
@@ -1039,8 +1040,7 @@ def approve_food_item(request, pk):
     
 @login_required
 def user_aggriment(request, pk):
-    permission = Permission.objects.get(codename="change_theatre")
-    if request.user.groups.first().permissions.filter(id=permission.id).exists():
+    if user_has_permission(request.user, "change_theatre"):
         theatre = Theatre.objects.get(pk=pk)
         current_date = localtime(timezone.now())
         data = {'theatre': theatre, "current_date": current_date}
@@ -1050,8 +1050,7 @@ def user_aggriment(request, pk):
 
 @login_required
 def download_report(request, pk):
-    permission = Permission.objects.get(codename="change_theatre")
-    if request.user.groups.first().permissions.filter(id=permission.id).exists():
+    if user_has_permission(request.user, "change_theatre"):
         try:
             payout = PayOutLogs.objects.get(pk=pk)
             payments = payout.payment_set.all()
@@ -1123,8 +1122,7 @@ def download_report(request, pk):
 
 @login_required
 def download_bulk_report(request):
-    permission = Permission.objects.get(codename="change_theatre")
-    if request.user.groups.first().permissions.filter(id=permission.id).exists():
+    if user_has_permission(request.user, "change_theatre"):
         
         date_range = request.GET.get('daterange', "")
         if date_range == "":
@@ -1206,8 +1204,7 @@ def download_bulk_report(request):
     
 @login_required
 def create_single_payout(request):
-    permission = Permission.objects.get(codename="change_theatre")
-    if request.user.groups.first().permissions.filter(id=permission.id).exists():
+    if user_has_permission(request.user, "change_theatre"):
         current_time = localtime(timezone.now())
 
         last_time = current_time.replace(hour=6, minute=0, second=0, microsecond=0)
@@ -1389,8 +1386,7 @@ def compare_settlment_and_payout(request):
 
 @login_required
 def all_refund_queries(request):
-    permission = Permission.objects.get(codename="view_order")
-    if request.user.groups.first().permissions.filter(id=permission.id).exists():
+    if user_has_permission(request.user, "view_order"):
         date_range = request.GET.get('daterange', "")
         resolve_status = request.GET.get('resolve_status', "")
         selected_theatre = request.GET.get('selected-theatre', "")
@@ -1489,8 +1485,7 @@ def download_hall_qr(request, pk):
 
 @login_required
 def get_db_files(request):
-    permission = Permission.objects.get(codename="change_theatre")
-    if request.user.groups.first().permissions.filter(id=permission.id).exists():
+    if user_has_permission(request.user, "change_theatre"):
         backups = []
 
         media_root = django_settings.MEDIA_ROOT

@@ -35,12 +35,17 @@ def login_required(view_func):
                     return redirect('login')
 
             except AttributeError:
-                if request.user.groups.first().name == 'service_provider':
+                # Check if user has groups before accessing
+                user_group = request.user.groups.first()
+                if user_group and user_group.name == 'service_provider':
                     return redirect('admin-portal:index')
+                # If user is superuser, redirect to admin
+                if request.user.is_superuser:
+                    return redirect('/admin/')
                 # If userprofile or adminprofile doesn't exist, log out the user
                 # logout(request)
                 # return redirect('permission_denied')
-                return HttpResponse('There is some issue')
+                return HttpResponse('There is some issue - User profile not configured')
 
         else:
             # User is not authenticated

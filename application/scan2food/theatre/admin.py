@@ -153,11 +153,14 @@ class TheatreAdmin(admin.ModelAdmin):
     list_filter = ('address', )
 
     def user(self, obj):
-        return format_html(
-            '<a href="/admin/auth/user/{}/change/">{}</a>',
-            obj.userprofile_set.first().user.id,
-            obj.userprofile_set.first().user.username,
-        )
+        user_profile = obj.userprofile_set.first()
+        if user_profile:
+            return format_html(
+                '<a href="/admin/auth/user/{}/change/">{}</a>',
+                user_profile.user.id,
+                user_profile.user.username,
+            )
+        return "No User"
     
 @admin.register(UserProfile)
 class UserProfileAdmin(admin.ModelAdmin):

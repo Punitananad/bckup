@@ -8,6 +8,10 @@ def login_required(view_func):
     def wrapper(request, *args, **kwargs):
         # Check if the user is authenticated
         if request.user.is_authenticated:
+            # Allow superusers to access admin portal
+            if request.user.is_superuser:
+                return view_func(request, *args, **kwargs)
+            
             # Check if the user profile and required fields exist
             try:
                 admin_group = Group.objects.filter(name="service_provider").first()
