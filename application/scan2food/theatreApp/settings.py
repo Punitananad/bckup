@@ -26,7 +26,7 @@ SECRET_KEY = '^u_*nzz-$&m6jeyj=mml8rmp8^7btom(sj9(r3kb8_#uxn$f^*'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['134.209.149.31', 'scan2food.com', 'www.scan2food.com', 'localhost', '127.0.0.1', '192.168.1.33']
+ALLOWED_HOSTS = ['165.22.219.111', '134.209.149.31', 'scan2food.com', 'www.scan2food.com', 'localhost', '127.0.0.1', '192.168.1.33']
 
 # ALLOW CSRF ORIGINS
 CORS_ALLOWED_ORIGINS = [
