@@ -11,6 +11,7 @@ from django.db.models import Sum, F, Q, Count, Max
 from django.http import JsonResponse, HttpResponse, StreamingHttpResponse, FileResponse
 import json
 from django.views.decorators.cache import never_cache
+from django.views.decorators.csrf import csrf_exempt
 
 # whatsapp template
 from chat_box.whatsapp_msg_utils import amount_missmatch
@@ -461,6 +462,7 @@ def seat_last_order(request, pk):
     return JsonResponse(return_data, safe=False)
 
 
+@csrf_exempt
 @csrf_exempt
 @api_view(['POST'])
 def create_order(request):
