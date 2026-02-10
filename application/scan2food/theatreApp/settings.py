@@ -101,21 +101,21 @@ WSGI_APPLICATION = 'theatreApp.wsgi.application'
 
 ASGI_APPLICATION = 'theatreApp.asgi.application'
 
-# CHANNEL_LAYERS - Using InMemoryChannelLayer (Redis disabled)
-# For production with multiple servers, switch back to Redis
+# CHANNEL_LAYERS - Using Redis for inter-process communication
+# This allows Gunicorn workers to send WebSocket updates to Daphne
 CHANNEL_LAYERS = {
     "default": {
-        "BACKEND": "channels.layers.InMemoryChannelLayer"
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("127.0.0.1", 6379)],
+        },
     },
 }
 
-# Redis-based channel layer (commented out - Redis disabled)
+# Old InMemoryChannelLayer (doesn't work for inter-process communication)
 # CHANNEL_LAYERS = {
 #     "default": {
-#         "BACKEND": "channels_redis.core.RedisChannelLayer",
-#         "CONFIG": {
-#             "hosts": [("127.0.0.1", 6379)],
-#         },
+#         "BACKEND": "channels.layers.InMemoryChannelLayer"
 #     },
 # }
 
