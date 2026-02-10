@@ -12,27 +12,23 @@ def login_required(view_func):
             # Check if the user profile and required fields exist
             try:
                 user_profile = request.user.userprofile
-                theatre_detail = user_profile.theatre.detail
-                if theatre_detail.is_active == True:
-                    # if theatre_detail.expire_date < timezone.now():
-                    #     theatre_detail.is_active = False
-                    #     theatre_detail.save()
-                    #     messages.error(request, 'Your Application is Expired !!!')
-                    #     logout(request)
-                    #     return redirect('login')
-                        
-                    if user_profile.theatre and user_profile.active_status:
-                        # All conditions are met, proceed to the view
-                        return view_func(request, *args, **kwargs)
-                    else:
-                        # Conditions not met, log out the user
-                        logout(request)
-                        # return redirect('permission_denied')  # Define a permission denied page
-                        return HttpResponse('permission Denied')
+                
+                # Check if user has theatre and active status
+                if user_profile.theatre and user_profile.active_status:
+                    # Check if theatre has detail and is active
+                    if hasattr(user_profile.theatre, 'detail'):
+                        theatre_detail = user_profile.theatre.detail
+                        if not theatre_detail.is_active:
+                            messages.error(request, 'Your payment is Pending')
+                            logout(request)
+                            return redirect('login')
+                    
+                    # All conditions are met, proceed to the view
+                    return view_func(request, *args, **kwargs)
                 else:
-                    messages.error(request, 'Your payment is Pending')
+                    # Conditions not met, log out the user
                     logout(request)
-                    return redirect('login')
+                    return HttpResponse('permission Denied')
 
             except AttributeError:
                 # Check if user has groups before accessing
@@ -43,8 +39,6 @@ def login_required(view_func):
                 if request.user.is_superuser:
                     return redirect('/admin/')
                 # If userprofile or adminprofile doesn't exist, log out the user
-                # logout(request)
-                # return redirect('permission_denied')
                 return HttpResponse('There is some issue - User profile not configured')
 
         else:

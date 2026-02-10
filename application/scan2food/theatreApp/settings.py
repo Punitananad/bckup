@@ -101,14 +101,23 @@ WSGI_APPLICATION = 'theatreApp.wsgi.application'
 
 ASGI_APPLICATION = 'theatreApp.asgi.application'
 
+# CHANNEL_LAYERS - Using InMemoryChannelLayer (Redis disabled)
+# For production with multiple servers, switch back to Redis
 CHANNEL_LAYERS = {
     "default": {
-        "BACKEND": "channels_redis.core.RedisChannelLayer",
-        "CONFIG": {
-            "hosts": [("127.0.0.1", 6379)],  # Use your Redis host/port
-        },
+        "BACKEND": "channels.layers.InMemoryChannelLayer"
     },
 }
+
+# Redis-based channel layer (commented out - Redis disabled)
+# CHANNEL_LAYERS = {
+#     "default": {
+#         "BACKEND": "channels_redis.core.RedisChannelLayer",
+#         "CONFIG": {
+#             "hosts": [("127.0.0.1", 6379)],
+#         },
+#     },
+# }
 
 
 # Database
