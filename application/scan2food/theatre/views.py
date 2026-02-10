@@ -235,6 +235,9 @@ def add_food_item(request, pk=None):
                 cache_key = f'theatre_menu_{theatre.pk}'
                 cache.delete(cache_key)
             return redirect("theatre:add-menu")
+        else:
+            # GET request - redirect to add-menu page where the modal form is
+            return redirect("theatre:add-menu")
     else:
         return HttpResponse('Permission Denied')
 
