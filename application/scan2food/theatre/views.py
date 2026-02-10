@@ -1410,6 +1410,10 @@ def initiate_payment(request, pk):
                 'order': order,
             }
             return render(request, 'theatre/Payu/payment-page.html', context)
+        
+        else:
+            # Unknown payment gateway
+            return HttpResponse('Payment gateway not configured properly', status=400)
 
     except Exception as e:
         return HttpResponse(f'error {e}')
