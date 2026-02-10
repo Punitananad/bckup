@@ -931,6 +931,7 @@ def get_volet_data(request):
     return JsonResponse(return_data)
 
 @csrf_exempt
+@csrf_exempt
 @api_view(['GET', 'POST'])
 def razporpay_webhook_url(request):
     if request.method == 'POST':
