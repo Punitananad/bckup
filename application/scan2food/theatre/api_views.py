@@ -18,6 +18,7 @@ from chat_box.whatsapp_msg_utils import amount_missmatch
 
 # send data to websocket
 from .update_websocket import update_websocket, send_invoice
+from .webhook_security import verify_webhook_request
 
 from django.urls import reverse
 from django.contrib.auth.models import Permission
@@ -935,11 +936,19 @@ def get_volet_data(request):
 @api_view(['GET', 'POST'])
 def razporpay_webhook_url(request):
     if request.method == 'POST':
-
-        request_data = request.data
         
         # get payment gateway from database
         gateway_detail = PaymentGateway.objects.get(name='Razorpay')
+        
+        # VERIFY WEBHOOK SIGNATURE FIRST
+        is_valid, error_message = verify_webhook_request(request, 'Razorpay', gateway_detail.gateway_salt)
+        if not is_valid:
+            print(f"❌ Razorpay webhook verification failed: {error_message}")
+            return JsonResponse({'status': 'error', 'message': 'Invalid signature'}, status=401)
+        print("✅ Razorpay webhook verified")
+
+        request_data = request.data
+        
         client = razorpay.Client(auth=(gateway_detail.gateway_key, gateway_detail.gateway_secret))
         try:
             payment_id = request_data['payload']['payment']['entity']['id']
@@ -1019,11 +1028,19 @@ def razporpay_webhook_url(request):
 @api_view(['GET', 'POST'])
 def split_razporpay_webhook_url(request):
     if request.method == 'POST':
-
-        request_data = request.data
         
         # get payment gateway from database
         gateway_detail = PaymentGateway.objects.get(name='split_razorpay')
+        
+        # VERIFY WEBHOOK SIGNATURE FIRST
+        is_valid, error_message = verify_webhook_request(request, 'split_razorpay', gateway_detail.gateway_salt)
+        if not is_valid:
+            print(f"❌ Split Razorpay webhook verification failed: {error_message}")
+            return JsonResponse({'status': 'error', 'message': 'Invalid signature'}, status=401)
+        print("✅ Split Razorpay webhook verified")
+
+        request_data = request.data
+        
         client = razorpay.Client(auth=(gateway_detail.gateway_key, gateway_detail.gateway_secret))
         try:
             payment_id = request_data['payload']['payment']['entity']['id']
