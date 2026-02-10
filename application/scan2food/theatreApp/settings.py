@@ -26,12 +26,14 @@ SECRET_KEY = '^u_*nzz-$&m6jeyj=mml8rmp8^7btom(sj9(r3kb8_#uxn$f^*'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['165.22.219.111', '134.209.149.31', 'scan2food.com', 'www.scan2food.com', 'localhost', '127.0.0.1', '192.168.1.33']
+ALLOWED_HOSTS = ['165.22.219.111', '134.209.149.31', 'scan2food.com', 'www.scan2food.com', 'calculatentrade.com', 'www.calculatentrade.com', 'localhost', '127.0.0.1', '192.168.1.33']
 
 # ALLOW CSRF ORIGINS
 CORS_ALLOWED_ORIGINS = [
     'https://scan2food.com',  # Replace with your actual domain
     'https://www.scan2food.com',  # If applicable, add the www version as well
+    'https://calculatentrade.com',
+    'https://www.calculatentrade.com',
     "https://sandbox.cashfree.com",
     "https://api.cashfree.com"
 ]
@@ -40,6 +42,8 @@ CORS_ALLOWED_ORIGINS = [
 CSRF_TRUSTED_ORIGINS = [
     'https://scan2food.com',  # Replace with your actual domain
     'https://www.scan2food.com',  # If applicable, add the www version as well
+    'https://calculatentrade.com',
+    'https://www.calculatentrade.com',
     "https://api.cashfree.com",
     "https://sandbox.cashfree.com",
 ]
@@ -193,9 +197,8 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR.parent.parent, 'static_files', 'scan2food-static', 'static'),
 ]
 
-# STATIC_ROOT not needed for local development with runserver
-# Uncomment for production deployment
-# STATIC_ROOT = os.path.join(BASE_DIR.parent.parent, 'staticfiles_collected')
+# PRODUCTION: Where collectstatic will gather all static files
+STATIC_ROOT = '/var/www/scan2food/static'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
