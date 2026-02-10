@@ -189,35 +189,14 @@ def validate_ccavenue_webhook(payment_data, order):
 # UNIFIED WEBHOOK VERIFICATION
 # ============================================================================
 
-def get_webhook_secret_from_env(gateway_name):
-    """
-    Get webhook secret from environment variables
-    
-    Args:
-        gateway_name (str): Name of the payment gateway
-    
-    Returns:
-        str: Webhook secret or None
-    """
-    env_var_map = {
-        'Razorpay': 'RAZORPAY_WEBHOOK_SECRET',
-        'split_razorpay': 'SPLIT_RAZORPAY_WEBHOOK_SECRET'
-    }
-    
-    env_var = env_var_map.get(gateway_name)
-    if not env_var:
-        return None
-    
-    return os.environ.get(env_var)
-
-
-def verify_webhook_request(request, gateway_name):
+def verify_webhook_request(request, gateway_name, webhook_secret):
     """
     Verify webhook request signature for Razorpay/Split Razorpay
     
     Args:
         request: Django request object
         gateway_name (str): Name of the payment gateway
+        webhook_secret (str): Webhook secret from database (gateway_salt field)
     
     Returns:
         tuple: (is_valid, error_message)
@@ -228,14 +207,11 @@ def verify_webhook_request(request, gateway_name):
     if not signature:
         return False, "Missing X-Razorpay-Signature header"
     
-    # Get webhook secret from environment
-    webhook_secret = get_webhook_secret_from_env(gateway_name)
-    
+    # STRICT: Webhook secret is REQUIRED
     if not webhook_secret:
-        print(f"WARNING: No webhook secret configured for {gateway_name}")
-        print("Webhook signature verification is DISABLED")
-        print("This is a SECURITY RISK in production!")
-        return True, None  # Allow for backward compatibility
+        print(f"❌ ERROR: No webhook secret configured for {gateway_name}")
+        print("❌ Payment will be REJECTED")
+        return False, "Webhook secret not configured"
     
     # Get raw request body
     payload_body = request.body
@@ -248,6 +224,7 @@ def verify_webhook_request(request, gateway_name):
     )
     
     if not is_valid:
+        print(f"❌ Invalid webhook signature for {gateway_name}")
         return False, "Invalid webhook signature"
     
     return True, None
