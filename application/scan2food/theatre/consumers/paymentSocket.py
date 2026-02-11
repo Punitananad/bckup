@@ -24,7 +24,9 @@ class PaymentSocket(AsyncWebsocketConsumer):
         await self.accept()
     
     async def disconnect(self, code):
-        await self.check_and_delete()
+        # Only check and delete if order_id was set (connection was accepted)
+        if hasattr(self, 'order_id'):
+            await self.check_and_delete()
 
     @database_sync_to_async
     def check_and_delete(self):

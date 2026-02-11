@@ -49,10 +49,12 @@ class ChatConsumer(AsyncWebsocketConsumer):
     
     # FUNCTION RUN AT TIME OF DISCONNECTION
     async def disconnect(self, code):
-        await self.channel_layer.group_discard(
-            self.group_name,
-            self.channel_name
-        )
+        # Only discard from group if group_name was set (connection was accepted)
+        if hasattr(self, 'group_name'):
+            await self.channel_layer.group_discard(
+                self.group_name,
+                self.channel_name
+            )
     
     async def receive(self, text_data=None):
         data = json.loads(text_data)

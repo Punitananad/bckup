@@ -53,10 +53,12 @@ class AllSeatConsumers(AsyncWebsocketConsumer):
         except:
             pass
 
-        await self.channel_layer.group_discard(
-            self.group_name,
-            self.channel_name
-        )
+        # Only discard from group if group_name was set (connection was accepted)
+        if hasattr(self, 'group_name'):
+            await self.channel_layer.group_discard(
+                self.group_name,
+                self.channel_name
+            )
 
     async def table_data(self, event):
         updated_table_data = event['updated_table_data']
