@@ -25,7 +25,11 @@ function RunWebSocket() {
         document.getElementById('user-input').value = ""
     })
 
-    let chatSocket = new WebSocket(socket_url);
+    // Add API key to WebSocket URL
+    const ws_key = 'A0B9sna1Pdio-1MdXHG8kQJwuC_45Ok2ZmlQbS_0B-U';
+    const socket_url_with_key = `${socket_url}?key=${ws_key}`;
+    
+    let chatSocket = new WebSocket(socket_url_with_key);
 
     chatSocket.onmessage = (e) => {
         const socket_data = e.data;

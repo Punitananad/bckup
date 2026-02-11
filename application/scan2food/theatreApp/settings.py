@@ -236,3 +236,9 @@ CSRF_COOKIE_SECURE = False  # Changed from True for local dev (http://)
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'
 SESSION_COOKIE_AGE = 86400  # 1 day
+
+
+# WebSocket Security Keys
+LIVE_ORDERS_WS_KEY = os.environ.get('LIVE_ORDERS_WS_KEY', '05XnhaghUWM6Hd7YVR6_iPcJGfH_YDn3RiDv1Rh-zNM')
+PAYMENT_STATUS_WS_KEY = os.environ.get('PAYMENT_STATUS_WS_KEY', 'vy8ALNb9ev6DvTFGHv9IC3RgQ0xL5shqNmnFmDEHNqM')
+CHAT_WS_KEY = os.environ.get('CHAT_WS_KEY', 'A0B9sna1Pdio-1MdXHG8kQJwuC_45Ok2ZmlQbS_0B-U')

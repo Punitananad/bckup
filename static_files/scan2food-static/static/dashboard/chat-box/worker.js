@@ -84,7 +84,11 @@ var socket;
 // FUNCTION CONNECT THE WEBSOCKET AND PERFORM ALL THE SOCKET RELATED CODE
 function connectWebsocket(socket_url) {
     ChatCount = 0
-    socket = new WebSocket(socket_url);
+    // Add API key to WebSocket URL
+    const ws_key = 'A0B9sna1Pdio-1MdXHG8kQJwuC_45Ok2ZmlQbS_0B-U';
+    const socket_url_with_key = `${socket_url}?key=${ws_key}`;
+    
+    socket = new WebSocket(socket_url_with_key);
     socket.onopen = async (e) => {
         await getAllChatUsers();
     }

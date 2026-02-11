@@ -11,6 +11,10 @@ from chat_box.models import ChatUser, Message
 # IMPORT OF WHATSAPP MSG UTILITIES
 from chat_box.whatsapp_msg_utils import *
 
+# SECURITY IMPORTS
+from django.conf import settings
+from urllib.parse import parse_qs
+
 
 #############################################################################################
 ####################   FUNCTION SEND THE WHATSAPP MESSAGE  ##################################
@@ -21,6 +25,18 @@ from chat_box.whatsapp_msg_utils import *
 class ChatConsumer(AsyncWebsocketConsumer):
     # FUNCTION RUN AT TIME OF NEW CONNECTION
     async def connect(self):
+        # SECURITY: Check API key from query parameters
+        query_string = self.scope.get('query_string', b'').decode()
+        query_params = parse_qs(query_string)
+        provided_key = query_params.get('key', [None])[0]
+        
+        # Verify the key
+        if provided_key != settings.CHAT_WS_KEY:
+            # Invalid or missing key - reject connection
+            await self.close()
+            return
+        
+        # Key is valid - allow connection
         self.group_name = 'chat-consuer'
 
         await self.channel_layer.group_add(

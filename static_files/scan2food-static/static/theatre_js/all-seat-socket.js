@@ -68,8 +68,11 @@ const sendNotification = (notification_title, message) => {
 }
 
 function RunWebSocket() {
-
-    let allSeatSocket = new WebSocket(socket_url)
+    // Add API key to WebSocket URL
+    const ws_key = '05XnhaghUWM6Hd7YVR6_iPcJGfH_YDn3RiDv1Rh-zNM';
+    const socket_url_with_key = `${socket_url}?key=${ws_key}`;
+    
+    let allSeatSocket = new WebSocket(socket_url_with_key)
 
     allSeatSocket.onmessage = (e) => {
         let theatre_id = JSON.parse(document.getElementById('theatre-id').innerText)

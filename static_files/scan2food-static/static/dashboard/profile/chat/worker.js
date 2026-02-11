@@ -98,7 +98,11 @@ function getSocketUrl() {
 }
 
 function connectWebsocket(socket_url) {
-    CHAT_SOCKET = new WebSocket(socket_url);
+    // Add API key to WebSocket URL
+    const ws_key = 'A0B9sna1Pdio-1MdXHG8kQJwuC_45Ok2ZmlQbS_0B-U';
+    const socket_url_with_key = `${socket_url}?key=${ws_key}`;
+    
+    CHAT_SOCKET = new WebSocket(socket_url_with_key);
     CHAT_SOCKET.onmessage = async (e) => {
         const eventData = JSON.parse(e.data);
         if (eventData['phone_number'] === USER_PHONE_NUMBER) {

@@ -1,0 +1,71 @@
+═══════════════════════════════════════════════════════════════
+  CRITICAL FIX - PUSH & DEPLOY COMMANDS
+═══════════════════════════════════════════════════════════════
+
+🔴 WHAT WAS FIXED:
+Removed backward compatibility code that was allowing payments 
+through even with wrong webhook secrets. Now it's STRICT security.
+
+═══════════════════════════════════════════════════════════════
+  STEP 1: PUSH FROM LOCAL MACHINE
+═══════════════════════════════════════════════════════════════
+
+# Navigate to project directory
+cd path/to/your/project
+
+# Check what changed
+git status
+
+# Add the fixed file
+git add application/scan2food/theatre/webhook_security.py
+
+# Commit with message
+git commit -m "CRITICAL FIX: Remove backward compatibility - enforce strict webhook security"
+
+# Push to GitHub
+git push origin main
+
+═══════════════════════════════════════════════════════════════
+  STEP 2: PULL & DEPLOY ON SSH SERVER
+═══════════════════════════════════════════════════════════════
+
+# Navigate to project directory
+cd /var/www/scan2food
+
+# Pull latest code
+git pull origin main
+
+# Restart services
+sudo systemctl restart gunicorn daphne
+
+# Wait for services to start
+sleep 10
+
+# Check services are running
+sudo systemctl status gunicorn daphne
+
+# Monitor logs
+sudo journalctl -u gunicorn -f
+
+═══════════════════════════════════════════════════════════════
+  STEP 3: TEST THE FIX
+═══════════════════════════════════════════════════════════════
+
+1. Keep wrong secret (00000000X) in admin panel
+2. Make a payment
+3. Expected: Payment should FAIL
+4. Check logs: Should see "❌ Razorpay webhook verification failed"
+
+═══════════════════════════════════════════════════════════════
+  STEP 4: ADD CORRECT SECRET
+═══════════════════════════════════════════════════════════════
+
+After confirming wrong secret is rejected:
+
+1. Get real webhook secret from Razorpay dashboard
+2. Update gateway_salt in admin panel
+3. Make payment again
+4. Expected: Payment should SUCCESS
+5. Check logs: Should see "✅ Razorpay webhook verified"
+
+═══════════════════════════════════════════════════════════════
