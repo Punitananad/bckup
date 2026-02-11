@@ -26,8 +26,8 @@ def verify_razorpay_webhook_signature(payload_body, signature, webhook_secret):
         bool: True if signature is valid, False otherwise
     """
     if not webhook_secret:
-        print("WARNING: No webhook secret configured for Razorpay")
-        return True  # Backward compatibility
+        print("❌ ERROR: No webhook secret configured for Razorpay")
+        return False  # STRICT: Reject if no secret
     
     try:
         # Generate expected signature
@@ -61,8 +61,8 @@ def verify_payu_webhook_hash(post_data, gateway_salt):
         tuple: (is_valid, error_message)
     """
     if not gateway_salt:
-        print("WARNING: No gateway salt configured for PayU")
-        return True, None  # Backward compatibility
+        print("❌ ERROR: No gateway salt configured for PayU")
+        return False, "Gateway salt not configured"  # STRICT: Reject if no secret
     
     try:
         # Extract data from POST
@@ -116,8 +116,8 @@ def verify_phonepe_webhook_signature(payload_body, signature, salt_key, salt_ind
         tuple: (is_valid, error_message)
     """
     if not salt_key:
-        print("WARNING: No salt key configured for PhonePe")
-        return True, None  # Backward compatibility
+        print("❌ ERROR: No salt key configured for PhonePe")
+        return False, "Salt key not configured"  # STRICT: Reject if no secret
     
     try:
         # PhonePe signature formula: Base64(SHA256(response + salt_key + salt_index))
@@ -259,8 +259,8 @@ def verify_phonepe_webhook(request, salt_key):
     signature = request.headers.get('X-VERIFY')
     
     if not signature:
-        print("WARNING: Missing X-VERIFY header for PhonePe webhook")
-        return True, None  # Allow for backward compatibility
+        print("❌ ERROR: Missing X-VERIFY header for PhonePe webhook")
+        return False, "Missing X-VERIFY header"  # STRICT: Reject if no signature
     
     # Get raw request body
     payload_body = request.body
