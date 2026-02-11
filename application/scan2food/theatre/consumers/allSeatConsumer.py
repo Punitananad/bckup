@@ -4,26 +4,12 @@ from channels.db import database_sync_to_async
 from django.core.cache import cache
 from django.utils.timezone import localtime
 from django.utils import timezone
-from django.conf import settings
-from urllib.parse import parse_qs
 
 global connected_theatres
 connected_theatres = []
 
 class AllSeatConsumers(AsyncWebsocketConsumer):
     async def connect(self):
-        # SECURITY: Check API key from query parameters
-        query_string = self.scope.get('query_string', b'').decode()
-        query_params = parse_qs(query_string)
-        provided_key = query_params.get('key', [None])[0]
-        
-        # Verify the key
-        if provided_key != settings.LIVE_ORDERS_WS_KEY:
-            # Invalid or missing key - reject connection
-            await self.close()
-            return
-        
-        # Key is valid - allow connection
         self.group_name = "all-seat-status"
         
         await self.channel_layer.group_add(
