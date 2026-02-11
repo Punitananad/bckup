@@ -944,6 +944,36 @@ def razporpay_webhook_url(request):
         is_valid, error_message = verify_webhook_request(request, 'Razorpay', gateway_detail.gateway_salt)
         if not is_valid:
             print(f"❌ Razorpay webhook verification failed: {error_message}")
+            
+            # CRITICAL: Initiate refund for failed webhook verification
+            # This prevents customer money loss when webhook is compromised
+            try:
+                request_data = request.data
+                payment_id = request_data['payload']['payment']['entity']['id']
+                order_id = request_data['payload']['payment']['entity']['order_id']
+                
+                # Get payment details
+                razorpay_payment = RazorpayPayment.objects.get(razorpay_order_id=order_id)
+                payment = razorpay_payment.payment
+                
+                # Mark payment as failed
+                payment.status = 'Failed'
+                payment.save()
+                
+                # Initiate refund via Razorpay API
+                client = razorpay.Client(auth=(gateway_detail.gateway_key, gateway_detail.gateway_secret))
+                refund = client.payment.refund(payment_id, {
+                    "amount": int(payment.amount * 100),  # Amount in paise
+                    "speed": "normal",
+                    "notes": {
+                        "reason": "Webhook verification failed - security issue"
+                    }
+                })
+                print(f"✅ Refund initiated for payment {payment_id}: {refund['id']}")
+                
+            except Exception as e:
+                print(f"❌ Failed to initiate refund: {str(e)}")
+            
             return JsonResponse({'status': 'error', 'message': 'Invalid signature'}, status=401)
         print("✅ Razorpay webhook verified")
 
@@ -1036,6 +1066,36 @@ def split_razporpay_webhook_url(request):
         is_valid, error_message = verify_webhook_request(request, 'split_razorpay', gateway_detail.gateway_salt)
         if not is_valid:
             print(f"❌ Split Razorpay webhook verification failed: {error_message}")
+            
+            # CRITICAL: Initiate refund for failed webhook verification
+            # This prevents customer money loss when webhook is compromised
+            try:
+                request_data = request.data
+                payment_id = request_data['payload']['payment']['entity']['id']
+                order_id = request_data['payload']['payment']['entity']['order_id']
+                
+                # Get payment details
+                razorpay_payment = SplitRazorpayPayment.objects.get(razorpay_order_id=order_id)
+                payment = razorpay_payment.payment
+                
+                # Mark payment as failed
+                payment.status = 'Failed'
+                payment.save()
+                
+                # Initiate refund via Razorpay API
+                client = razorpay.Client(auth=(gateway_detail.gateway_key, gateway_detail.gateway_secret))
+                refund = client.payment.refund(payment_id, {
+                    "amount": int(payment.amount * 100),  # Amount in paise
+                    "speed": "normal",
+                    "notes": {
+                        "reason": "Webhook verification failed - security issue"
+                    }
+                })
+                print(f"✅ Refund initiated for payment {payment_id}: {refund['id']}")
+                
+            except Exception as e:
+                print(f"❌ Failed to initiate refund: {str(e)}")
+            
             return JsonResponse({'status': 'error', 'message': 'Invalid signature'}, status=401)
         print("✅ Split Razorpay webhook verified")
 
