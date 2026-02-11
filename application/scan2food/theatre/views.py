@@ -1569,24 +1569,12 @@ def split_razorpay_payment_callback(request):
         order_id = request.POST.get('razorpay_order_id', '')
         signature = request.POST.get('razorpay_signature', '')
 
-        # Verify the payment signature using Razorpay's SDK
-        # get payment gateway from database
-        gateway_detail = PaymentGateway.objects.get(name='split_razorpay')
-        client = razorpay.Client(auth=(gateway_detail.gateway_key, gateway_detail.gateway_secret))
-
-        params_dict = {
-            'razorpay_order_id': order_id,
-            'razorpay_payment_id': payment_id,
-            'razorpay_signature': signature
-        }
-        client.utility.verify_payment_signature(params_dict)
-
+        # ⚠️ SECURITY: Payment confirmation moved to webhook for security
+        # This callback only saves payment IDs and redirects to order status
+        # Actual payment confirmation happens in api_views.py webhook after signature verification
+        
         try:
-            # get the payment data and save other informations also
-            payment_data = client.payment.fetch(payment_id)
-            # If verification is successful, update the payment status to success
-            
-            # if payment gateway is razorpay
+            # Save payment IDs for reference
             razorpay_payment = SplitRazorpayPayment.objects.get(razorpay_order_id=order_id)
             payment = razorpay_payment.payment
             
@@ -1594,57 +1582,31 @@ def split_razorpay_payment_callback(request):
             razorpay_payment.razorpay_signature = signature
             razorpay_payment.save()
             
-            if payment.status != 'Success':
+            # COMMENTED OUT: Payment confirmation now happens ONLY in webhook
+            # This prevents bypassing webhook security verification
+            # The webhook in api_views.py will:
+            # 1. Verify signature using gateway_salt
+            # 2. Confirm payment status
+            # 3. Update seat and send notifications
+            
+            # if payment.status != 'Success':
+            #     payment.payment_method = 'Gateway'
+            #     payment.phone_number = payment_data['contact']
+            #     payment.status = "Success"
+            #     payment.time=localtime(timezone.now())
+            #     payment.save()
+            #     seat = payment.order.seat
+            #     seat.is_vacent = False
+            #     seat.save()
+            #     ... (websocket update code)
 
-                payment.payment_method = 'Gateway'
-                payment.phone_number = payment_data['contact']
-                payment.status = "Success"
-                payment.time=localtime(timezone.now())
-                payment.save()
-
-                seat = payment.order.seat
-                seat.is_vacent = False
-                seat.save()
-
-                order_status_url = reverse("theatre:order-status", args=[payment.order.pk])
-                order_status_url = f"https://www.scan2food.com{order_status_url}"
-                cusotmer_message = f"🎉 *Order Confirmed!* 🍿🥤%0A%0AThank you for your order, and welcome to *{seat.row.hall.theatre.name}*! 🎬✨%0A%0A🪑 *Your Seat:* {seat.row.hall.name}, {seat.name} %0A📍 *Track your order:* {order_status_url}%0A%0ASit back, relax, and enjoy your movie without missing a single scene!%0A%0A🚀 We'll deliver your food and drinks to your seat shortly.%0A%0Aℹ️ For assistance, contact our theatre staff at {seat.row.hall.theatre.query_number} 📞.%0A%0A⚠️ Please do not reply to this message or call this number.%0A%0AEnjoy the show! 🍿🎟️%0A%0A— *Team Scan2Food* 🚀"
-
-                order_profile_url = reverse("theatre:order-profile", args=[payment.order.pk])
-                order_profile_url = f"https://www.scan2food.com{order_profile_url}"
-
-                group = seat.row.hall.theatre.group
-                # update websocket
-                update_websocket(
-                    theatre_id=seat.row.hall.theatre.id,
-                    seat_id=seat.id,
-                    is_vacent=seat.is_vacent,
-                    payment_panding=False,
-                    seat_name=f"{seat.row.hall.name} | {seat.name}",
-                    message=f'New Order Come From Seat {seat.row.hall.name} | {seat.name}  %0A%0A Order Profile:- {order_profile_url}',
-                    customer_phone=payment.order.payment.phone_number,
-                    customer_message=cusotmer_message,
-                    notification_numbers=seat.row.hall.theatre.notification_numbers,
-                    group=group,
-                    theatre_name=seat.row.hall.theatre.name,
-                    msg_typ="confirmation",
-                    payment_method=payment.payment_method,
-                    payment_status=payment.status,
-                    amount=payment.order.order_amount(),
-                    order_id=payment.order.pk,
-                    max_time=payment.order.max_time()
-                )
-
-            # Perform any task on success, e.g., marking the seat's order as paid
+            # Redirect to order status page (webhook will confirm payment)
             return redirect('theatre:order-status', payment.order.pk)
 
-        except razorpay.errors.SignatureVerificationError:
-            # If verification fails, mark the payment as failed
-            payment = Payment.objects.get(razorpay_order_id=order_id)
-            payment.status = 'Failed'
-            payment.save()
-            # Perform any task on failure
-            return HttpResponse("Payment Failed")
+        except Exception as e:
+            # Log error but don't fail - webhook will handle confirmation
+            print(f"❌ Callback error: {str(e)}")
+            return HttpResponse("Processing payment...")
 
     return HttpResponse("Invalid request")
 
@@ -1657,24 +1619,12 @@ def razorpay_payment_callback(request):
         order_id = request.POST.get('razorpay_order_id', '')
         signature = request.POST.get('razorpay_signature', '')
 
-        # Verify the payment signature using Razorpay's SDK
-        # get payment gateway from database
-        gateway_detail = PaymentGateway.objects.get(name='Razorpay')
-        client = razorpay.Client(auth=(gateway_detail.gateway_key, gateway_detail.gateway_secret))
-
-        params_dict = {
-            'razorpay_order_id': order_id,
-            'razorpay_payment_id': payment_id,
-            'razorpay_signature': signature
-        }
-        client.utility.verify_payment_signature(params_dict)
-
+        # ⚠️ SECURITY: Payment confirmation moved to webhook for security
+        # This callback only saves payment IDs and redirects to order status
+        # Actual payment confirmation happens in api_views.py webhook after signature verification
+        
         try:
-            # get the payment data and save other informations also
-            payment_data = client.payment.fetch(payment_id)
-            # If verification is successful, update the payment status to success
-            
-            # if payment gateway is razorpay
+            # Save payment IDs for reference
             razorpay_payment = RazorpayPayment.objects.get(razorpay_order_id=order_id)
             payment = razorpay_payment.payment
             
@@ -1682,57 +1632,31 @@ def razorpay_payment_callback(request):
             razorpay_payment.razorpay_signature = signature
             razorpay_payment.save()
             
-            if payment.status != 'Success':
+            # COMMENTED OUT: Payment confirmation now happens ONLY in webhook
+            # This prevents bypassing webhook security verification
+            # The webhook in api_views.py will:
+            # 1. Verify signature using gateway_salt
+            # 2. Confirm payment status
+            # 3. Update seat and send notifications
+            
+            # if payment.status != 'Success':
+            #     payment.payment_method = 'Gateway'
+            #     payment.phone_number = payment_data['contact']
+            #     payment.status = "Success"
+            #     payment.time=localtime(timezone.now())
+            #     payment.save()
+            #     seat = payment.order.seat
+            #     seat.is_vacent = False
+            #     seat.save()
+            #     ... (websocket update code)
 
-                payment.payment_method = 'Gateway'
-                payment.phone_number = payment_data['contact']
-                payment.status = "Success"
-                payment.time=localtime(timezone.now())
-                payment.save()
-
-                seat = payment.order.seat
-                seat.is_vacent = False
-                seat.save()
-
-                order_status_url = reverse("theatre:order-status", args=[payment.order.pk])
-                order_status_url = f"https://www.scan2food.com{order_status_url}"
-                cusotmer_message = f"🎉 *Order Confirmed!* 🍿🥤%0A%0AThank you for your order, and welcome to *{seat.row.hall.theatre.name}*! 🎬✨%0A%0A🪑 *Your Seat:* {seat.row.hall.name}, {seat.name} %0A📍 *Track your order:* {order_status_url}%0A%0ASit back, relax, and enjoy your movie without missing a single scene!%0A%0A🚀 We'll deliver your food and drinks to your seat shortly.%0A%0Aℹ️ For assistance, contact our theatre staff at {seat.row.hall.theatre.query_number} 📞.%0A%0A⚠️ Please do not reply to this message or call this number.%0A%0AEnjoy the show! 🍿🎟️%0A%0A— *Team Scan2Food* 🚀"
-
-                order_profile_url = reverse("theatre:order-profile", args=[payment.order.pk])
-                order_profile_url = f"https://www.scan2food.com{order_profile_url}"
-
-                group = seat.row.hall.theatre.group
-                # update websocket
-                update_websocket(
-                    theatre_id=seat.row.hall.theatre.id,
-                    seat_id=seat.id,
-                    is_vacent=seat.is_vacent,
-                    payment_panding=False,
-                    seat_name=f"{seat.row.hall.name} | {seat.name}",
-                    message=f'New Order Come From Seat {seat.row.hall.name} | {seat.name}  %0A%0A Order Profile:- {order_profile_url}',
-                    customer_phone=payment.order.payment.phone_number,
-                    customer_message=cusotmer_message,
-                    notification_numbers=seat.row.hall.theatre.notification_numbers,
-                    group=group,
-                    theatre_name=seat.row.hall.theatre.name,
-                    msg_typ="confirmation",
-                    payment_method=payment.payment_method,
-                    payment_status=payment.status,
-                    amount=payment.order.order_amount(),
-                    order_id=payment.order.pk,
-                    max_time=payment.order.max_time()
-                )
-
-            # Perform any task on success, e.g., marking the seat's order as paid
+            # Redirect to order status page (webhook will confirm payment)
             return redirect('theatre:order-status', payment.order.pk)
 
-        except razorpay.errors.SignatureVerificationError:
-            # If verification fails, mark the payment as failed
-            payment = Payment.objects.get(razorpay_order_id=order_id)
-            payment.status = 'Failed'
-            payment.save()
-            # Perform any task on failure
-            return HttpResponse("Payment Failed")
+        except Exception as e:
+            # Log error but don't fail - webhook will handle confirmation
+            print(f"❌ Callback error: {str(e)}")
+            return HttpResponse("Processing payment...")
 
     return HttpResponse("Invalid request")
 
