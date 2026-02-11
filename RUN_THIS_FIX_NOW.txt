@@ -1,0 +1,79 @@
+========================================
+IMMEDIATE FIX FOR WEBSOCKET ISSUE
+========================================
+
+ROOT CAUSE IDENTIFIED:
+Nginx is serving static files from WRONG directory!
+
+Nginx config: /var/www/scan2food/staticfiles/
+Django STATIC_ROOT: /var/www/scan2food/static
+
+These are DIFFERENT folders!
+
+========================================
+RUN THESE COMMANDS ON SERVER NOW:
+========================================
+
+# 1. SSH to server
+ssh root@calculatentrade.com
+
+# 2. Go to project directory
+cd /var/www/scan2food
+
+# 3. Make script executable
+chmod +x FIX_NGINX_NOW.sh
+
+# 4. Run the fix
+bash FIX_NGINX_NOW.sh
+
+========================================
+WHAT THE SCRIPT DOES:
+========================================
+
+1. Backs up current nginx config
+2. Changes: /var/www/scan2food/staticfiles/ 
+   To: /var/www/scan2food/static/
+3. Tests nginx config
+4. Restarts nginx
+5. Verifies API key is now in served files
+
+========================================
+AFTER RUNNING THE SCRIPT:
+========================================
+
+1. Open browser: https://calculatentrade.com/theatre/live-orders/
+2. Do HARD REFRESH: Ctrl+Shift+R
+3. Open DevTools (F12) → Network tab → WS filter
+4. Check WebSocket URL should be:
+   wss://calculatentrade.com/ws/all-seat-datasocket/?key=05XnhaghUWM6Hd7YVR6_iPcJGfH_YDn3RiDv1Rh-zNM
+
+5. Check Daphne logs:
+   sudo journalctl -u daphne -n 20 | grep -E "WSREJECT|WSCONNECT"
+   
+   Should see: WSCONNECT (not WSREJECT)
+
+========================================
+IF IT STILL DOESN'T WORK:
+========================================
+
+Check if there's a CDN or proxy cache:
+- Cloudflare
+- Varnish
+- Other caching layer
+
+Clear those caches too.
+
+========================================
+NEXT STEPS (AFTER THIS WORKS):
+========================================
+
+Read: UPGRADE_TO_SESSION_AUTH.md
+
+This will show you how to:
+- Remove API keys from JavaScript
+- Use Django session authentication
+- Make WebSocket more secure
+
+But do that LATER. First, fix nginx path!
+
+========================================
