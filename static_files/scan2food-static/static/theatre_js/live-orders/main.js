@@ -43,7 +43,7 @@ function simpleAudioPlay() {
 
 
 
-const worker = new Worker('/static/theatre_js/live-orders/worker.js')
+const worker = new Worker('/static/theatre_js/live-orders/worker.js?v=' + Date.now())
 
 const theatre_id = JSON.parse(document.getElementById('theatre-id').innerText)
 

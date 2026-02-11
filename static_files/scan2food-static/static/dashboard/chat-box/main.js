@@ -49,7 +49,7 @@ const chatArea = document.getElementById('chat-box');
 const SeatNameLabel = document.getElementById('chat-seat-label');
 const PhoneNumberLabel = document.getElementById('chat-phone-label');
 
-const chatWorker = new Worker('/static/dashboard/chat-box/worker.js')
+const chatWorker = new Worker('/static/dashboard/chat-box/worker.js?v=' + Date.now())
 
 chatButton.addEventListener('click', () => {
     const task = {

@@ -1,66 +1,81 @@
 #!/bin/bash
 
 # WebSocket Security Deployment Script
-# This script deploys WebSocket authentication to production server
+# This script deploys the WebSocket API key security fix
 
 echo "=========================================="
-echo "WEBSOCKET SECURITY DEPLOYMENT"
+echo "DEPLOYING WEBSOCKET SECURITY FIX"
 echo "=========================================="
 echo ""
 
-# Step 1: Push to GitHub
-echo "Step 1: Pushing changes to GitHub..."
-git add application/scan2food/theatre/consumers/allSeatConsumer.py
-git add application/scan2food/theatre/consumers/paymentSocket.py
-git commit -m "Add WebSocket security: Staff authentication for Live Orders, Order validation for Payment Status"
-git push origin main
+# Navigate to project directory
+cd /var/www/scan2food/application/scan2food || exit 1
 
-echo ""
-echo "✅ Changes pushed to GitHub"
+# Activate virtual environment
+source venv/bin/activate
+
+echo "1. Pulling latest code from GitHub..."
+cd /var/www/scan2food
+git pull origin main
+echo "✓ Code pulled"
 echo ""
 
-# Step 2: Instructions for server
+# Navigate back to Django directory
+cd /var/www/scan2food/application/scan2food
+
+echo "2. Removing old static files..."
+rm -rf /var/www/scan2food/static/theatre_js/live-orders/
+rm -rf /var/www/scan2food/static/theatre_js/chat-box/
+rm -rf /var/www/scan2food/static/theatre_js/all-seat-socket.js
+rm -rf /var/www/scan2food/static/theatre_js/payment-socket.js
+rm -rf /var/www/scan2food/static/dashboard/live-order.js
+rm -rf /var/www/scan2food/static/dashboard/chat-box/
+rm -rf /var/www/scan2food/static/dashboard/profile/
+rm -rf /var/www/scan2food/static/chatBox/
+echo "✓ Old static files removed"
+echo ""
+
+echo "3. Collecting static files..."
+python manage.py collectstatic --noinput --clear
+echo "✓ Static files collected"
+echo ""
+
+echo "4. Restarting services..."
+sudo systemctl restart gunicorn
+sudo systemctl restart daphne
+sudo systemctl restart nginx
+echo "✓ Services restarted"
+echo ""
+
+echo "5. Checking service status..."
+echo ""
+echo "Gunicorn status:"
+sudo systemctl status gunicorn --no-pager | head -n 5
+echo ""
+echo "Daphne status:"
+sudo systemctl status daphne --no-pager | head -n 5
+echo ""
+echo "Nginx status:"
+sudo systemctl status nginx --no-pager | head -n 5
+echo ""
+
+echo "6. Verifying API key in static files..."
+if grep -q "05XnhaghUWM6Hd7YVR6" /var/www/scan2food/static/theatre_js/live-orders/worker.js; then
+    echo "✓ API key found in worker.js"
+else
+    echo "✗ API key NOT found in worker.js - DEPLOYMENT FAILED!"
+    exit 1
+fi
+echo ""
+
 echo "=========================================="
-echo "NOW RUN THESE COMMANDS ON SERVER:"
+echo "DEPLOYMENT COMPLETE!"
 echo "=========================================="
 echo ""
-echo "# Navigate to project directory"
-echo "cd /var/www/scan2food"
+echo "IMPORTANT: Users must do a HARD REFRESH (Ctrl+Shift+R) to clear browser cache"
 echo ""
-echo "# Pull latest changes"
-echo "git pull origin main"
+echo "To verify WebSocket connections are working:"
+echo "  sudo journalctl -u daphne -f"
 echo ""
-echo "# Restart Daphne service"
-echo "sudo systemctl restart daphne"
-echo ""
-echo "# Check Daphne status"
-echo "sudo systemctl status daphne"
-echo ""
-echo "=========================================="
-echo "WHAT WAS CHANGED:"
-echo "=========================================="
-echo ""
-echo "1. Live Orders WebSocket (allSeatConsumer.py):"
-echo "   - Added authentication check"
-echo "   - Only logged-in staff can connect"
-echo "   - Anonymous users are rejected"
-echo ""
-echo "2. Payment Status WebSocket (paymentSocket.py):"
-echo "   - Added order validation"
-echo "   - Only valid order IDs can connect"
-echo "   - Non-existent orders are rejected"
-echo ""
-echo "=========================================="
-echo "TESTING:"
-echo "=========================================="
-echo ""
-echo "Test 1: Live Orders (Should require login)"
-echo "  - Open: https://www.calculatentrade.com/live-orders/"
-echo "  - Without login: WebSocket should disconnect"
-echo "  - With login: WebSocket should connect"
-echo ""
-echo "Test 2: Payment Status (Should validate order)"
-echo "  - Valid order: wss://www.calculatentrade.com/ws/payment-socket/123/"
-echo "  - Invalid order: wss://www.calculatentrade.com/ws/payment-socket/999999/"
-echo "  - Invalid should disconnect immediately"
+echo "Look for 'WSCONNECT' messages instead of 'WSREJECT'"
 echo ""

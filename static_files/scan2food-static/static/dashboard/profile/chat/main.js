@@ -1,4 +1,4 @@
-const worker = new Worker('/static/dashboard/profile/chat/worker.js')
+const worker = new Worker('/static/dashboard/profile/chat/worker.js?v=' + Date.now())
 const order_id = parseInt(JSON.parse(document.head.getElementsByTagName('title')[0].innerText.split("|")[1]));
 
 var CHAT_SOCKET_URL;

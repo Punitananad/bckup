@@ -1,4 +1,4 @@
-const worker_script_url = '/static/dashboard/live-order-worker.js';
+const worker_script_url = '/static/dashboard/live-order-worker.js?v=' + Date.now();
 
 const worker = new Worker(worker_script_url);
 

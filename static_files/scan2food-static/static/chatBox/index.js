@@ -173,7 +173,7 @@ function ApendSingleMessage(message) {
 }
 
 
-const worker = new Worker('/static/chatBox/worker.js')
+const worker = new Worker('/static/chatBox/worker.js?v=' + Date.now())
 
 getAllPhoneNumber()
 
