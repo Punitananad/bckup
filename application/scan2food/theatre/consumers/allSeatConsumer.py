@@ -10,6 +10,15 @@ connected_theatres = []
 
 class AllSeatConsumers(AsyncWebsocketConsumer):
     async def connect(self):
+        # SECURITY: Only logged-in staff can see live orders
+        user = self.scope["user"]
+        
+        if user.is_anonymous:
+            # Not logged in - reject connection
+            await self.close()
+            return
+        
+        # User is logged in - allow connection
         self.group_name = "all-seat-status"
         
         await self.channel_layer.group_add(
