@@ -6,6 +6,13 @@ Bypasses Django ORM and connects directly to PostgreSQL
 
 import os
 import sys
+import django
+
+# Setup Django environment BEFORE importing make_password
+sys.path.insert(0, '/var/www/scan2food/application/scan2food')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'theatreApp.settings')
+django.setup()
+
 import psycopg2
 from django.contrib.auth.hashers import make_password
 
