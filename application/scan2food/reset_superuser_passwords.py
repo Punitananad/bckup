@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Reset Superuser Passwords Script
+Reset User Passwords Script
 
-This script lists all superusers and resets their passwords based on a pattern:
+This script lists all users and resets their passwords based on a pattern:
 - If username is a 10-digit mobile number: scan@{last2digits}{sum}
   Example: 7988269874 -> scan@7411 (74 are last 2 digits, 11 is 7+4)
 - If username is NOT a mobile number: scan@{username}1
@@ -49,41 +49,43 @@ def generate_password(username):
 
 
 def list_and_reset_superusers():
-    """List all superusers and reset their passwords"""
+    """List all users and reset their passwords"""
     
     print("\n" + "="*80)
-    print("  SUPERUSER PASSWORD RESET TOOL")
+    print("  USER PASSWORD RESET TOOL")
     print("="*80 + "\n")
     
-    # Get all superusers
-    superusers = User.objects.filter(is_superuser=True).order_by('username')
+    # Get all users
+    all_users = User.objects.all().order_by('username')
     
-    if not superusers.exists():
-        print("❌ No superusers found in the database!")
+    if not all_users.exists():
+        print("❌ No users found in the database!")
         return
     
-    print(f"Found {superusers.count()} superuser(s):\n")
+    print(f"Found {all_users.count()} user(s):\n")
     
-    # Display all superusers with their new passwords
-    print(f"{'#':<5} {'Username':<20} {'Email':<30} {'New Password':<20} {'Type':<15}")
-    print("-" * 90)
+    # Display all users with their new passwords
+    print(f"{'#':<5} {'Username':<20} {'Email':<30} {'New Password':<20} {'Type':<15} {'Role':<12}")
+    print("-" * 105)
     
     user_data = []
-    for idx, user in enumerate(superusers, 1):
+    for idx, user in enumerate(all_users, 1):
         new_password = generate_password(user.username)
         user_type = "Mobile Number" if is_mobile_number(user.username) else "Non-Mobile"
+        role = "Superuser" if user.is_superuser else ("Staff" if user.is_staff else "Regular")
         
-        print(f"{idx:<5} {user.username:<20} {user.email or 'N/A':<30} {new_password:<20} {user_type:<15}")
+        print(f"{idx:<5} {user.username:<20} {(user.email or 'N/A'):<30} {new_password:<20} {user_type:<15} {role:<12}")
         user_data.append({
             'user': user,
             'password': new_password,
-            'type': user_type
+            'type': user_type,
+            'role': role
         })
     
     print("\n" + "="*80)
     
     # Ask for confirmation
-    response = input("\n⚠️  Do you want to reset passwords for ALL these superusers? (yes/no): ").strip().lower()
+    response = input("\n⚠️  Do you want to reset passwords for ALL these users? (yes/no): ").strip().lower()
     
     if response not in ['yes', 'y']:
         print("\n❌ Password reset cancelled.")
@@ -112,10 +114,10 @@ def list_and_reset_superusers():
     save_response = input("💾 Do you want to save credentials to a file? (yes/no): ").strip().lower()
     
     if save_response in ['yes', 'y']:
-        filename = "superuser_credentials.txt"
+        filename = "user_credentials.txt"
         with open(filename, 'w') as f:
             f.write("="*80 + "\n")
-            f.write("  SUPERUSER CREDENTIALS\n")
+            f.write("  ALL USER CREDENTIALS\n")
             f.write(f"  Generated on: {django.utils.timezone.now()}\n")
             f.write("="*80 + "\n\n")
             
@@ -124,9 +126,11 @@ def list_and_reset_superusers():
                 f.write(f"   Password: {data['password']}\n")
                 f.write(f"   Email: {data['user'].email or 'N/A'}\n")
                 f.write(f"   Type: {data['type']}\n")
+                f.write(f"   Role: {data['role']}\n")
                 f.write("-" * 80 + "\n")
         
         print(f"\n✅ Credentials saved to: {filename}")
+        print(f"⚠️  IMPORTANT: Keep this file secure and delete after noting passwords!")
 
 
 if __name__ == "__main__":
