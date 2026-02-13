@@ -11,13 +11,13 @@ ssh root@165.22.219.111
 
 ### Step 2: Run Diagnostic (Optional)
 ```bash
-cd /root/application/scan2food
+cd /var/www/scan2food
 bash diagnose_static_files.sh
 ```
 
 ### Step 3: Fix Static Files
 ```bash
-cd /root/application/scan2food
+cd /var/www/scan2food
 bash fix_production_static_files.sh
 ```
 
@@ -25,12 +25,12 @@ bash fix_production_static_files.sh
 
 ### 1. Activate Virtual Environment
 ```bash
-source /root/venv/bin/activate
+source /var/www/scan2food/venv/bin/activate
 ```
 
 ### 2. Navigate to Application
 ```bash
-cd /root/application/scan2food
+cd /var/www/scan2food/application/scan2food
 ```
 
 ### 3. Collect Static Files
@@ -101,8 +101,8 @@ sudo chmod -R 755 /var/www/scan2food/
 ### Issue 2: Static Files Not Found
 Check if STATIC_ROOT is correct in settings.py:
 ```bash
-cd /root/application/scan2food
-source /root/venv/bin/activate
+cd /var/www/scan2food/application/scan2food
+source /var/www/scan2food/venv/bin/activate
 python manage.py shell
 ```
 
@@ -131,17 +131,17 @@ From your local machine, upload the fix scripts:
 
 ```bash
 # Using SCP
-scp fix_production_static_files.sh root@calculatentrade.com:/root/application/scan2food/
-scp diagnose_static_files.sh root@calculatentrade.com:/root/application/scan2food/
+scp fix_production_static_files.sh root@calculatentrade.com:/var/www/scan2food/
+scp diagnose_static_files.sh root@calculatentrade.com:/var/www/scan2food/
 
 # Make them executable
-ssh root@calculatentrade.com "chmod +x /root/application/scan2food/*.sh"
+ssh root@calculatentrade.com "chmod +x /var/www/scan2food/*.sh"
 ```
 
 Or manually copy the script content and create files on the server:
 ```bash
 ssh root@calculatentrade.com
-cd /root/application/scan2food
+cd /var/www/scan2food
 nano fix_production_static_files.sh
 # Paste the script content
 # Press Ctrl+X, then Y, then Enter
@@ -152,7 +152,7 @@ chmod +x fix_production_static_files.sh
 
 If you just want to run everything at once:
 ```bash
-ssh root@calculatentrade.com "cd /root/application/scan2food && source /root/venv/bin/activate && python manage.py collectstatic --noinput --clear && sudo chown -R www-data:www-data /var/www/scan2food/static/ && sudo chmod -R 755 /var/www/scan2food/static/ && sudo systemctl restart nginx gunicorn daphne"
+ssh root@calculatentrade.com "cd /var/www/scan2food/application/scan2food && source /var/www/scan2food/venv/bin/activate && python manage.py collectstatic --noinput --clear && sudo chown -R www-data:www-data /var/www/scan2food/static/ && sudo chmod -R 755 /var/www/scan2food/static/ && sudo systemctl restart nginx gunicorn daphne"
 ```
 
 ## After Fix

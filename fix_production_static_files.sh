@@ -10,9 +10,9 @@ echo "=========================================="
 echo ""
 
 # Configuration - Update these paths if needed
-APP_DIR="/root/application/scan2food"
+APP_DIR="/var/www/scan2food/application/scan2food"
 STATIC_ROOT="/var/www/scan2food/static"
-VENV_PATH="/root/venv"
+VENV_PATH="/var/www/scan2food/venv"
 
 echo "Step 1: Activating virtual environment..."
 source $VENV_PATH/bin/activate

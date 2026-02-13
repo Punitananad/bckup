@@ -7,9 +7,9 @@ echo "=========================================="
 echo ""
 
 # Configuration
-APP_DIR="/root/application/scan2food"
+APP_DIR="/var/www/scan2food/application/scan2food"
 STATIC_ROOT="/var/www/scan2food/static"
-VENV_PATH="/root/venv"
+VENV_PATH="/var/www/scan2food/venv"
 
 echo "1. Checking Application Directory..."
 if [ -d "$APP_DIR" ]; then
