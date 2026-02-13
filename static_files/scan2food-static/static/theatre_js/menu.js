@@ -200,10 +200,14 @@ function showFoodItems(category_data, is_active) {
             food_image_url = food_image_url.replace('http', 'https');
         }
 
+        // Log image URL for debugging
+        console.log(`Loading image for ${item_data.name}: ${food_image_url}`);
+
         let food_card_html = `
                                             <div class="d-flex align-items-center menu-item my-food-card">
                                                 <img loading="lazy" class="flex-shrink-0 img-fluid rounded menu-img"
-                                                    src="${food_image_url}" alt="" style="width: 80px;">
+                                                    src="${food_image_url}" alt="${item_data.name}" style="width: 80px;" 
+                                                    onerror="this.onerror=null; this.src='/media/default_food_img.png'; console.error('Failed to load image for ${item_data.name}');">
                                                 <div class="w-100 d-flex flex-column text-start ps-4">
                                                     <span class="item-pk" style="display: none;">${item_data.item_id}</span>
                                                     <span class="item-real-price d-none">${item_data.real_price}</span>
