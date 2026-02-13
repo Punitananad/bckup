@@ -225,13 +225,13 @@ def all_menu(request, pk=None):
                 # Handle food image with proper error checking
                 try:
                     if item.food_image and hasattr(item.food_image, 'url'):
-                        food_image = request.build_absolute_uri(item.food_image.url)
+                        food_image = item.food_image.url
                     else:
                         # Use default image if no image is set
-                        food_image = request.build_absolute_uri(f'{settings.MEDIA_URL}default_food_img.png')
+                        food_image = f'{settings.MEDIA_URL}default_food_img.png'
                 except Exception as e:
                     # Fallback to default image on any error
-                    food_image = request.build_absolute_uri(f'{settings.MEDIA_URL}default_food_img.png')
+                    food_image = f'{settings.MEDIA_URL}default_food_img.png'
                 
                 push_data = {
                     "item_id": item.id,
