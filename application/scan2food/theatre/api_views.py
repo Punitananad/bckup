@@ -218,7 +218,7 @@ def all_menu(request, pk=None):
         all_category = FoodCategory.objects.filter(theatre = theatre).annotate(max_priority=Max('fooditem__priority_number')).order_by('-max_priority')
         
         for category in all_category:
-            category_image = request.build_absolute_uri(f'{settings.STATIC_URL}assets/images/category/' + category.name + '.png')
+            category_image = f'{settings.STATIC_URL}assets/images/category/{category.name}.png'
             theatre_data = {"name": category.name, "id": category.pk, "category_image": category_image}
             food_items = []
             for item in category.fooditem_set.filter(is_approved=True).order_by('-priority_number'):
