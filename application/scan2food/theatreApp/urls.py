@@ -22,7 +22,9 @@ from django.conf.urls.static import static
 from django.conf import settings
 from .views import CustomLoginView, custom_404_view
 
+# Custom error handlers
 handler404 = custom_404_view
+handler500 = 'theatreApp.views.custom_500_view'
 
 urlpatterns = [
     path('admin/', admin.site.urls),

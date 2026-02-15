@@ -24,7 +24,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = '^u_*nzz-$&m6jeyj=mml8rmp8^7btom(sj9(r3kb8_#uxn$f^*'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# DEBUG = True for local development, False for production
+DEBUG = os.environ.get('DJANGO_ENV') != 'production'
 
 ALLOWED_HOSTS = ['165.22.219.111', '134.209.149.31', 'scan2food.com', 'www.scan2food.com', 'calculatentrade.com', 'www.calculatentrade.com', 'localhost', '127.0.0.1', '192.168.1.33']
 
