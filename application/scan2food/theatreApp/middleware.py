@@ -43,7 +43,8 @@ class APIKeyMiddleware:
             )
     
     def __call__(self, request):
-        # DEBUG: Log every request to verify middleware is running
+        # CRITICAL DEBUG: This should print for EVERY request
+        print(f"[MIDDLEWARE CALL] Path: {request.path}", flush=True)
         logger.info(f"[MIDDLEWARE] Processing: {request.method} {request.path}")
         
         # Check if this endpoint needs API key protection
