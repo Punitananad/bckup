@@ -1069,7 +1069,10 @@ def show_menu(request, pk):
                 
                 return redirect('theatre:order-status', last_order.pk)
     
-    except:
+    except Exception as e:
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.error(f"Error in show_menu for seat {pk}: {type(e).__name__}: {str(e)}", exc_info=True)
         raise Http404('page not found')
 
 def single_qr(request, pk):
