@@ -1033,7 +1033,12 @@ def show_menu(request, pk):
             if pending_orders >= theatre.order_limit:
                 return render(request, 'theatre/over-order.html')
 
-            return render(request, 'theatre/show-new-menu.html', {'seat': seat, 'theatre': theatre, 'discount': discount})
+            return render(request, 'theatre/show-new-menu.html', {
+                'seat': seat, 
+                'theatre': theatre, 
+                'discount': discount,
+                'api_key': settings.API_KEY  # Pass API key to template
+            })
                 
         else:
             last_order = Order.objects.filter(seat=seat, seat__is_vacent=False).last()

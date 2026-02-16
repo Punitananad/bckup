@@ -232,6 +232,11 @@
 {{seat.row.hall.theatre.id|json_script:'theatre-id'}}
 
 <script>
+    // Inject API key for secure API calls
+    window.API_KEY = "{{ api_key }}";
+</script>
+
+<script>
     try {
         // 1. Clear localStorage + sessionStorage
         localStorage.setItem('{{seat.row.hall.name}} | {{seat.name}}', '{}')

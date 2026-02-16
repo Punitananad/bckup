@@ -77,6 +77,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
+    'theatreApp.middleware.APIKeyMiddleware',  # API key authentication for public endpoints
 ]
 
 ROOT_URLCONF = 'theatreApp.urls'
@@ -243,3 +244,8 @@ SESSION_COOKIE_AGE = 86400  # 1 day
 LIVE_ORDERS_WS_KEY = os.environ.get('LIVE_ORDERS_WS_KEY', '05XnhaghUWM6Hd7YVR6_iPcJGfH_YDn3RiDv1Rh-zNM')
 PAYMENT_STATUS_WS_KEY = os.environ.get('PAYMENT_STATUS_WS_KEY', 'vy8ALNb9ev6DvTFGHv9IC3RgQ0xL5shqNmnFmDEHNqM')
 CHAT_WS_KEY = os.environ.get('CHAT_WS_KEY', 'A0B9sna1Pdio-1MdXHG8kQJwuC_45Ok2ZmlQbS_0B-U')
+
+# API Key for Public Endpoint Protection
+# IMPORTANT: Generate a secure key and set in environment variable
+# Generate with: python -c "import secrets; print(secrets.token_urlsafe(32))"
+API_KEY = os.environ.get('API_KEY', 'CHANGE_THIS_IN_PRODUCTION_USE_SECURE_RANDOM_KEY')

@@ -7,8 +7,16 @@ local_storage.clear()
 
 let theatre_id = JSON.parse(document.getElementById('theatre-id').innerText)
 
+// Get API key from global variable (injected by Django template)
+const API_KEY = window.API_KEY || '';
+
 async function getRequest(url) {
-    return fetch(url)
+    return fetch(url, {
+        headers: {
+            'X-API-Key': API_KEY,
+            'Content-Type': 'application/json'
+        }
+    })
         .then(function (response) {
             return response.json();
         })

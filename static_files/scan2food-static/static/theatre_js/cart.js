@@ -1,5 +1,8 @@
 const csrftoken = document.querySelector('[name=csrf-token]').content;
 
+// Get API key from global variable (injected by Django template)
+const API_KEY = window.API_KEY || '';
+
 // function to hit the post request
 async function PostRequest(url, data) {
 
@@ -7,7 +10,8 @@ async function PostRequest(url, data) {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'X-CSRFToken': csrftoken
+            'X-CSRFToken': csrftoken,
+            'X-API-Key': API_KEY
         },
         body: JSON.stringify(data),
     })
