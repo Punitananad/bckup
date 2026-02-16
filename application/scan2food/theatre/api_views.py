@@ -179,13 +179,18 @@ def theatre_detail(request):
         return JsonResponse({'error': 'method not allowed'}, status=405)
 
 # any body can access
+@never_cache
 @api_view(['GET'])
 def all_menu(request, pk=None): 
     cache_key = f'theatre_menu_{pk}'
     cache_data = cache.get(cache_key)
 
     if cache_data:
-        return JsonResponse(cache_data, safe=False)
+        response = JsonResponse(cache_data, safe=False)
+        response['Cache-Control'] = 'no-cache, no-store, must-revalidate, max-age=0'
+        response['Pragma'] = 'no-cache'
+        response['Expires'] = '0'
+        return response
     
     data = {}
     return_data = []
@@ -264,7 +269,12 @@ def all_menu(request, pk=None):
     
     except:
         pass
-    return JsonResponse(data, safe=False)
+    
+    response = JsonResponse(data, safe=False)
+    response['Cache-Control'] = 'no-cache, no-store, must-revalidate, max-age=0'
+    response['Pragma'] = 'no-cache'
+    response['Expires'] = '0'
+    return response
 
 @api_view(['GET'])
 def get_tex_list(request, pk):
