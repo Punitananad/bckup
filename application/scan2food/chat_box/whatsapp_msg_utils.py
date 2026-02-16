@@ -13,7 +13,7 @@ from theatre.models import Order
 ####################################################
 ######   VARIABLES TO SEND THE WHATSAPP MESSAGE  ###
 ####################################################
-ACCESS_TOKEN = "EAAJph1TVFooBPVSZB7LL4s46nCJkLJg2mxu5brGWPd8DcrDIZBmMFkZA0YyPwds1wlggZCFY3psMRxZCadGX6KPu77Dv4I15U8ZBW6Lq5jWbZA6fQhXGlrvf9vo3B4ut8MMK18pElaImeAYMpGbCmU3C3xx2XPytPZBuPqJgr5aHjwHQeTlHactZAIdIEfPrJsRZA0DAZDZD"
+ACCESS_TOKEN = "EAAJph1TVFooBQiftANmi38EQeqoiKdTgaXR4btXbYRaU6iAWAXyGkZAyMxPa9Ycx4LL8A6vu5W66bhaQqsFXbJnI0N1TjReL2dVN3zqH6ChAPRIz1oi0VdIC7eXjasq5VzNO53I2djJ8n99VYNkyOnhRu7RBuyQ3rvtW7fjMyUhzkbXPhFWJFFQXO0tIEPAZDZD"
 PHONE_NUMBER_ID = "706345399217798"
 VERIFY_TOKEN = "scan2food_my_token"
 
