@@ -189,7 +189,12 @@ function UpdateCart(table_name) {
     }
     document.getElementById('cart-length').innerText = cart_length;
     
-    getCartAmount(table_cart_data)
+    // Check if getCartAmount exists (from cart.js), otherwise skip
+    if (typeof getCartAmount === 'function') {
+        getCartAmount(table_cart_data);
+    } else {
+        console.warn('getCartAmount function not found - cart.js may not be loaded yet');
+    }
 }
 
 

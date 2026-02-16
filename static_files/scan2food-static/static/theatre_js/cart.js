@@ -1,7 +1,6 @@
 const csrftoken = document.querySelector('[name=csrf-token]').content;
 
-// Get API key from global variable (injected by Django template)
-const API_KEY = window.API_KEY || '';
+// API_KEY is already declared in new-menu.js, use the global variable directly
 
 // function to hit the post request
 async function PostRequest(url, data) {
