@@ -113,6 +113,7 @@ class APIKeyMiddleware:
             return False
         
         # PROTECT these public customer-facing API endpoints:
+        # NOTE: Only protect /api/ endpoints, NOT the HTML pages
         public_api_patterns = [
             '/theatre/api/all-menu/',
             '/theatre/api/create-order',
@@ -121,9 +122,6 @@ class APIKeyMiddleware:
             '/theatre/api/order-data/',
             '/theatre/api/seat-last-order/',
             '/theatre/api/get-payu-form-details/',
-            '/theatre/show-menu/',
-            '/theatre/order-status/',
-            '/theatre/order-feedback/',
         ]
         
         for pattern in public_api_patterns:
