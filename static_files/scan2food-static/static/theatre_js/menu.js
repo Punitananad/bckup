@@ -35,7 +35,9 @@ let menu_data = {}
 var commission = 0
 var tax_type = "IGST"
 async function loadMenu() {
-    let menu_api_url = `/theatre/api/all-menu/${theatre_id}`;
+    // Add cache-busting parameter to prevent browser caching
+    let cacheBuster = new Date().getTime();
+    let menu_api_url = `/theatre/api/all-menu/${theatre_id}?v=${cacheBuster}`;
     menu_data = await getRequest(menu_api_url);
     commission = menu_data.commission;
     tax_type = menu_data.tax_type;
