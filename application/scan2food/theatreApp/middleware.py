@@ -25,10 +25,21 @@ class APIKeyMiddleware:
         # Load API key once at startup (not on every request for performance)
         self.api_key = getattr(settings, 'API_KEY', None)
         
+        # Log initialization for debugging
+        logger.warning(f"[MIDDLEWARE INIT] APIKeyMiddleware initialized with API_KEY: {self.api_key[:10] if self.api_key else 'NONE'}...")
+        
         if not self.api_key:
+            logger.error("[MIDDLEWARE INIT] API_KEY not configured!")
             raise Exception(
                 "API_KEY not configured in settings. "
                 "Please set API_KEY environment variable."
+            )
+        
+        if self.api_key.startswith('CHANGE_THIS'):
+            logger.error("[MIDDLEWARE INIT] API_KEY is still default value!")
+            raise Exception(
+                "API_KEY is still set to default value. "
+                "Please set a real API_KEY in environment variable."
             )
     
     def __call__(self, request):
