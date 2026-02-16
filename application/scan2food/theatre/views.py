@@ -1072,14 +1072,56 @@ def show_menu(request, pk):
         raise Http404('page not found')
 
 def single_qr(request, pk):
-    try:
-        context = {
-            'theatre_id': pk
-        }
-        return render(request, 'theatre/single-qr.html', context)
+    # TEMPORARILY DISABLED: QR redirect page
+    # This view normally shows a page where users select hall/seat
+    # For debugging, we're bypassing it to show direct seat URLs
+    # TODO: Re-enable this after fixing seat ID issues
     
-    except:
-        raise Http404('page not found')
+    # try:
+    #     context = {
+    #         'theatre_id': pk
+    #     }
+    #     return render(request, 'theatre/single-qr.html', context)
+    # except:
+    #     raise Http404('page not found')
+    
+    # TEMPORARY: Show debug info instead
+    from django.http import HttpResponse
+    from theatre.models import Seat
+    
+    try:
+        # Get first 10 seats for this theatre
+        seats = Seat.objects.filter(
+            row__hall__theatre__pk=pk,
+            is_vacent=True
+        ).select_related('row__hall__theatre')[:10]
+        
+        html = f"""
+        <html>
+        <head><title>Debug: Theatre {pk} Seats</title></head>
+        <body style="font-family: Arial; padding: 20px;">
+            <h1>Theatre ID: {pk}</h1>
+            <h2>Available Seat URLs (for testing):</h2>
+            <ul>
+        """
+        
+        for seat in seats:
+            url = f"https://calculatentrade.com/theatre/show-menu/{seat.pk}"
+            html += f'<li><a href="{url}">{seat.row.hall.hall_name} - Row {seat.row.row_name} - Seat {seat.seat_name}</a> (ID: {seat.pk})</li>'
+        
+        html += """
+            </ul>
+            <p><strong>Note:</strong> This is a temporary debug page. The QR redirect is disabled for testing.</p>
+            <p>Click any link above to test the menu page with API key protection.</p>
+        </body>
+        </html>
+        """
+        
+        return HttpResponse(html)
+        
+    except Exception as e:
+        return HttpResponse(f"<h1>Error</h1><p>{str(e)}</p><p>Theatre ID: {pk}</p>")
+
 
 def hall_qr(request, pk):
     try:
