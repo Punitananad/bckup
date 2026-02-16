@@ -40,8 +40,12 @@ for (let i = 0; i < all_canvas.length; i++) {
     });
 
 
-    // let url = `${protocol}//${host_name}/theatre/show-menu/${seat_id}`
-    let url = `https://f2s.in?id=${seat_id}`
+    // ORIGINAL: Using f2s.in URL shortener
+    // let url = `https://f2s.in?id=${seat_id}`
+    
+    // TEMPORARY: Direct URL for testing (bypass f2s.in)
+    let url = `https://calculatentrade.com/theatre/show-menu/${seat_id}`
+    
     generateQRCode(`${seat_id}`, url)
 }
 
