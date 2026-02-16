@@ -1,5 +1,30 @@
 # API Key Security Deployment Guide
 
+## ⚠️ MIDDLEWARE NOT WORKING? SEE FIX BELOW ⚠️
+
+**If middleware is deployed but not blocking requests without API key:**
+
+See detailed fix guide: **DEPLOY_MIDDLEWARE_FIX.md**
+
+Quick diagnostic:
+```bash
+# On production server - run diagnostic
+bash diagnose_middleware.sh
+```
+
+Quick fix:
+```bash
+# On production server - fix and restart
+cd /var/www/scan2food
+git pull origin main
+sudo systemctl daemon-reload
+find application/scan2food -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
+sudo systemctl restart gunicorn && sudo systemctl restart daphne
+curl -i https://scan2food.com/theatre/api/theatre-detail  # Should return 401
+```
+
+---
+
 ## Overview
 This guide explains how to deploy the API key authentication system that protects your public customer-facing endpoints from unauthorized access.
 
@@ -89,10 +114,92 @@ API_KEY=your_local_dev_key_here
 git add .
 git commit -m "Add API key authentication for public endpoints"
 git push origin main
+pu-1gb-amd-blr1-01:~# cd /var/www/scan2food#
+-bash: cd: /var/www/scan2food#: No such file or directory
+root@ubuntu-s-1vcpu-1gb-amd-blr1-01:~# cd /var/www/scan2food
+root@ubuntu-s-1vcpu-1gb-amd-blr1-01:/var/www/scan2food# journalctl -u gunicorn -n 50 --no-pager
+Feb 15 04:46:34 ubuntu-s-1vcpu-1gb-amd-blr1-01 gunicorn[184159]: Forbidden (Referer checking failed - no Referer.): /
+Feb 15 05:14:21 ubuntu-s-1vcpu-1gb-amd-blr1-01 gunicorn[184159]: Not Found: /.env
+Feb 15 05:14:23 ubuntu-s-1vcpu-1gb-amd-blr1-01 gunicorn[184158]: Forbidden (Referer checking failed - no Referer.): /
+Feb 15 05:41:36 ubuntu-s-1vcpu-1gb-amd-blr1-01 gunicorn[184159]: Not Found: /xsq
+Feb 15 05:41:36 ubuntu-s-1vcpu-1gb-amd-blr1-01 gunicorn[184158]: Not Found: /favicon.ico        
+Feb 15 05:48:01 ubuntu-s-1vcpu-1gb-amd-blr1-01 systemd[1]: Stopping gunicorn.service...
+Feb 15 05:48:01 ubuntu-s-1vcpu-1gb-amd-blr1-01 gunicorn[184154]: [2026-02-15 05:48:01 +0000] [184154] [INFO] Handling signal: term
+Feb 15 05:48:02 ubuntu-s-1vcpu-1gb-amd-blr1-01 gunicorn[184159]: [2026-02-15 11:18:02 +0530] [184159] [INFO] Worker exiting (pid: 184159)
+Feb 15 05:48:02 ubuntu-s-1vcpu-1gb-amd-blr1-01 gunicorn[184158]: [2026-02-15 11:18:02 +0530] [184158] [INFO] Worker exiting (pid: 184158)
+Feb 15 05:48:04 ubuntu-s-1vcpu-1gb-amd-blr1-01 gunicorn[184154]: [2026-02-15 05:48:04 +0000] [184154] [INFO] Shutting down: Master
+Feb 15 05:48:04 ubuntu-s-1vcpu-1gb-amd-blr1-01 systemd[1]: gunicorn.service: Deactivated successfully.
+Feb 15 05:48:04 ubuntu-s-1vcpu-1gb-amd-blr1-01 systemd[1]: Stopped gunicorn.service.
+Feb 15 05:48:04 ubuntu-s-1vcpu-1gb-amd-blr1-01 systemd[1]: gunicorn.service: Consumed 1min 29.331s CPU time, 293.4M memory peak, 0B memory swap peak.
+Feb 15 05:48:04 ubuntu-s-1vcpu-1gb-amd-blr1-01 systemd[1]: Started gunicorn.service.
+Feb 15 05:48:04 ubuntu-s-1vcpu-1gb-amd-blr1-01 gunicorn[216199]: [2026-02-15 05:48:04 +0000] [216199] [INFO] Starting gunicorn 25.0.3
+Feb 15 05:48:04 ubuntu-s-1vcpu-1gb-amd-blr1-01 gunicorn[216199]: [2026-02-15 05:48:04 +0000] [216199] [INFO] Listening at: unix:/var/www/scan2food/application/scan2food/gunicorn.sock (216199) 
+Feb 15 05:48:04 ubuntu-s-1vcpu-1gb-amd-blr1-01 gunicorn[216199]: [2026-02-15 05:48:04 +0000] [216199] [INFO] Using worker: sync
+Feb 15 05:48:04 ubuntu-s-1vcpu-1gb-amd-blr1-01 gunicorn[216201]: [2026-02-15 05:48:04 +0000] [216201] [INFO] Booting worker with pid: 216201
+Feb 15 05:48:04 ubuntu-s-1vcpu-1gb-amd-blr1-01 gunicorn[216202]: [2026-02-15 05:48:04 +0000] [216202] [INFO] Booting worker with pid: 216202
+Feb 15 05:48:37 ubuntu-s-1vcpu-1gb-amd-blr1-01 gunicorn[216202]: /var/www/scan2food/application/scan2food/venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1670: RuntimeWarning: DateTimeField Order.start_time received a naive datetime (2026-02-15 06:00:00) while time zone support is active.
+Feb 15 05:48:37 ubuntu-s-1vcpu-1gb-amd-blr1-01 gunicorn[216202]:   warnings.warn(
+Feb 15 05:48:37 ubuntu-s-1vcpu-1gb-amd-blr1-01 gunicorn[216202]: /var/www/scan2food/application/scan2food/venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1670: RuntimeWarning: DateTimeField Order.start_time received a naive datetime (2026-02-16 06:00:00) while time zone support is active.
+Feb 15 05:48:37 ubuntu-s-1vcpu-1gb-amd-blr1-01 gunicorn[216202]:   warnings.warn(
+Feb 15 05:48:37 ubuntu-s-1vcpu-1gb-amd-blr1-01 gunicorn[216202]: /var/www/scan2food/application/scan2food/venv/lib/python3.12/site-packages/gunicorn/workers/sync.py:190: Warning: StreamingHttpResponse must consume asynchronous iterators in order to serve them synchronously. Use a synchronous iterator instead.
+Feb 15 05:48:37 ubuntu-s-1vcpu-1gb-amd-blr1-01 gunicorn[216202]:   for item in respiter:        
+Feb 15 05:53:30 ubuntu-s-1vcpu-1gb-amd-blr1-01 gunicorn[216201]: /var/www/scan2food/application/scan2food/venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1670: RuntimeWarning: DateTimeField Order.start_time received a naive datetime (2026-02-15 06:00:00) while time zone support is active.
+Feb 15 05:53:30 ubuntu-s-1vcpu-1gb-amd-blr1-01 gunicorn[216201]:   warnings.warn(
+Feb 15 05:53:30 ubuntu-s-1vcpu-1gb-amd-blr1-01 gunicorn[216201]: /var/www/scan2food/application/scan2food/venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1670: RuntimeWarning: DateTimeField Order.start_time received a naive datetime (2026-02-16 06:00:00) while time zone support is active.
+Feb 15 05:53:30 ubuntu-s-1vcpu-1gb-amd-blr1-01 gunicorn[216201]:   warnings.warn(
+Feb 15 05:53:30 ubuntu-s-1vcpu-1gb-amd-blr1-01 gunicorn[216201]: /var/www/scan2food/application/scan2food/venv/lib/python3.12/site-packages/gunicorn/workers/sync.py:190: Warning: StreamingHttpResponse must consume asynchronous iterators in order to serve them synchronously. Use a synchronous iterator instead.
+Feb 15 05:53:30 ubuntu-s-1vcpu-1gb-amd-blr1-01 gunicorn[216201]:   for item in respiter:        
+Feb 15 05:53:36 ubuntu-s-1vcpu-1gb-amd-blr1-01 gunicorn[216201]: /var/www/scan2food/application/scan2food/venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1670: RuntimeWarning: DateTimeField Order.start_time received a naive datetime (2026-02-09 06:00:00) while time zone support is active.
+Feb 15 05:53:36 ubuntu-s-1vcpu-1gb-amd-blr1-01 gunicorn[216201]:   warnings.warn(
+Feb 16 09:56:47 ubuntu-s-1vcpu-1gb-amd-blr1-01 systemd[1]: Stopping gunicorn.service...
+Feb 16 09:56:47 ubuntu-s-1vcpu-1gb-amd-blr1-01 gunicorn[216201]: [2026-02-16 15:26:47 +0530] [216201] [INFO] Worker exiting (pid: 216201)
+Feb 16 09:56:47 ubuntu-s-1vcpu-1gb-amd-blr1-01 gunicorn[216202]: [2026-02-16 15:26:47 +0530] [216202] [INFO] Worker exiting (pid: 216202)
+Feb 16 09:56:47 ubuntu-s-1vcpu-1gb-amd-blr1-01 gunicorn[216199]: [2026-02-16 09:56:47 +0000] [216199] [INFO] Handling signal: term
+Feb 16 09:56:49 ubuntu-s-1vcpu-1gb-amd-blr1-01 gunicorn[216199]: [2026-02-16 09:56:49 +0000] [216199] [INFO] Shutting down: Master
+Feb 16 09:56:49 ubuntu-s-1vcpu-1gb-amd-blr1-01 systemd[1]: gunicorn.service: Deactivated successfully.
+Feb 16 09:56:49 ubuntu-s-1vcpu-1gb-amd-blr1-01 systemd[1]: Stopped gunicorn.service.
+Feb 16 09:56:49 ubuntu-s-1vcpu-1gb-amd-blr1-01 systemd[1]: gunicorn.service: Consumed 32.060s CPU time.
+Feb 16 09:56:49 ubuntu-s-1vcpu-1gb-amd-blr1-01 systemd[1]: Started gunicorn.service.
+Feb 16 09:56:49 ubuntu-s-1vcpu-1gb-amd-blr1-01 gunicorn[241716]: [2026-02-16 09:56:49 +0000] [241716] [INFO] Starting gunicorn 25.0.3
+Feb 16 09:56:49 ubuntu-s-1vcpu-1gb-amd-blr1-01 gunicorn[241716]: [2026-02-16 09:56:49 +0000] [241716] [INFO] Listening at: unix:/var/www/scan2food/application/scan2food/gunicorn.sock (241716) 
+Feb 16 09:56:49 ubuntu-s-1vcpu-1gb-amd-blr1-01 gunicorn[241716]: [2026-02-16 09:56:49 +0000] [241716] [INFO] Using worker: sync
+Feb 16 09:56:49 ubuntu-s-1vcpu-1gb-amd-blr1-01 gunicorn[241722]: [2026-02-16 09:56:49 +0000] [241722] [INFO] Booting worker with pid: 241722
+Feb 16 09:56:49 ubuntu-s-1vcpu-1gb-amd-blr1-01 gunicorn[241723]: [2026-02-16 09:56:49 +0000] [241723] [INFO] Booting worker with pid: 241723
+Feb 16 09:56:52 ubuntu-s-1vcpu-1gb-amd-blr1-01 systemd[1]: /etc/systemd/system/gunicorn.service:1: Assignment outside of section. Ignoring.
+Feb 16 09:56:52 ubuntu-s-1vcpu-1gb-amd-blr1-01 systemd[1]: /etc/systemd/system/gunicorn.service:2: Assignment outside of section. Ignoring.
+Feb 16 09:56:52 ubuntu-s-1vcpu-1gb-amd-blr1-01 systemd[1]: /etc/systemd/system/gunicorn.service:3: Assignment outside of section. Ignoring.
+root@ubuntu-s-1vcpu-1gb-amd-blr1-01:/var/www/scan2food# cat /etc/systemd/system/gunicorn.service
+kk[Unit]
+Description=Gunicorn daemon
+After=network.target
 
+[Service]
+User=root
+Group=www-data
+
+WorkingDirectory=/var/www/scan2food/application/scan2food
+
+EnvironmentFile=/var/www/scan2food/application/scan2food/.env
+
+ExecStart=/var/www/scan2food/application/scan2food/venv/bin/gunicorn --workers 2 --bind unix:/var/www/scan2food/application/scan2food/gunicorn.sock theatreApp.wsgi:application
+
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
+
+root@ubuntu-s-1vcpu-1gb-amd-blr1-01:/var/www/scan2food# sudo systemctl daemon-reload && sudo systemctl restart gunicorn && sudo systemctl restart daphne && sleep 3 && echo "Testing API (should return 401):" && curl https://scan2food.com/theatre/api/all-menu/1 | head -20
+Testing API (should return 401):
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+{"commission": 5.9, "tax_type": "IGST", "all_category": [{"name": "Popcorn", "id": 3, "category_image": "http://scan2food.com/static/assets/images/category/Popcorn.png", "items": [{"item_id": 5, "name": "Cheese Popcorn Medium", "description": "-", "real_price": 100.0, "price": 105.9, "food_type": "veg", "food_image": "http://scan2food.com/media/food_images/chese-popcorn.png", "made_by": "in-house", "min_time": 5, "max_time": 30}, {"item_id": 3, "name": "Large Popcorn", "description": "-", "real_price": 1.0, "price": 1.06, "food_type": "veg", "food_image": "http://scan2food.com/media/food_images/pop-corn_qxDeJsw.jpg", "made_by": "in-house", "min_time": 5, "max_time": 30}, {"item_id": 4, "name": "Medium Popcorn", "description": "-", "real_price": 9443.0, "price": 10000.14, "food_type": "veg", "food_image": "http://scan2food.com/media/food_images/popcorn00_oTNAEAk.jpg", "made_by": "in-house", "min_time": 5, "max_time": 30}]}, {"name": "Pizza", "id": 61, "category_image": "http://scan2food.com/static/assets/images/category/Pizza.png", "items": [{"item_id": 37, "name": "Paneer Tikka Pizza", "description": "-", "real_price": 230.0, "price": 243.57, "food_type": "veg", "food_image": "http://scan2food.com/media/food_images/pizza_vWNnLrK.webp", "made_by": "in-house", "min_time": 5, "max_time": 30}]}, {"name": "Fast Food", "id": 5, "category_image": "http://scan2food.com/static/assets/images/category/Fast%20Food.png", "items": [{"item_id": 17, "name": "French fries", "description": "-", "real_price": 120.0, "price": 127.08, "food_type": "veg", "food_image": "http://scan2food.com/media/food_images/french-fries.jpg", "made_by": "in-house", "min_time": 5, "max_time": 30}, {"item_id": 18, "name": "Sweet Corn", "description": "-", "real_price": 80.0, "price": 84.72, "food_type": "veg", "food_image": "http://scan2food.com/media/food_images/sweet-corn.webp", "made_by": "in-house", "min_time": 5, "max_time": 30}, {"item_id": 19, "name": "Nachos (with Salsa & Mayo Dip)", "description": "-", "real_price": 140.0, "price": 148.26, "food_type": "veg", "food_image": "http://scan2food.com/media/food_images/nacho.jpg", "made_by": "in-house", "min_time": 5, "max_time": 30}, {"item_id": 20, "name": "Veg Aloo Patties", "description": "-", "real_price": 70.0, "price": 74.13, "food_type": "veg", "food_image": "http://scan2food.com/media/food_images/aloo-patties.webp", "made_by": "in-house", "min_time": 5, "max_time": 30}, {"item_id": 21, "name": "Veg Maggi", "description": "-", "real_price": 110.0, "price": 116.49, "food_type": "veg", "food_image": "http://scan2food.com/media/food_images/megi.jpeg", "made_by": "in-house", "min_time": 5, "max_time": 30}, {"item_id": 22, "name": "Cheese Maggi", "description": "-", "real_price": 130.0, "price": 137.67, "food_type": "veg", "food_image": "http://scan2food.com/media/food_images/megi_XaT6Ox8.jpeg", "made_by": "in-house", "min_time": 5, "max_time": 30}, {"item_id": 23, "name": "Veg Momos Fried (6 Pieces)", "description": "-", "real_price": 120.0, "price": 127.08, "food_type": "veg", "food_image": "http://scan2food.com/media/food_images/momos.webp", "made_by": "in-house", "min_time": 5, "max_time": 30}, {"item_id": 24, "name": "Paneer Momos Fried (4 Pieces)", "description": "-", "real_price": 140.0, "price": 148.26, "food_type": "veg", "food_image": "http://scan2food.com/media/food_images/momos_zFp0Y4L.webp", "made_by": "in-house", "min_time": 5, "max_time": 30}, {"item_id": 25, "name": "Corn & Cheese Momos Fried (6 Pieces)", "description": "-", "real_price": 140.0, "price": 148.26, "food_type": "veg", "food_image": "http://scan2food.com/media/food_images/momos_NtpWyd4.webp", "made_by": "in-house", "min_time": 5, "max_time": 30}, {"item_id": 26, "name": "Veg Cigar Roll (4 Pieces)", "description": "-", "real_price": 140.0, "price": 148.26, "food_type": "veg", "food_image": "http://scan2food.com/media/food_images/cigar-roll.webp", "made_by": "in-house", "min_time": 5, "max_time": 30}, {"item_id": 27, "name": "Paneer Cigar Roll (4 Pieces)", "description": "-", "real_price": 150.0, "price": 158.85, "food_type": "veg", "food_image": "http://scan2food.com/media/food_images/cigar-roll_MGYg15z.webp", "made_by": "in-house", "min_time": 5, "max_time": 30}]}, {"name": "Combos", "id": 13, "category_image": "http://scan2food.com/static/assets/images/category/Combos.png", "items": [{"item_id": 7, "name": "Medium Coke", "description": "-", "real_price": 130.0, "price": 137.67, "food_type": "veg", "food_image": "http://scan2food.com/media/food_images/coca-cola_ZMV3zcH.jpeg", "made_by": "in-house", "min_time": 5, "max_time": 30}, {"item_id": 169, "name": "test", "description": "__", "real_price": 1.0, "price": 1.06, "food_type": "veg", "food_image": "http://scan2food.com/media/food_images/sandwich_200_png_ALiaESf.png", "made_by": "in-house", "min_time": 5, "max_time": 30}]}, {"name": "Patty", "id": 6, "category_image": "http://scan2food.com/static/assets/images/category/Patty.png", "items": [{"item_id": 31, "name": "Veg Cheese Burger", "description": "-", "real_price": 120.0, "price": 127.08, "food_type": "veg", "food_image": "http://scan2food.com/media/food_images/burger.jpg", "made_by": "in-house", "min_time": 5, "max_time": 30}, {"item_id": 38, "name": "Veg Pasta (Red Sauce, White Sauce, Mix Sauce)", "description": "-", "real_price": 160.0, "price": 169.44, "food_type": "veg", "food_image": "http://scan2food.com/media/food_images/pasta.jpeg", "made_by": "in-house", "min_time": 5, "max_time": 30}, {"item_id": 34, "name": "Veg Club Sandwich", "description": "-", "real_price": 130.0, "price": 137.67, "food_type": "veg", "food_image": "http://scan2food.com/media/food_images/sandwich.jpg", "made_by": "in-house", "min_time": 5, "max_time": 30}, {"item_id": 32, "name": "Paneer Tikka Sandwich Grilled", "description": "-", "real_price": 150.0, "price": 158.85, "food_type": "veg", "food_image": "http://scan2food.com/media/food_images/sandwich_oZDrm5b.jpg", "made_by": "in-house", "min_time": 5, "max_time": 30}, {"item_id": 33, "name": "Veg Mexican Sandwich Grilled", "description": "-", "real_price": 140.0, "price": 148.26, "food_type": "veg", "food_image": "http://scan2food.com/media/food_images/sandwich_6C1quqM.jpg", "made_by": "in-house", "min_time": 5, "max_time": 30}, {"item_id": 36, "name": "Veg Mexican Pizza", "description": "-", "real_price": 190.0, "price": 201.21, "food_type": "veg", "food_image": "http://scan2food.com/media/food_images/pizza.webp", "made_by": "in-house", "min_time": 5, "max_time": 30}]}, {"name": "Dessert", "id": 60, "category_image": "http://scan2food.com/static/assets/images/category/Dessert.png", "items": [{"item_id": 9, "name": "Chocolate Shakes", "description": "-", "real_price": 130.0, "price": 137.67, "food_type": "veg", "food_image": "http://scan2food.com/media/food_images/oreo-shake.jpg", "made_by": "in-house", "min_time": 5, "max_time": 30}]}, {"name": "Beverages", "id": 4, "category_image": "http://scan2food.com/static/assets/images/category/Beverages.png", "items": [{"item_id": 16, "name": "Tea", "description": "-", "real_price": 70.0, "price": 74.13, "food_type": "veg", "food_image": "http://scan2food.com/media/food_images/tea.jpg", "made_by": "in-house", "min_time": 5, "max_time": 30}, {"item_id": 12, "name": "Cold Coffee With Ice Cream", "description": "-", "real_price": 140.0, "price": 148.26, "food_type": "veg", "food_image": "http://scan2food.com/media/food_images/download_4.jpg", "made_by": "packaged", "min_time": 5, "max_time": 30}, {"item_id": 13, "name": "Virgin Mojito Mocktail", "description": "-", "real_price": 120.0, "price": 127.08, "food_type": "veg", "food_image": "http://scan2food.com/media/food_images/mojito-mocktail.jpeg", "made_by": "in-house", "min_time": 5, "max_time": 30}, {"item_id": 6, "name": "Large Coke", "description": "-", "real_price": 150.0, "price": 158.85, "food_type": "veg", "food_image": "http://scan2food.com/media/food_images/coca-cola_JbjOqQo.jpeg", "made_by": "in-house", "min_time": 5, "max_time": 30}, {"item_id": 14, "name": "Ice Cream Cup", "description": "-", "real_price": 80.0, "price": 84.72, "food_type": "veg", "food_image": "http://scan2food.com/media/food_images/ice-100  8503  100  8503    0     0   151k      0 --:--:-- --:--:-- --:--:--  153k
+cream.jpg", "made_by": "in-house", "min_time": 5, "max_time": 30}, {"item_id": 15, "name": "Hot Coffee", "description": "-", "real_price": 10.0, "price": 10.59, "food_type": "veg", "food_image": "http://scan2food.com/media/food_images/tea_JOjusiN.webp", "made_by": "in-house", "min_time": 5, "max_time": 30}]}]}root@ubuntu-s-1vcpu-1gb-amd-blr1-01:/var/www/scan2food#
 # On the server
 cd /var/www/scan2food
-git pull origin main
+git pull origin 
+
+RDnXh86Ciczn2Orbc2CxQtQ6VB-tzl19bcKTtNrSK4Y
 ```
 
 #### Option B: Manual File Upload

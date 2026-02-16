@@ -32,15 +32,23 @@ class APIKeyMiddleware:
             )
     
     def __call__(self, request):
+        # DEBUG: Log every request to verify middleware is running
+        logger.info(f"[MIDDLEWARE] Processing: {request.method} {request.path}")
+        
         # Check if this endpoint needs API key protection
-        if self.needs_api_key(request):
+        needs_key = self.needs_api_key(request)
+        logger.info(f"[MIDDLEWARE] Needs API key: {needs_key}")
+        
+        if needs_key:
             # Check if user is already logged in (theatre staff)
             if request.user.is_authenticated:
                 # Let them through - they're authenticated staff
+                logger.info(f"[MIDDLEWARE] User authenticated, allowing access")
                 return self.get_response(request)
             
             # Get the API key from request header
             provided_key = request.headers.get('X-API-Key', '')
+            logger.info(f"[MIDDLEWARE] API key provided: {bool(provided_key)}")
             
             # Check if it matches (using constant-time comparison for security)
             if not provided_key or not secrets.compare_digest(provided_key, self.api_key):
@@ -61,6 +69,8 @@ class APIKeyMiddleware:
                     },
                     status=401
                 )
+            
+            logger.info(f"[MIDDLEWARE] API key valid, allowing access")
         
         # All good - let the request through
         return self.get_response(request)
