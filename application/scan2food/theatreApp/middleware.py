@@ -53,7 +53,9 @@ class APIKeyMiddleware:
         
         if needs_key:
             # Check if user is already logged in (theatre staff)
-            if request.user.is_authenticated:
+            # Note: request.user might not be available yet during middleware init
+            # So we check if the user object exists and is authenticated
+            if hasattr(request, 'user') and request.user.is_authenticated:
                 # Let them through - they're authenticated staff
                 logger.info(f"[MIDDLEWARE] User authenticated, allowing access")
                 return self.get_response(request)
@@ -95,25 +97,12 @@ class APIKeyMiddleware:
         """
         path = request.path
         
-        # SKIP these endpoints (don't need API key):
-        skip_patterns = [
-            '/admin/',              # Django admin panel
-            '/static/',             # Static files (CSS, JS, images)
-            '/media/',              # Media files (uploads)
-            '/login',               # Login page
-            '/logout',              # Logout
-        ]
-        
-        for pattern in skip_patterns:
-            if path.startswith(pattern):
-                return False
-        
         # SKIP all webhook endpoints (they use signature verification)
         if 'webhook' in path.lower():
             return False
         
-        # PROTECT these public customer-facing API endpoints:
-        # NOTE: Only protect /api/ endpoints, NOT the HTML pages
+        # ONLY PROTECT these specific public customer-facing API endpoints:
+        # These are the endpoints that customers access without logging in
         public_api_patterns = [
             '/theatre/api/all-menu/',
             '/theatre/api/create-order',
@@ -128,7 +117,9 @@ class APIKeyMiddleware:
             if path.startswith(pattern):
                 return True
         
-        # Default: don't require API key
+        # Default: DON'T require API key
+        # This means all other endpoints (admin pages, staff pages, etc.) 
+        # are protected by Django's built-in authentication instead
         return False
     
     def get_client_ip(self, request):

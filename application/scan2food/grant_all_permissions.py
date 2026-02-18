@@ -1,7 +1,7 @@
 """
-Fix user permissions by adding them to a group with proper permissions
+Grant all permissions to a theatre user
 Run from: application/scan2food/
-Command: python fix_user_permissions.py <username>
+Command: python grant_all_permissions.py <username>
 """
 import os
 import sys
@@ -10,12 +10,12 @@ import django
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'theatreApp.settings')
 django.setup()
 
-from django.contrib.auth.models import User, Permission, Group
+from django.contrib.auth.models import User, Permission
 from django.contrib.contenttypes.models import ContentType
 
-def fix_user_permissions(username):
+def grant_permissions(username):
     print("=" * 60)
-    print(f"FIXING PERMISSIONS FOR: {username}")
+    print(f"GRANTING PERMISSIONS TO: {username}")
     print("=" * 60)
     
     try:
@@ -25,15 +25,6 @@ def fix_user_permissions(username):
         return
     
     print(f"\n✓ Found user: {user.username}")
-    
-    # Create or get a "Theatre Manager" group
-    group_name = "Theatre Manager"
-    group, created = Group.objects.get_or_create(name=group_name)
-    
-    if created:
-        print(f"\n✓ Created new group: {group_name}")
-    else:
-        print(f"\n✓ Found existing group: {group_name}")
     
     # Get all permissions related to theatre operations
     permission_codenames = [
@@ -53,39 +44,31 @@ def fix_user_permissions(username):
         'add_payment',
         'change_payment',
         'delete_payment',
-        'view_foodcategory',
-        'add_foodcategory',
-        'change_foodcategory',
-        'delete_foodcategory',
     ]
     
-    print("\nAdding permissions to group:")
+    print("\nGranting permissions:")
     granted = 0
     for codename in permission_codenames:
         try:
             permission = Permission.objects.get(codename=codename)
-            group.permissions.add(permission)
+            user.user_permissions.add(permission)
             print(f"  ✓ {codename}")
             granted += 1
         except Permission.DoesNotExist:
             print(f"  ⚠️  {codename} (not found)")
     
-    # Add user to the group
-    user.groups.clear()  # Remove from other groups
-    user.groups.add(group)
     user.save()
     
-    print(f"\n✓ Added {granted} permissions to group '{group_name}'")
-    print(f"✓ Added user '{username}' to group '{group_name}'")
+    print(f"\n✓ Granted {granted} permissions to {username}")
     print("\n" + "=" * 60)
-    print("DONE - User now has full theatre access via group")
+    print("DONE - User now has full theatre access")
     print("=" * 60)
 
 if __name__ == '__main__':
     if len(sys.argv) < 2:
-        print("Usage: python fix_user_permissions.py <username>")
-        print("\nExample: python fix_user_permissions.py 8708093774")
+        print("Usage: python grant_all_permissions.py <username>")
+        print("\nExample: python grant_all_permissions.py 8708093774")
         sys.exit(1)
     
     username = sys.argv[1]
-    fix_user_permissions(username)
+    grant_permissions(username)
