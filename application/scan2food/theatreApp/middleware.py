@@ -103,10 +103,10 @@ class APIKeyMiddleware:
         
         # ONLY PROTECT these specific public customer-facing API endpoints:
         # These are the endpoints that customers access without logging in
+        # NOTE: /theatre/api/theatre-detail is excluded because it's used by QR code page
         public_api_patterns = [
             '/theatre/api/all-menu/',
             '/theatre/api/create-order',
-            '/theatre/api/theatre-detail',
             '/theatre/api/tax-list/',
             '/theatre/api/order-data/',
             '/theatre/api/seat-last-order/',
