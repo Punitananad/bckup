@@ -1111,7 +1111,7 @@ def single_qr(request, pk):
         
         for seat in seats:
             url = f"https://calculatentrade.com/theatre/show-menu/{seat.pk}"
-            html += f'<li><a href="{url}">{seat.row.hall.name} - Row {seat.row.row_name} - Seat {seat.seat_name}</a> (ID: {seat.pk})</li>'
+            html += f'<li><a href="{url}">{seat.row.hall.name} - Row {seat.row.name} - Seat {seat.seat_name}</a> (ID: {seat.pk})</li>'
         
         html += """
             </ul>
