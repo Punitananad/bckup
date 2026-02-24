@@ -13,6 +13,10 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 from pathlib import Path
 import os
 
+# Load environment variables from .env file
+from dotenv import load_dotenv
+load_dotenv()
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -129,19 +133,19 @@ import os
 
 # Check if we're in production (you can set this environment variable on server)
 if os.environ.get('DJANGO_ENV') == 'production':
-    # PRODUCTION: PostgreSQL with NEW secure credentials
+    # PRODUCTION: PostgreSQL
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
             'NAME': os.environ.get('DB_NAME', 'scan2food_db'),
             'USER': os.environ.get('DB_USER', 'scan2food_user'),
-            'PASSWORD': os.environ.get('DB_PASSWORD', 'CHANGE_THIS_PASSWORD'),
+            'PASSWORD': os.environ.get('DB_PASSWORD', 'scann2Food'),
             'HOST': os.environ.get('DB_HOST', 'localhost'),
             'PORT': os.environ.get('DB_PORT', '5432'),
         }
     }
 else:
-    # LOCAL DEVELOPMENT: Using SQLite
+    # LOCAL DEVELOPMENT: SQLite
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',

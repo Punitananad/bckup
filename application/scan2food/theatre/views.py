@@ -1076,55 +1076,16 @@ def show_menu(request, pk):
         raise Http404('page not found')
 
 def single_qr(request, pk):
-    # TEMPORARILY DISABLED: QR redirect page
-    # This view normally shows a page where users select hall/seat
-    # For debugging, we're bypassing it to show direct seat URLs
-    # TODO: Re-enable this after fixing seat ID issues
-    
-    # try:
-    #     context = {
-    #         'theatre_id': pk
-    #     }
-    #     return render(request, 'theatre/single-qr.html', context)
-    # except:
-    #     raise Http404('page not found')
-    
-    # TEMPORARY: Show debug info instead
-    from django.http import HttpResponse
-    from theatre.models import Seat
+    # Set session variable to indicate this is a common screen
+    request.session['is_common_screen'] = True
     
     try:
-        # Get first 10 seats for this theatre
-        seats = Seat.objects.filter(
-            row__hall__theatre__pk=pk,
-            is_vacent=True
-        ).select_related('row__hall__theatre')[:10]
-        
-        html = f"""
-        <html>
-        <head><title>Debug: Theatre {pk} Seats</title></head>
-        <body style="font-family: Arial; padding: 20px;">
-            <h1>Theatre ID: {pk}</h1>
-            <h2>Available Seat URLs (for testing):</h2>
-            <ul>
-        """
-        
-        for seat in seats:
-            url = f"https://calculatentrade.com/theatre/show-menu/{seat.pk}"
-            html += f'<li><a href="{url}">{seat.row.hall.name} - Row {seat.row.name} - Seat {seat.seat_name}</a> (ID: {seat.pk})</li>'
-        
-        html += """
-            </ul>
-            <p><strong>Note:</strong> This is a temporary debug page. The QR redirect is disabled for testing.</p>
-            <p>Click any link above to test the menu page with API key protection.</p>
-        </body>
-        </html>
-        """
-        
-        return HttpResponse(html)
-        
-    except Exception as e:
-        return HttpResponse(f"<h1>Error</h1><p>{str(e)}</p><p>Theatre ID: {pk}</p>")
+        context = {
+            'theatre_id': pk
+        }
+        return render(request, 'theatre/single-qr.html', context)
+    except:
+        raise Http404('page not found')
 
 
 def hall_qr(request, pk):
@@ -1181,7 +1142,16 @@ def order_status(request, pk):
                 order_time = localtime(order.payment.time)
                 order_time = order_time.strftime("%d-%b-%Y %I:%M %p")
                 max_time = order.max_time()
-                return render(request, 'theatre/order-preparing.html', {'order': order, "order_time": order_time, "max_time": max_time})
+                
+                # Check if this is a common screen order (session variable set when opening menu from common screen)
+                is_common_screen = request.session.get('is_common_screen', False)
+                
+                return render(request, 'theatre/order-preparing.html', {
+                    'order': order, 
+                    "order_time": order_time, 
+                    "max_time": max_time,
+                    "is_common_screen": is_common_screen
+                })
     
     except:
         raise Http404('page not found')

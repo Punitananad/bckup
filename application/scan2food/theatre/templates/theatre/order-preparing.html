@@ -145,11 +145,11 @@
 {{order.pk|json_script:"order-id"}}
 <script src="{% static 'theatre_js/order-preparing.js' %}"></script>
 
-{% if request.user.is_authenticated %}
+{% if is_common_screen %}
 {{ order.seat.row.hall.theatre.pk|json_script:"theatre-id"}}
 <script src="{% static 'theatre_js/redirect-url.js' %}"></script>
-
 {% endif %}
+
 <script>
   // Example usage:
   startCountdown("{{order_time}}", parseInt("{{max_time}}"));

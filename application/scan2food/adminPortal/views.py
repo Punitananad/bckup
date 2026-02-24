@@ -529,7 +529,7 @@ def all_orders_new_page(request):
             all_orders = Order.objects.filter(start_time__range=(start_time, end_time))
         else:
             all_orders = Order.objects.filter(start_time__range=(start_time, end_time), seat__row__hall__theatre__pk=selected_theatre)
-            
+        
         total_amount = theatre_payment.objects.filter(order__in=all_orders, status="Success").aggregate(total=Sum("amount"))["total"] or 0
 
         if order_status == None or order_status == "":

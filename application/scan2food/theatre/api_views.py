@@ -483,6 +483,7 @@ def seat_last_order(request, pk):
 
 @csrf_exempt
 @csrf_exempt
+@csrf_exempt
 @api_view(['POST'])
 def create_order(request):
     current_user = request.user
