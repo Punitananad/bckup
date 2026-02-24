@@ -146,12 +146,18 @@
 <script src="{% static 'theatre_js/order-preparing.js' %}"></script>
 
 {% if request.user.is_authenticated and request.user.userprofile.theatre %}
-<!-- Theatre owner is logged in - show countdown and redirect (common screen) -->
+<!-- Theatre owner is logged in - show ONLY 10-second redirect countdown (common screen) -->
 {{ order.seat.row.hall.theatre.pk|json_script:"theatre-id"}}
 <script src="{% static 'theatre_js/redirect-url.js' %}"></script>
 <script>
-  // Start countdown and redirect for theatre owners
-  startCountdown();
+  // Start 10-second redirect countdown for theatre owners
+  startRedirectCountdown();
+</script>
+{% else %}
+<!-- Regular customer - show ONLY estimated preparation time -->
+<script>
+  // Show estimated preparation time for customers
+  startCountdown("{{order_time}}", parseInt("{{max_time}}"));
 </script>
 {% endif %}
 

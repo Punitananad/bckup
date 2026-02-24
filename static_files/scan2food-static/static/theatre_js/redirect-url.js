@@ -1,4 +1,4 @@
-function startCountdown() {
+function startRedirectCountdown() {
     // Get theatre_id when function is called, not when script loads
     const theatre_id = JSON.parse(document.getElementById('theatre-id').innerText);
     
