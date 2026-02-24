@@ -145,13 +145,14 @@
 {{order.pk|json_script:"order-id"}}
 <script src="{% static 'theatre_js/order-preparing.js' %}"></script>
 
-{% if is_common_screen %}
+{% if request.user.is_authenticated %}
+<!-- User is logged in - show countdown and redirect (common screen) -->
 {{ order.seat.row.hall.theatre.pk|json_script:"theatre-id"}}
 <script src="{% static 'theatre_js/redirect-url.js' %}"></script>
+<script>
+  // Start countdown and redirect for logged in users
+  startCountdown();
+</script>
 {% endif %}
 
-<script>
-  // Example usage:
-  startCountdown("{{order_time}}", parseInt("{{max_time}}"));
-</script>
 {% endblock %}

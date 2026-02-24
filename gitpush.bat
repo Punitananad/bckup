@@ -1,32 +1,19 @@
 @echo off
 echo ============================================================
-echo Git Push to Repository
+echo Git Push to Repository (Force Push - No Pull)
 echo ============================================================
 echo.
 
-REM Check if there are any changes
-git status
-
-echo.
-set /p commit_msg="Enter commit message: "
-
-if "%commit_msg%"=="" (
-    echo Error: Commit message cannot be empty
-    pause
-    exit /b 1
-)
-
-echo.
 echo Adding all changes...
 git add .
 
 echo.
 echo Committing changes...
-git commit -m "%commit_msg%"
+git commit -m "Update: Fix countdown logic for authenticated users"
 
 echo.
-echo Pushing to origin main...
-git push origin main
+echo Force pushing to origin main...
+git push origin main --force
 
 echo.
 echo ============================================================
