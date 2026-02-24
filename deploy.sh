@@ -22,7 +22,7 @@ echo ""
 echo "Step 2: Creating backup of current code..."
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)
 BACKUP_FILE="/var/www/scan2food_backups/backup_${TIMESTAMP}.tar.gz"
-tar -czf $BACKUP_FILE --exclude='*.pyc' --exclude='__pycache__' --exclude='*.log' --exclude='db.sqlite3' .
+tar -czf $BACKUP_FILE --exclude='*.pyc' --exclude='__pycache__' --exclude='*.log' --exclude='db.sqlite3' --exclude='*.sock' --exclude='backups' .
 echo "✓ Backup created: $BACKUP_FILE"
 
 echo ""
