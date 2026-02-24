@@ -1,6 +1,7 @@
-const theatre_id = JSON.parse(document.getElementById('theatre-id').innerText);
-
 function startCountdown() {
+    // Get theatre_id when function is called, not when script loads
+    const theatre_id = JSON.parse(document.getElementById('theatre-id').innerText);
+    
     // Create dark overlay
     const overlay = document.createElement("div");
     overlay.style.position = "fixed";

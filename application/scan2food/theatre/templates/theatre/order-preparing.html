@@ -145,12 +145,12 @@
 {{order.pk|json_script:"order-id"}}
 <script src="{% static 'theatre_js/order-preparing.js' %}"></script>
 
-{% if request.user.is_authenticated %}
-<!-- User is logged in - show countdown and redirect (common screen) -->
+{% if request.user.is_authenticated and request.user.userprofile.theatre %}
+<!-- Theatre owner is logged in - show countdown and redirect (common screen) -->
 {{ order.seat.row.hall.theatre.pk|json_script:"theatre-id"}}
 <script src="{% static 'theatre_js/redirect-url.js' %}"></script>
 <script>
-  // Start countdown and redirect for logged in users
+  // Start countdown and redirect for theatre owners
   startCountdown();
 </script>
 {% endif %}
