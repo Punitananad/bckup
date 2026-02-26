@@ -1835,7 +1835,6 @@ def generate_update_otp(request):
     else:
         return JsonResponse({'status': 'Permission Denied'})
 
-@sync_to_async
 def serialize_order(order):
     theatre = order.seat.row.hall.theatre
     return {
