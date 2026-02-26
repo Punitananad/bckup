@@ -1860,26 +1860,36 @@ def sse_orders_stream(request):
     Streams each order individually over SSE - synchronous version.
     """
     import traceback
+    import logging
+    
+    logger = logging.getLogger(__name__)
     
     # fetch all orders
+    logger.info(f"[SSE] Fetching orders with params: {request.GET.dict()}")
     orders = get_all_orders(request)
+    logger.info(f"[SSE] Found {len(orders)} orders to stream")
 
     def event_stream():
+        count = 0
         try:
             for order in orders:
                 try:
                     serialized = serialize_order(order)
                     payload = json.dumps(serialized)
+                    count += 1
+                    if count % 100 == 0:
+                        logger.info(f"[SSE] Streamed {count} orders so far")
                     yield f"data: {payload}\n\n"
                 except Exception as e:
                     # Log the error but continue with other orders
                     error_msg = f"Error serializing order {order.id}: {str(e)}"
-                    print(error_msg)
+                    logger.error(error_msg)
                     traceback.print_exc()
                     continue
+            logger.info(f"[SSE] Completed streaming {count} orders")
         except Exception as e:
             error_msg = f"Error in event_stream: {str(e)}"
-            print(error_msg)
+            logger.error(error_msg)
             traceback.print_exc()
             yield f"data: {json.dumps({'error': error_msg})}\n\n"
         

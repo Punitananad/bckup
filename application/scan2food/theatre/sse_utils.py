@@ -7,6 +7,9 @@ from .models import Order, Theatre
 from django.db.models import Max, Q
 
 def get_all_orders(request):
+    import logging
+    logger = logging.getLogger(__name__)
+    
     date_range = request.GET.get('daterange', "")
     order_status = request.GET.get('order-status')
     selected_theatre = request.GET.get('selected-theatre', "")
@@ -14,6 +17,8 @@ def get_all_orders(request):
     payment_id = request.GET.get('payment-id', "")
     scan2food_payment_id = request.GET.get('scan2food-payment-id', "")
     phone_number = request.GET.get('phone-number', "")
+    
+    logger.info(f"[get_all_orders] Params - date_range: {date_range}, order_status: {order_status}, selected_theatre: {selected_theatre}")
     # deactivate_theatres = Theatre.objects.filter(detail__scaning_service=False).count()
 
     current_time = localtime(timezone.now())
@@ -47,6 +52,8 @@ def get_all_orders(request):
     tiem_obj = time(hour=6, minute=0, second=0, microsecond=0)
     start_time = datetime.combine(start_date, tiem_obj)
     end_time = datetime.combine(end_date, tiem_obj)
+    
+    logger.info(f"[get_all_orders] Date range: {start_time} to {end_time}")
 
     if selected_theatre == "":
         all_orders = Order.objects.filter(start_time__range=(start_time, end_time))
@@ -56,11 +63,15 @@ def get_all_orders(request):
             seat__row__hall__theatre__pk=selected_theatre
         )
 
+    logger.info(f"[get_all_orders] After date filter: {all_orders.count()} orders")
+
     if order_status is None or order_status == "":
         order_status = "Success"
 
     if order_status != "All":
         all_orders = all_orders.filter(payment__status=order_status)
+    
+    logger.info(f"[get_all_orders] After status filter ({order_status}): {all_orders.count()} orders")
     
     if seat_status == "Vacent":
         all_orders = all_orders.filter(seat__is_vacent=False)
@@ -97,4 +108,6 @@ def get_all_orders(request):
         if cleaned_phone:
             all_orders = all_orders.filter(payment__phone_number__icontains=cleaned_phone)
 
-    return list(all_orders)
+    result = list(all_orders)
+    logger.info(f"[get_all_orders] Final result: {len(result)} orders")
+    return result
