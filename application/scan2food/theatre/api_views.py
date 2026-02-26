@@ -1862,6 +1862,9 @@ async def sse_orders_stream(request):
     from asgiref.sync import sync_to_async
     import traceback
     
+    # Wrap serialize_order to handle DB queries properly
+    async_serialize_order = sync_to_async(serialize_order, thread_sensitive=True)
+    
     # fetch all orders (sync function wrapped)
     orders = await sync_to_async(list)(await sync_to_async(get_all_orders)(request))
 
@@ -1869,8 +1872,8 @@ async def sse_orders_stream(request):
         try:
             for order in orders:
                 try:
-                    # Call serialize_order directly without wrapping - it's already sync
-                    serialized = serialize_order(order)
+                    # Use the wrapped version
+                    serialized = await async_serialize_order(order)
                     payload = json.dumps(serialized)
                     yield f"data: {payload}\n\n".encode('utf-8')
                 except Exception as e:
