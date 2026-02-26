@@ -1855,27 +1855,22 @@ def serialize_order(order):
         'items': order.get_items(),
     }
 
-async def sse_orders_stream(request):
+def sse_orders_stream(request):
     """
-    Streams each order individually over SSE.
+    Streams each order individually over SSE - synchronous version.
     """
-    from asgiref.sync import sync_to_async
     import traceback
     
-    # Wrap serialize_order to handle DB queries properly
-    async_serialize_order = sync_to_async(serialize_order, thread_sensitive=True)
-    
-    # fetch all orders (sync function wrapped)
-    orders = await sync_to_async(list)(await sync_to_async(get_all_orders)(request))
+    # fetch all orders
+    orders = get_all_orders(request)
 
-    async def event_stream():
+    def event_stream():
         try:
             for order in orders:
                 try:
-                    # Use the wrapped version
-                    serialized = await async_serialize_order(order)
+                    serialized = serialize_order(order)
                     payload = json.dumps(serialized)
-                    yield f"data: {payload}\n\n".encode('utf-8')
+                    yield f"data: {payload}\n\n"
                 except Exception as e:
                     # Log the error but continue with other orders
                     error_msg = f"Error serializing order {order.id}: {str(e)}"
@@ -1886,7 +1881,7 @@ async def sse_orders_stream(request):
             error_msg = f"Error in event_stream: {str(e)}"
             print(error_msg)
             traceback.print_exc()
-            yield f"data: {json.dumps({'error': error_msg})}\n\n".encode('utf-8')
+            yield f"data: {json.dumps({'error': error_msg})}\n\n"
         
 
     response = StreamingHttpResponse(
