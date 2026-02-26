@@ -93,6 +93,8 @@ def get_all_orders(request):
     if phone_number != "":
         # Clean phone number: remove +tel: prefix and any whitespace
         cleaned_phone = phone_number.replace("+tel:", "").replace(" ", "").strip()
-        all_orders = all_orders.filter(payment__phone_number__icontains=cleaned_phone)
+        # Only filter if there's actual content after cleaning
+        if cleaned_phone:
+            all_orders = all_orders.filter(payment__phone_number__icontains=cleaned_phone)
 
     return list(all_orders)
