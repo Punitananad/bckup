@@ -1855,19 +1855,35 @@ def serialize_order(order):
         'items': order.get_items(),
     }
 
-def sse_orders_stream(request):
+async def sse_orders_stream(request):
     """
     Streams each order individually over SSE.
     """
+    from asgiref.sync import sync_to_async
+    import traceback
+    
+    # fetch all orders (sync function wrapped)
+    orders = await sync_to_async(list)(await sync_to_async(get_all_orders)(request))
 
-    # fetch all orders
-    orders = get_all_orders(request)
-
-    def event_stream():
-        for order in orders:
-            serialized = serialize_order(order)
-            payload = json.dumps(serialized)
-            yield f"data: {payload}\n\n"
+    async def event_stream():
+        try:
+            for order in orders:
+                try:
+                    # Wrap the sync serialize_order function
+                    serialized = await sync_to_async(serialize_order)(order)
+                    payload = json.dumps(serialized)
+                    yield f"data: {payload}\n\n".encode('utf-8')
+                except Exception as e:
+                    # Log the error but continue with other orders
+                    error_msg = f"Error serializing order {order.id}: {str(e)}"
+                    print(error_msg)
+                    traceback.print_exc()
+                    continue
+        except Exception as e:
+            error_msg = f"Error in event_stream: {str(e)}"
+            print(error_msg)
+            traceback.print_exc()
+            yield f"data: {json.dumps({'error': error_msg})}\n\n".encode('utf-8')
         
 
     response = StreamingHttpResponse(
@@ -1875,8 +1891,9 @@ def sse_orders_stream(request):
         content_type='text/event-stream'
     )
 
-    response["Access-Control-Allow-Origin"] = "*"  # Allow all for testing
+    response["Access-Control-Allow-Origin"] = "*"
     response["Cache-Control"] = "no-cache"
+    response["X-Accel-Buffering"] = "no"
     return response
 
 def live_orders(request):
