@@ -91,6 +91,8 @@ def get_all_orders(request):
         all_orders = all_orders.filter(payment__pk__icontains=scan2food_payment_id)
 
     if phone_number != "":
-        all_orders = all_orders.filter(payment__phone_number__icontains=phone_number)
+        # Clean phone number: remove +tel: prefix and any whitespace
+        cleaned_phone = phone_number.replace("+tel:", "").replace(" ", "").strip()
+        all_orders = all_orders.filter(payment__phone_number__icontains=cleaned_phone)
 
     return list(all_orders)

@@ -131,27 +131,17 @@ CHANNEL_LAYERS = {
 
 import os
 
-# Check if we're in production (you can set this environment variable on server)
-if os.environ.get('DJANGO_ENV') == 'production':
-    # PRODUCTION: PostgreSQL
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': os.environ.get('DB_NAME', 'scan2food_db'),
-            'USER': os.environ.get('DB_USER', 'scan2food_user'),
-            'PASSWORD': os.environ.get('DB_PASSWORD', 'scann2Food'),
-            'HOST': os.environ.get('DB_HOST', 'localhost'),
-            'PORT': os.environ.get('DB_PORT', '5432'),
-        }
+# Use PostgreSQL for both local and production
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.environ.get('DB_NAME', 'scan2food_db'),
+        'USER': os.environ.get('DB_USER', 'scan2food_user'),
+        'PASSWORD': os.environ.get('DB_PASSWORD', 'scann2Food'),
+        'HOST': os.environ.get('DB_HOST', 'localhost'),
+        'PORT': os.environ.get('DB_PORT', '5432'),
     }
-else:
-    # LOCAL DEVELOPMENT: SQLite
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
-        }
-    }
+}
 
 # OLD CREDENTIALS (COMPROMISED - DO NOT USE):
 # USER: 'guru'
