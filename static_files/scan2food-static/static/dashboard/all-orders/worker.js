@@ -42,21 +42,30 @@ function showOrdersByPage(page) {
 function getAllOrders(daterange, theatre_id, order_status, page, scan2food_payment_id, payment_id, phone_number) {
     const sse_url = `/theatre/api/all-orders-sse?daterange=${daterange}&selected-theatre=${theatre_id}&order-status=${order_status}&scan2food-payment-id=${scan2food_payment_id}&payment-id=${payment_id}&phone-number=${phone_number}`;
     
+    console.log('SSE URL:', sse_url);
+    
     const eventSource = new EventSource(sse_url);
+
+    eventSource.onopen = (e) => {
+        console.log('SSE connection opened');
+    };
 
     eventSource.onmessage = (e) => {
         try {
+            console.log('SSE message received:', e.data);
             const order_data = JSON.parse(e.data);
             addOrder(order_data);
 
             showOrdersByPage(page);
         }
         catch (error) {
-            console.log('error ==>', error)
+            console.log('error parsing SSE data ==>', error)
         }
     }
 
     eventSource.onerror = (e) => {
+        console.error('SSE error occurred:', e);
+        console.error('EventSource readyState:', eventSource.readyState);
         eventSource.close();
         theatre_amount = parseInt(all_order_data.theatre_amount).toFixed(2);
 
