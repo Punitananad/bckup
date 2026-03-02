@@ -1491,18 +1491,27 @@ def get_db_files(request):
         media_root = django_settings.MEDIA_ROOT
         backup_folder = os.path.join(media_root, 'backup_db')
 
-        for filename in os.listdir(backup_folder):
-            file_path = os.path.join(backup_folder, filename)
-            file_size = os.path.getsize(file_path)
-            file_info = {
-                'name': filename,
-                'size': round(file_size/1048576, 2),  # size in MB
-                'path': file_path,
-                "modified": filename.replace('app_backup_', '').replace(".sql", ""),
-            }
-            backups.append(file_info)
-        
-        backups.sort(key=lambda x: datetime.strptime(x["modified"], "%d-%b-%Y"), reverse=True)
+        # Create backup folder if it doesn't exist
+        if not os.path.exists(backup_folder):
+            os.makedirs(backup_folder, exist_ok=True)
+
+        # List all backup files
+        try:
+            for filename in os.listdir(backup_folder):
+                file_path = os.path.join(backup_folder, filename)
+                if os.path.isfile(file_path):
+                    file_size = os.path.getsize(file_path)
+                    file_info = {
+                        'name': filename,
+                        'size': round(file_size/1048576, 2),  # size in MB
+                        'path': file_path,
+                        "modified": filename.replace('app_backup_', '').replace(".sql", ""),
+                    }
+                    backups.append(file_info)
+            
+            backups.sort(key=lambda x: datetime.strptime(x["modified"], "%d-%b-%Y"), reverse=True)
+        except Exception as e:
+            messages.error(request, f'Error reading backup files: {str(e)}')
         
         return render(request, 'adminPortal/db-backups.html', {'backups': backups})
     else:
