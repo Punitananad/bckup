@@ -7,7 +7,7 @@ echo ""
 
 # Define paths
 PROJECT_DIR="/var/www/scan2food/application/scan2food"
-VENV_DIR="/var/www/scan2food/venv"
+VENV_DIR="/var/www/scan2food/application/scan2food/venv"
 BACKUP_SCRIPT="$PROJECT_DIR/backupScript/automated_backup.py"
 LOG_DIR="/var/log/scan2food"
 LOG_FILE="$LOG_DIR/backup.log"
