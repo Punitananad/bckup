@@ -1,0 +1,45 @@
+Deploy PIN Protection for Database Backups
+==========================================
+
+Run these commands on your server (165.22.219.111):
+
+1. Pull the latest code:
+   cd /var/www/scan2food
+   git pull origin main
+
+2. Add the PIN to your .env file:
+   nano /var/www/scan2food/application/scan2food/.env
+   
+   Add this line at the end:
+   DB_DOWNLOAD_PIN=4210
+   
+   Save and exit (Ctrl+X, then Y, then Enter)
+
+3. Restart Gunicorn:
+   sudo systemctl restart gunicorn
+
+4. Test it:
+   Visit: https://scan2food.com/admin-portal/get-db-files
+   Click Download button
+   Enter PIN: 4210
+   Download should start
+
+How it works:
+- When user clicks Download, a modal popup asks for PIN
+- User enters 4-digit PIN (4210)
+- If correct, a temporary download token is generated (valid for 5 minutes)
+- File downloads automatically
+- Token is single-use and expires after download
+
+Security features:
+✅ PIN stored securely in .env file
+✅ One-time use download tokens
+✅ 5-minute token expiration
+✅ Path traversal protection
+✅ User permission check
+✅ Login required
+
+To change the PIN:
+Edit /var/www/scan2food/application/scan2food/.env
+Change DB_DOWNLOAD_PIN=4210 to your new PIN
+Restart Gunicorn
