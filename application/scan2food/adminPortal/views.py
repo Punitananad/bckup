@@ -1517,3 +1517,75 @@ def get_db_files(request):
     else:
         return HttpResponse('Permission Denied')
     
+
+@login_required
+def verify_download_pin(request):
+    """Verify PIN for database backup download"""
+    if request.method == 'POST':
+        import json
+        data = json.loads(request.body)
+        pin = data.get('pin', '')
+        filename = data.get('filename', '')
+        
+        # Get PIN from environment variable
+        correct_pin = os.environ.get('DB_DOWNLOAD_PIN', '4210')
+        
+        if pin == correct_pin:
+            # Generate a temporary token for download
+            import secrets
+            token = secrets.token_urlsafe(32)
+            
+            # Store token in session with filename
+            request.session[f'download_token_{token}'] = {
+                'filename': filename,
+                'expires': (timezone.now() + timedelta(minutes=5)).timestamp()
+            }
+            
+            return JsonResponse({'success': True, 'token': token})
+        else:
+            return JsonResponse({'success': False, 'error': 'Invalid PIN'})
+    
+    return JsonResponse({'success': False, 'error': 'Invalid request'})
+
+@login_required
+def download_backup(request, filename):
+    """Secure download of database backup with token verification"""
+    if user_has_permission(request.user, "change_theatre"):
+        token = request.GET.get('token', '')
+        
+        # Verify token
+        session_key = f'download_token_{token}'
+        token_data = request.session.get(session_key)
+        
+        if not token_data:
+            return HttpResponse('Invalid or expired download token', status=403)
+        
+        # Check if token expired
+        if timezone.now().timestamp() > token_data['expires']:
+            del request.session[session_key]
+            return HttpResponse('Download token expired', status=403)
+        
+        # Check if filename matches
+        if token_data['filename'] != filename:
+            return HttpResponse('Invalid filename', status=403)
+        
+        # Delete token after use (one-time use)
+        del request.session[session_key]
+        
+        # Serve the file
+        media_root = django_settings.MEDIA_ROOT
+        file_path = os.path.join(media_root, 'backup_db', filename)
+        
+        # Security check: ensure file is in backup_db folder
+        if not os.path.abspath(file_path).startswith(os.path.abspath(os.path.join(media_root, 'backup_db'))):
+            return HttpResponse('Invalid file path', status=403)
+        
+        if os.path.exists(file_path):
+            with open(file_path, 'rb') as f:
+                response = HttpResponse(f.read(), content_type='application/sql')
+                response['Content-Disposition'] = f'attachment; filename="{filename}"'
+                return response
+        else:
+            return HttpResponse('File not found', status=404)
+    else:
+        return HttpResponse('Permission Denied', status=403)

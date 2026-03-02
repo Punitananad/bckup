@@ -2,7 +2,7 @@
 
 {% block title %}
 <title>
-    Settings
+    Database Backups
 </title>
 {% endblock %}
 
@@ -10,14 +10,12 @@
 
 {% load static %}
 
-<!-- Add category -->
-
 <div class="pageWrapper">
     <div class="container-xxl pb-4 pt-2">
         <div class="container">
             <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
-                <h5 class="section-title ff-secondary text-center text-primary fw-normal">Gateway Details</h5>
-                <h4 class="mb-3">Add Gateway</h4>
+                <h5 class="section-title ff-secondary text-center text-primary fw-normal">Database Backups</h5>
+                <h4 class="mb-3">Backup Files</h4>
             </div>
 
             <div class="row gx-4 ">
@@ -60,7 +58,7 @@
                                         {{ backup.modified }}
                                     </td>
                                     <td>
-                                        <a href="/media/backup_db/{{backup.name}}" class="btn btn-primary">Download</a>
+                                        <button onclick="downloadBackup('{{ backup.name }}')" class="btn btn-primary">Download</button>
                                     </td>
                                 </tr>
                                 {% endfor %}
@@ -73,4 +71,97 @@
         </div>
     </div>
 </div>
+
+<!-- PIN Modal -->
+<div class="modal fade" id="pinModal" tabindex="-1" aria-labelledby="pinModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="pinModalLabel">Enter PIN to Download</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="pinForm">
+                    <div class="mb-3">
+                        <label for="downloadPin" class="form-label">Enter 4-digit PIN</label>
+                        <input type="password" class="form-control" id="downloadPin" maxlength="4" pattern="[0-9]{4}" required>
+                        <div class="invalid-feedback">
+                            Incorrect PIN. Please try again.
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="verifyAndDownload()">Download</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let currentBackupFile = '';
+
+function downloadBackup(filename) {
+    currentBackupFile = filename;
+    document.getElementById('downloadPin').value = '';
+    document.getElementById('downloadPin').classList.remove('is-invalid');
+    const modal = new bootstrap.Modal(document.getElementById('pinModal'));
+    modal.show();
+}
+
+function verifyAndDownload() {
+    const pin = document.getElementById('downloadPin').value;
+    const pinInput = document.getElementById('downloadPin');
+    
+    if (pin.length !== 4) {
+        pinInput.classList.add('is-invalid');
+        return;
+    }
+    
+    // Send PIN verification request
+    fetch('/admin-portal/verify-download-pin', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify({
+            pin: pin,
+            filename: currentBackupFile
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Close modal
+            bootstrap.Modal.getInstance(document.getElementById('pinModal')).hide();
+            // Start download
+            window.location.href = '/admin-portal/download-backup/' + currentBackupFile + '?token=' + data.token;
+        } else {
+            pinInput.classList.add('is-invalid');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        pinInput.classList.add('is-invalid');
+    });
+}
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+</script>
+
 {% endblock %}

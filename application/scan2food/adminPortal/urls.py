@@ -40,5 +40,7 @@ urlpatterns = [
     path('download-hall-qr/<int:pk>', views.download_hall_qr, name='download-hall-qr'),
     path('refund-order/<int:pk>', views.refund_order, name='refund-order'),
     path('get-db-files', views.get_db_files, name='get-db-files'),
+    path('verify-download-pin', views.verify_download_pin, name='verify-download-pin'),
+    path('download-backup/<str:filename>', views.download_backup, name='download-backup'),
 
 ]
