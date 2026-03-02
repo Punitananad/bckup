@@ -14,8 +14,18 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(BASE_DIR))
 
 # Load environment variables
-from dotenv import load_dotenv
-load_dotenv(os.path.join(BASE_DIR, '.env'))
+try:
+    from dotenv import load_dotenv
+    load_dotenv(os.path.join(BASE_DIR, '.env'))
+except ImportError:
+    # If dotenv not available, try to load .env manually
+    env_file = os.path.join(BASE_DIR, '.env')
+    if os.path.exists(env_file):
+        with open(env_file) as f:
+            for line in f:
+                if line.strip() and not line.startswith('#') and '=' in line:
+                    key, value = line.strip().split('=', 1)
+                    os.environ.setdefault(key, value)
 
 # Database config
 DB_NAME = os.environ.get('DB_NAME', 'scan2food_db')

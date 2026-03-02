@@ -1,0 +1,16 @@
+Copy and paste these commands into your SSH session (165.22.219.111):
+
+cd /var/www/scan2food && git pull origin main && chmod +x setup_backup_cron.sh && sudo bash setup_backup_cron.sh
+
+After running, you should see:
+- ✅ Test backup successful!
+- 🎉 Automated backup system is ready!
+
+Then verify with:
+crontab -l | grep backup
+
+And check the backup was created:
+ls -lh /var/www/scan2food/application/scan2food/media/backup_db/
+
+Finally, visit in browser:
+https://scan2food.com/admin-portal/get-db-files
